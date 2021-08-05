@@ -22,4 +22,28 @@ export function GetCpuStatus(ip, username, password, port) {
   });
 }
 
+export function GetHwdStatus(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/hardwarestatus', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
+export function GetSfpStatus(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/sfpstatus', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
+export function GeBgpStatus(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/bgpstatus', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
  
