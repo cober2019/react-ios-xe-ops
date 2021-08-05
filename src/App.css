@@ -1,0 +1,195 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.red {
+  background-color: orange !important;
+}
+
+.green {
+  background-color: palegreen !important;
+}
+
+.row-text{
+  color: white;
+  font-size: 5;
+  text-align: left;
+}
+
+.fade-in {
+  animation: fadeInAnimation ease 3s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+   }
+}
+
+.export-button{ display: block;
+  width: 150px;
+  margin-left: 10px;
+  color: white;
+  background-color: #3498db;
+  border-radius: 8px}
+
+.h3 {
+  color: black;
+  margin-bottom: 15px;
+}
+
+.background {
+  background-color:rgb(221, 218, 218);
+}
+
+.card-text{
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(66, 61, 61, 0.9);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.center-login {
+  margin-top: 200px;
+  width: 25%;
+  padding: 10px;
+  border-bottom: white solid thin;}
+
+.loading-table {
+    margin-top: 15px;
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    opacity: .4;
+    background-color: rgb(66, 61, 61, 0.5);
+    border-radius: 6px;
+    margin: auto;}
+
+  .status {
+      color: black;
+      text-align: right;
+      
+    }
+
+.h3 {
+  color: black;
+  text-align: center;
+}
+
+.status {
+  float: right;
+  font-size: 10;
+}
+
+.fadeTables{
+  display:none;
+}
+
+.input-text{text-align: center;}
+
+.submitButton{ display: block;
+                max-width: 300px;
+                width: 150px;
+                margin: auto;
+                color: white;
+                background-color: rgb(76, 76, 231);
+                border-radius: 6px;}
+
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-bottom: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+
+.status-loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-bottom: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.blinking{
+  animation:blinkingText 1.5s infinite;
+}
+@keyframes blinkingText{
+  0%{     color: white;    }
+  60%{    color: transparent; }
+  99%{    color:transparent;  }
+  100%{   color: white;    }
+}
+
+.blinking-status{
+  animation:blinkingStatusText .5 infinite;
+}
+@keyframes blinkingStatusText{
+  0%{     color: #000;    }
+  49%{    color: #000; }
+  60%{    color: transparent; }
+  99%{    color:transparent;  }
+  100%{   color: #000;    }
+}
