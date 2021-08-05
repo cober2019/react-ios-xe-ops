@@ -25,6 +25,7 @@ export  function Index(props){
       var update = updateSomeChildren += 1
       setupdateSomeChildren(update)
       let interfaces = await PollInterfaces(ip, username, password, port)
+      console.log(interfaces)
       setInterfaces(interfaces.data.data)
       setIsAuth(true)
     }

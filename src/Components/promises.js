@@ -16,9 +16,9 @@ export function PollInterfaces(ip, username, password, port) {
 
 export function GetCpuStatus(ip, username, password, port) {
   return new Promise(resolve => {
-    setTimeout(() => {
+    setInterval(() => {
       resolve(axios.post('/cpustatus', {'ip': ip, 'username': username, 'password': password, 'port': port}));
-    }, 5000);
+    }, 2000);
   });
 }
 

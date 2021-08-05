@@ -27,7 +27,6 @@ export  function InterfaceCard(props){
   useEffect(() => {
     if(chartStatus !== true){
       var chart = InitialChartBuild(interfacesRef.current.getContext('2d'), parseInt(props.value['statistics']['tx-kbps']), parseInt(props.value['statistics']['rx-kbps']));
-
       setChart(chart)
       setArpCount(props.arps.length)
       setChartStatus(true)
@@ -67,7 +66,7 @@ export  function InterfaceCard(props){
   }
 
   return <div key={props.value} className="col-4">
-            <div className="card text-white bg-dark" style={{marginTop: 10, height: '550px'}}>
+            <div className="card text-white bg-dark" style={{marginTop: 10, height: '575px'}}>
               <div className="card-body">
               <h4 class="card-title">{props.value.name}</h4>
               <br/>

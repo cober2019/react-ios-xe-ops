@@ -34,6 +34,7 @@ export function CpuUsage(props){
         ( async () => {
           if(chartStatus !== true){
             let cpu = await GetCpuStatus(props.ip, props.username, props.password, props.port)
+            console.log(cpu)
             setcpuStats(cpu)
             setChart(InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), cpu.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']))
             setChartStatus(true)
@@ -72,22 +73,23 @@ export function CpuUsage(props){
         return <div key={props.value} className="col-12">
                     <div className="card text-white bg-dark">
                         <div className="card-body">
+                            <h4 class="card-title">CPU Statistics</h4>
                             <div className="row" style={{marginTop: '20px'}}>
                                 <div className="col-8">
                                     <div className="row" style={{height: "200px"}}>
                                         <canvas ref={cpuTableRef} style={{height: "100%", marginLeft: '10px'}}/>
                                     </div>
                                 </div>
-                                <div className="col-1"/>
-                                <div className="col-2">
+                                <div className="col-3">
                                     <div class="table-responsive" style={{marginTop: '20px'}}>
-                                        <table className="table table-borderless row-text" style={{width: '100%'}}>
+                                        <table className="table table-borderless row-text">
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th style={{textAlign: 'center' }} scope="col">5 Sec</th>
                                                     <th style={{textAlign: 'center'}} scope="col">One Min</th>
                                                     <th style={{textAlign: 'center'}} scope="col">Five Min</th>
-                                                    <th style={{textAlign: 'center'}} scope="col">Procc(s)</th>
+                                                    <th style={{textAlign: 'center'}} scope="col">Processes</th>
+                                                    <th style={{textAlign: 'center'}} scope="col">Mem Usg.</th>
                                                 </tr>
                                             </thead>  
                                             <tbody>
@@ -96,6 +98,7 @@ export function CpuUsage(props){
                                                 <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
                                                 <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
                                                 <td href="#" style={{textAlign: 'center', fontSize: 40}}><a onClick={() => displayProccesses(true)} href="#">{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</a></td>
+                                                <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.mem[0]['memory-stats']['available-percent']}<span style={{textAlign: 'center', fontSize: 10}}>({cpuStats.data.mem[0]['memory-stats']['memory-status']})</span></td>
                                             </tr>
                                             </tbody>                             
                                         </table>
@@ -116,16 +119,20 @@ export function CpuUsage(props){
             else{
                 return <div key={props.value} className="col-12">
                     <div className="card text-white bg-dark">
-                        <div className="card-body"> 
+                        <div className="card-body">
+                            <h4 class="card-title">CPU Statistics</h4>
                             <div className="row">
                                 <div className="col-8">
                                     <div className="row" style={{height: "200px"}}>
-                                        <canvas ref={cpuTableRef} style={{height: "100%"}}/>
+                                        <div className="card text-white bg-dark">
+                                            <div className="card-body" style={{display: "flex", justifyContent: "center", marginTop: '40px'}}>
+                                                <div className="spinner"/>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="col-1"/>
-                                <div className="col-2">
-                                        <div class="table-responsive" style={{marginTop: '30px'}}>
+                                <div className="col-3">
+                                        <div class="table-responsive" style={{marginTop: '30px', marginLeft: '40px'}}>
                                             <table className="table table-borderless row-text" style={{width: '100%'}}>
                                                 <thead class="thead-light">
                                                     <tr>
@@ -133,14 +140,16 @@ export function CpuUsage(props){
                                                     <th style={{textAlign: 'center'}} scope="col">One Min</th>
                                                     <th style={{textAlign: 'center'}} scope="col">Five Min</th>
                                                     <th style={{textAlign: 'center'}} scope="col">Procc(s)</th>
+                                                    <th style={{textAlign: 'center'}} scope="col">Mem Usg.</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr className="blinking">
+                                                <tr>
                                                     <td style={{textAlign: 'center', fontSize: 40}}>0</td>
                                                     <td style={{textAlign: 'center', fontSize: 40}}>0</td>
                                                     <td style={{textAlign: 'center', fontSize: 40}}>0</td>
                                                     <td style={{textAlign: 'center', fontSize: 40}}>0</td>
+                                                    <td style={{textAlign: 'center', fontSize: 40}}>0<span style={{textAlign: 'center', fontSize: 10}}>(unknown)</span></td>
                                                 </tr></tbody> 
                                             </table>
                                         </div>

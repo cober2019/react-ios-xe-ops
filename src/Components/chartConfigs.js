@@ -18,7 +18,7 @@ export function CpuChartConfig() {
             y: {
             min: 0,
             display: true,
-            position: 'left',
+            position: 'right',
             grid: {
                     },
                 ticks: {
@@ -119,7 +119,7 @@ export function InitialChartBuild(ctx, response, responseTwo){
         backgroundColor: 'yellow',
         data: [parseInt(response) / 1000],
         fill: false,
-        tension: .0,
+        tension: .5,
         yAxisID: 'y'},
         
         {
@@ -128,7 +128,7 @@ export function InitialChartBuild(ctx, response, responseTwo){
         backgroundColor: 'white',
         data: [parseInt(responseTwo) / 1000],
         fill: false,
-        tension: .0,
+        tension: .5,
         yAxisID: 'y1'}],
         }
         });    
@@ -150,13 +150,14 @@ export function InitialCpuChartBuild(ctx, response){
         borderColor: 'yellow',
         backgroundColor: 'yellow',
         data: [response],
-        fill: false,
-        tension: .0,}],
+        fill: true,
+        tension: .5,}],
         }
         });    
 
     return chart
 }
+
 
 export function UpdateChart(chart, response, responseTwo) {
 
@@ -185,7 +186,6 @@ export function UpdateChart(chart, response, responseTwo) {
             }
         }
     });
-
     return chart
     
 }
