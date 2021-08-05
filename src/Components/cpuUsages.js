@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { UpdateCpuChart, InitialCpuChartBuild, CpuTableHtml } from './chartConfigs';
-import { GetCpuStatus } from './promises';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
@@ -8,46 +7,36 @@ $.DataTable = require('datatables.net');
 export function CpuUsage(props){
     const [chart, setChart] = useState(undefined)
     const [cpuStats, setcpuStats] = useState(undefined)
-    const [cpuTableRef, setcpuTableRef] = useState(React.createRef())
     const [proccessTableStatus, setproccessTableStatus] = useState(false)
     const [proccessRef, setcapabilitiesRef] = useState(React.createRef())
     const [chartStatus, setChartStatus] = useState(false)
+    const cpuTableRef = React.createRef()
     const proccessTable = CpuTableHtml(proccessRef); 
 
     useEffect(() => {
-        ( async () => {
-            if(chart !== undefined){
-                while(props.auth){
-                    try{
-                        let cpu = await GetCpuStatus(props.ip, props.username, props.password, props.port)
-                        setcpuStats(cpu)
-                        let updatedChart = UpdateCpuChart(chart, cpu.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
-                        updatedChart.update()
-                    }
-                    catch{}
-                }
-            }
-          }) ();
-      }, [chartStatus])
-    
-      useEffect(() => {
-        ( async () => {
-          if(chartStatus !== true){
-            let cpu = await GetCpuStatus(props.ip, props.username, props.password, props.port)
-            console.log(cpu)
-            setcpuStats(cpu)
-            setChart(InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), cpu.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']))
-            setChartStatus(true)
-            }
-          }) ();
-      }, [])
+        if(chart){
+            let updatedChart = UpdateCpuChart(chart, props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
+            setChart(updatedChart)
+            updatedChart.update()
+        }
+        
+      }, [props.cpuMem])
       
+    
+    useEffect(() => {
+        console.log(props)
+    if(chartStatus !== true){
+        setChart(InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']))
+        setChartStatus(true)
+        }
+    }, [])
+
     const displayProccesses = (bool) =>{
         if(bool){
             if(proccessTableStatus === false){
                 $(proccessRef.current).DataTable({
                     dom: "<\"top\"B><'col-sm-12'f>rt<\"bottom\"p><'col-sm-2'l>",
-                    data: cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
+                    data: props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
                     columns:  [
                         { data: 'name' },
                         { data: 'tty' },
@@ -66,10 +55,8 @@ export function CpuUsage(props){
             setproccessTableStatus(false)
         }
     }
-    
 
-
-    if(cpuStats !== undefined){
+    if(setChart !== false){
         return <div key={props.value} className="col-12">
                     <div className="card text-white bg-dark">
                         <div className="card-body">
@@ -77,10 +64,10 @@ export function CpuUsage(props){
                             <div className="row" style={{marginTop: '20px'}}>
                                 <div className="col-8">
                                     <div className="row" style={{height: "200px"}}>
-                                        <canvas ref={cpuTableRef} style={{height: "100%"}}/>
+                                        <canvas ref={cpuTableRef} style={{height: "100%", marginLeft: '10px'}}/>
                                     </div>
                                 </div>
-								<div className="col-1" style={{width: '60px'}}/>
+                                <div className="col-1" style={{width: '60px'}}/>
                                 <div className="col-3">
                                     <div class="table-responsive" style={{marginTop: '20px'}}>
                                         <table className="table table-borderless row-text">
@@ -95,11 +82,11 @@ export function CpuUsage(props){
                                             </thead>  
                                             <tbody>
                                             <tr className="fade-in">
-                                                <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
-                                                <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
-                                                <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
-                                                <td href="#" style={{textAlign: 'center', fontSize: 40}}><a onClick={() => displayProccesses(true)} href="#">{cpuStats.data.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</a></td>
-                                                <td style={{textAlign: 'center', fontSize: 40}}>{cpuStats.data.mem[0]['memory-stats']['available-percent']}<span style={{textAlign: 'center', fontSize: 10}}>({cpuStats.data.mem[0]['memory-stats']['memory-status']})</span></td>
+                                                <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
+                                                <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
+                                                <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
+                                                <td href="#" style={{textAlign: 'center', fontSize: 40}}><a onClick={() => displayProccesses(true)} href="#">{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</a></td>
+                                                <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.mem[0]['memory-stats']['available-percent']}<span style={{textAlign: 'center', fontSize: 10}}>({props.cpuMem.mem[0]['memory-stats']['memory-status']})</span></td>
                                             </tr>
                                             </tbody>                             
                                         </table>
@@ -125,6 +112,10 @@ export function CpuUsage(props){
                             <div className="row">
                                 <div className="col-8">
                                     <div className="row" style={{height: "200px"}}>
+                                            <canvas ref={cpuTableRef} style={{height: "100%", marginLeft: '10px'}} hidden/>
+                                        </div>
+                                    </div>
+                                    <div className="row" style={{height: "200px"}}>
                                         <div className="card text-white bg-dark">
                                             <div className="card-body" style={{display: "flex", justifyContent: "center", marginTop: '40px'}}>
                                                 <div className="spinner"/>
@@ -132,7 +123,7 @@ export function CpuUsage(props){
                                         </div>
                                     </div>
                                 </div>
-								<div className="col-1" style={{width: '60px'}}/>
+                                <div className="col-1" style={{width: '60px'}}/>
                                 <div className="col-3">
                                         <div class="table-responsive" style={{marginTop: '30px', marginLeft: '40px'}}>
                                             <table className="table table-borderless row-text" style={{width: '100%'}}>
@@ -155,12 +146,10 @@ export function CpuUsage(props){
                                                 </tr></tbody> 
                                             </table>
                                         </div>
-                                    {proccessTableStatus ? <div className="row-text">{proccessTable} </div>: <div hidden>{proccessTable}</div>}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
             } 
         }
         

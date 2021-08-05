@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PollInterfaces} from './promises'
+import { PollInterfaces, GetCpuStatus} from './promises'
 import { InterfaceCard} from './interfaceCard'
 import { CpuUsage} from './cpuUsages'
 import { DeviceAuth} from './login'
@@ -8,6 +8,7 @@ import { ErrorBoundary } from './errorBoundry';
 
 export  function Index(props){
   const [interfaces, setInterfaces] = useState([])
+  const [cpuMemStats, setcpuMemStats] = useState([])
   const [isAuth, setIsAuth] = useState(false)
   const [ip, setIp] = useState(null)
   const [username, setUserName] = useState(null)
@@ -25,8 +26,10 @@ export  function Index(props){
       var update = updateSomeChildren += 1
       setupdateSomeChildren(update)
       let interfaces = await PollInterfaces(ip, username, password, port)
-      console.log(interfaces)
+      let cpu = await GetCpuStatus(ip, username, password, port)
+      console.log(cpu.data.data)
       setInterfaces(interfaces.data.data)
+      setcpuMemStats(cpu)
       setIsAuth(true)
     }
   }
@@ -43,7 +46,7 @@ export  function Index(props){
             <div className="row">
               <div className="col-12">
                 <ErrorBoundary>
-                  <CpuUsage ip={ip} port={port} username={username} password={password} auth={isAuth}/>
+                  <CpuUsage cpuMem={cpuMemStats.data} ip={ip} port={port} username={username} password={password} auth={isAuth}/>
                 </ErrorBoundary>
               </div>
             </div>
