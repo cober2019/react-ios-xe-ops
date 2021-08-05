@@ -69,6 +69,8 @@ export  function InterfaceCard(props){
   return <div key={props.value} className="col-4">
             <div className="card text-white bg-dark" style={{marginTop: 10, height: '550px'}}>
               <div className="card-body">
+              <h4 class="card-title">{props.value.name}</h4>
+              <br/>
               {showArp ? <div onClick={(e) => getArps(false, e)} className="overlay">{table}</div>: 
               <div hidden>
               {table}
@@ -78,7 +80,6 @@ export  function InterfaceCard(props){
               <br/>
                   <div className="row">
                     <div className="col-6">
-                      <p className="card-text">Name: {props.value.name}</p>
                       <p className="card-text">Speed: {parseInt(props.value.speed) / 1e6 }</p>
                       <p className="card-text">Status: {props.value['oper-status']}</p>
                       <p className="card-text">IP: {props.value.ipv4}-{props.value['ipv4-subnet-mask']}</p>
