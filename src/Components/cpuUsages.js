@@ -77,9 +77,10 @@ export function CpuUsage(props){
                             <div className="row" style={{marginTop: '20px'}}>
                                 <div className="col-8">
                                     <div className="row" style={{height: "200px"}}>
-                                        <canvas ref={cpuTableRef} style={{height: "100%", marginLeft: '10px'}}/>
+                                        <canvas ref={cpuTableRef} style={{height: "100%"}}/>
                                     </div>
                                 </div>
+								<div className="col-1" style={{width: '60px'}}/>
                                 <div className="col-3">
                                     <div class="table-responsive" style={{marginTop: '20px'}}>
                                         <table className="table table-borderless row-text">
@@ -131,6 +132,7 @@ export function CpuUsage(props){
                                         </div>
                                     </div>
                                 </div>
+								<div className="col-1" style={{width: '60px'}}/>
                                 <div className="col-3">
                                         <div class="table-responsive" style={{marginTop: '30px', marginLeft: '40px'}}>
                                             <table className="table table-borderless row-text" style={{width: '100%'}}>
