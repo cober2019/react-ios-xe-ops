@@ -1,4 +1,4 @@
 IOS-XE-Ops
 ============
 
-**! This code is not complete but functional !**
+**! This code is not complete but is functional !**
