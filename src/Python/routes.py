@@ -2,7 +2,7 @@ from flask import Flask, request
 import os
 import json
 import requests
-import interfaces as GetInterfaces
+import devicecalls as GetInterfaces
 
 
 app = Flask(__name__)
@@ -60,7 +60,7 @@ def get_cpu_status():
 
     cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'data': cpu_status}
+    return {'data': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/hardwarestatus', methods=['POST', 'GET'])
 def get_hardware_status():
