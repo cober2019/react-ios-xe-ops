@@ -62,14 +62,30 @@ def get_cpu_status():
 
     return {'data': cpu_status}
 
-@app.route('/logout', methods=['POST', 'GET'])
-def logout():
-    """User logout"""
-    
-    #Clear route_session object from sessions dictionary
-    sessions.pop(request.json.get('device'))
+@app.route('/hardwarestatus', methods=['POST', 'GET'])
+def get_hardware_status():
+    """This page displays device interface"""
 
-    return {'data': 'LogOutSuccessful'}
+    cpu_status = GetInterfaces.get_hardware_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'data': cpu_status}
+
+@app.route('/sfpstatus', methods=['POST', 'GET'])
+def get_sfp_status():
+    """This page displays device interface"""
+
+    cpu_status = GetInterfaces.get_sfp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'data': cpu_status}
+
+@app.route('/bgpstatus', methods=['POST', 'GET'])
+def get_bgp_status():
+    """This page displays device interface"""
+
+    cpu_status = GetInterfaces.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'data': cpu_status}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
