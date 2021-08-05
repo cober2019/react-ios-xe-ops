@@ -3,6 +3,7 @@ import { PollInterfaces} from './promises'
 import { InterfaceCard} from './interfaceCard'
 import { CpuUsage} from './cpuUsages'
 import { DeviceAuth} from './login'
+import { ErrorBoundary } from './errorBoundry';
 
 
 export  function Index(props){
@@ -31,19 +32,25 @@ export  function Index(props){
 
   if (isAuth === false){
     return <div>
-            <DeviceAuth callback={setAuthTrue}/>
+            <ErrorBoundary>
+              <DeviceAuth callback={setAuthTrue}/>
+            </ErrorBoundary>
           </div>
   }
   else{
     return <div className="container-fluid">
             <div className="row">
               <div className="col-12">
-                <CpuUsage ip={ip} port={port} username={username} password={password} auth={isAuth}/>
+                <ErrorBoundary>
+                  <CpuUsage ip={ip} port={port} username={username} password={password} auth={isAuth}/>
+                </ErrorBoundary>
               </div>
             </div>
               <div className="row">
                   { Object.values(interfaces).map((value) => (
-                    <InterfaceCard key={value.interface} value={value.data} arps={value.arps} ip={ip} port={port} username={username} password={password}></InterfaceCard>
+                    <ErrorBoundary>
+                      <InterfaceCard key={value.interface} value={value.data} arps={value.arps} ip={ip} port={port} username={username} password={password}/>
+                    </ErrorBoundary>
                   ))}
               </div>
             </div>
