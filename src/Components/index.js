@@ -26,7 +26,7 @@ export  function Index(props){
 
       try{
         var interfaces = await PollInterfaces(ip, username, password, port)
-        console.log(interfaces.data.data)
+        
       }
       catch(e){
         console.log(e)
