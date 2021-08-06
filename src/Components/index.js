@@ -22,12 +22,24 @@ export  function Index(props){
     setUserName(username)
     setPassword(password)
     setPort(port)
+    
     while (true){
       var update = updateSomeChildren += 1
       setupdateSomeChildren(update)
-      let interfaces = await PollInterfaces(ip, username, password, port)
-      let cpu = await GetCpuStatus(ip, username, password, port)
-      console.log(cpu.data.data)
+      try{
+        var interfaces = await PollInterfaces(ip, username, password, port)
+      }
+      catch(e){
+        console.log(e)
+      }
+      
+      try{
+        var cpu = await GetCpuStatus(ip, username, password, port)
+      }
+      catch(e){
+        console.log(e)
+      }
+   
       setInterfaces(interfaces.data.data)
       setcpuMemStats(cpu)
       setIsAuth(true)
