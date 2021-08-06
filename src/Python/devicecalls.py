@@ -43,8 +43,9 @@ def get_interfaces(ip, port, username, password):
                 data[interface.get('name')] = {'interface': interface.get('name'), 'data': interface, 'arps': entries}
                 
         except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-            data = interface_data
-    
+            for interface in interface_data:
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': interface, 'arps': []}
+
     return data
 
 def get_cpu_usages(ip, port, username, password):
