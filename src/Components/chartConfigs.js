@@ -220,11 +220,11 @@ export function TableHtml(tableRef) {
                             <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
                                 <thead class="thead-light">
                                     <tr>
-                                        <th class="text-left" scope="col">Address</th>
-                                        <th class="text-left" scope="col">Type</th>
-                                        <th class="text-left" scope="col">MAC</th>
-                                        <th class="text-left" scope="col">Type</th>
-                                        <th class="text-left" scope="col">Time</th>    
+                                        <th scope="col">Address</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">MAC</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Time</th>    
                                     </tr>
                                 </thead>                               
                             </table>
@@ -233,27 +233,53 @@ export function TableHtml(tableRef) {
                 </div>
     }
 
-    export function CpuTableHtml(tableRef) {
+export function CpuTableHtml(tableRef) {
 
-        return  <div>
-                    <div className="col-12">
-                        <div class="table-responsive" style={{height: '550px'}}>
-                                <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th class="text-left" scope="col">Name</th>
-                                            <th class="text-left" scope="col">TTY</th>
-                                            <th class="text-left" scope="col">Run Time</th>
-                                            <th class="text-left" scope="col">Invocation-count</th>
-                                            <th class="text-left" scope="col">Avg-run-time</th>
-                                            <th class="text-left" scope="col">Five-seconds</th>
-                                            <th class="text-left" scope="col">One-minute</th>
-                                            <th class="text-left" scope="col">Five-minutes</th>        
-                                        </tr>
-                                    </thead>                               
-                                </table>
-                            </div>
+    return  <div>
+                <div className="col-12">
+                    <div class="table-responsive" style={{height: '550px'}}>
+                            <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">TTY</th>
+                                        <th scope="col">Run Time</th>
+                                        <th scope="col">Invocation-count</th>
+                                        <th scope="col">Avg-run-time</th>
+                                        <th scope="col">Five-seconds</th>
+                                        <th scope="col">One-minute</th>
+                                        <th scope="col">Five-minutes</th>        
+                                    </tr>
+                                </thead>                               
+                            </table>
                         </div>
                     </div>
-        }
+                </div>
+    }
+
+export function MemTableHtml(tableRef) {
+
+    return  <div>
+                <div className="col-12">
+                    <div class="table-responsive">
+                            <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
+                                <thead class="thead-light">
+                                    <tr style={{textAlign: 'center'}}>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Used</th>
+                                        <th scope="col">Used%</th>
+                                        <th scope="col">Free</th>
+                                        <th scope="col">Free%</th>
+                                        <th scope="col">Used Avl.</th>
+                                        <th scope="col">Used Avl%</th>
+                                        <th scope="col">Committed</th>
+                                        <th scope="col">Committed%</th>
+    
+                                    </tr>
+                                </thead>                               
+                            </table>
+                        </div>
+                    </div>
+                </div>
+    }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UpdateCpuChart, InitialCpuChartBuild, CpuTableHtml } from './chartConfigs';
+import { UpdateCpuChart, InitialCpuChartBuild, CpuTableHtml, MemTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
@@ -8,10 +8,13 @@ export function CpuUsage(props){
     const [chart, setChart] = useState(undefined)
     const [cpuStats, setcpuStats] = useState(undefined)
     const [proccessTableStatus, setproccessTableStatus] = useState(false)
+    const [memTableStatus, setmemTableStatus] = useState(false)
     const [proccessRef, setcapabilitiesRef] = useState(React.createRef())
     const [chartStatus, setChartStatus] = useState(false)
     const cpuTableRef = React.createRef()
-    const proccessTable = CpuTableHtml(proccessRef); 
+    const memTableRef = React.createRef()
+    const proccessTable = CpuTableHtml(proccessRef);
+    const memTable = MemTableHtml(memTableRef); 
 
     useEffect(() => {
         if(chart){
@@ -32,6 +35,7 @@ export function CpuUsage(props){
     }, [])
 
     const displayProccesses = (bool) =>{
+        console.log(props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'])
         if(bool){
             if(proccessTableStatus === false){
                 $(proccessRef.current).DataTable({
@@ -56,11 +60,37 @@ export function CpuUsage(props){
         }
     }
 
+    const displayMemory = (bool) =>{
+        if(bool){
+            if(memTableStatus === false){
+                $(memTableRef.current).DataTable({
+                    dom: "",
+                    data: [props.cpuMem.mem[0]['memory-stats']],
+                    columns:  [
+                        { data: 'total'},
+                        { data: 'used-number' },
+                        { data: 'used-percent' },
+                        { data: 'free-number' },
+                        { data: 'free-percent' },
+                        { data: 'available-number' },
+                        { data: 'available-percent'},
+                        { data: 'committed-number' },
+                        { data: 'committed-percent'}
+                    ],});
+                    setmemTableStatus(true)
+                }
+            }
+        else{
+            $(memTableRef.current).DataTable().destroy()
+            setmemTableStatus(false)
+        }
+    }
+
     if(setChart !== false){
         return <div key={props.value} className="col-12">
                     <div className="card text-white bg-dark">
                         <div className="card-body">
-                            <h4 class="card-title">CPU Statistics</h4>
+                            <h4 class="card-title">CPU/Memory Statistics</h4>
                             <div className="row" style={{marginTop: '20px'}}>
                                 <div className="col-8">
                                     <div className="row" style={{height: "200px"}}>
@@ -86,12 +116,13 @@ export function CpuUsage(props){
                                                 <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
                                                 <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
                                                 <td href="#" style={{textAlign: 'center', fontSize: 40}}><a onClick={() => displayProccesses(true)} href="#">{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</a></td>
-                                                <td style={{textAlign: 'center', fontSize: 40}}>{props.cpuMem.mem[0]['memory-stats']['available-percent']}<span style={{textAlign: 'center', fontSize: 10}}>({props.cpuMem.mem[0]['memory-stats']['memory-status']})</span></td>
+                                                <td style={{textAlign: 'center', fontSize: 40}}><a onClick={() => displayMemory(true)} href="#">{props.cpuMem.mem[0]['memory-stats']['available-percent']}</a><span style={{textAlign: 'center', fontSize: 10}}>({props.cpuMem.mem[0]['memory-stats']['memory-status']})</span></td>
                                             </tr>
                                             </tbody>                             
                                         </table>
                                     </div>
                                 </div>
+
                                 {proccessTableStatus ?<div className="row" style={{borderTop: '1px solid white', marginBottom: '10px', marginTop: '10px'}}/>: <div/>}
                                 <div className="col-3">
                                     {proccessTableStatus ? <button  onClick={() => displayProccesses(false)} type="button" className="btn btn-primary btn-sm" style={{marginLeft: '10px', marginTop: '20px'}}>Close CPU Table</button>
@@ -99,6 +130,14 @@ export function CpuUsage(props){
                                     <button  onClick={() => displayProccesses(false)} type="submit" value="Submit" className="btn btn-primary" hidden/>}
                                 </div>
                                 {proccessTableStatus ? <div>{proccessTable} </div>: <div hidden>{proccessTable}</div>}
+
+                                {memTableStatus ?<div className="row" style={{borderTop: '1px solid white', marginBottom: '10px', marginTop: '10px'}}/>: <div/>}
+                                <div className="col-3">
+                                    {memTableStatus ? <button  onClick={() => displayMemory(false)} type="button" className="btn btn-primary btn-sm" style={{marginLeft: '10px', marginTop: '20px'}}>Close Mem Table</button>
+                                    : 
+                                    <button  onClick={() => displayMemory(false)} type="submit" value="Submit" className="btn btn-primary" hidden/>}
+                                </div>
+                                {memTableStatus ? <div>{memTable} </div>: <div hidden>{memTable}</div>}
                             </div>
                         </div>
                     </div>
