@@ -65,8 +65,6 @@ export  function InterfaceCard(props){
     }
   }
 
-  console.log(props.value)
-
   return  <div className="card text-white bg-dark" style={{marginTop: 10, height: '575px'}}>
               <div className="card-body">
               <h4 class="card-title">{props.value.name}</h4>
