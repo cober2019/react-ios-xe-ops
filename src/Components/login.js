@@ -15,13 +15,11 @@ export function DeviceAuth(props){
             var response = await Login(ip, username, password, port)
         }
         catch(e){
-            var response = 500
-        }
-        if(response === 500){
             alert('Login Failed')
             setloading(false)
-        }       
-        else if(response.data.status === 200){
+        }
+       
+        if(response.data.status === 200){
             props.callback(ip, username, password, port)
         }
         else{
