@@ -10,7 +10,7 @@ export function DeviceAuth(props){
 
     const handleSubmit = async (evt) => {
         evt.preventDefault();
-        console.log('response')
+        
         try{
             var response = await Login(ip, username, password, port)
         }
@@ -26,7 +26,7 @@ export function DeviceAuth(props){
         }
         else{
             alert('Login Failed')
-	        setloading(false)
+	    setloading(false)
         }
 
     }
