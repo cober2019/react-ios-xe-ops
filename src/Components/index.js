@@ -14,20 +14,19 @@ export  function Index(props){
   const [username, setUserName] = useState(null)
   const [password, setPassword] = useState(null)
   const [port, setPort] = useState(443)
-  var [updateSomeChildren, setupdateSomeChildren] = useState(0)
-
 
   const setAuthTrue = async (ip, username, password, port) => {
+
     setIp(ip)
     setUserName(username)
     setPassword(password)
     setPort(port)
-    
+
     while (true){
-      var update = updateSomeChildren += 1
-      setupdateSomeChildren(update)
+
       try{
         var interfaces = await PollInterfaces(ip, username, password, port)
+        console.log(interfaces.data.data)
       }
       catch(e){
         console.log(e)
@@ -39,7 +38,6 @@ export  function Index(props){
       catch(e){
         console.log(e)
       }
-   
       setInterfaces(interfaces.data.data)
       setcpuMemStats(cpu)
       setIsAuth(true)
@@ -64,9 +62,11 @@ export  function Index(props){
             </div>
               <div className="row">
                   { Object.values(interfaces).map((value) => (
-                    <ErrorBoundary>
-                      <InterfaceCard key={value.interface} value={value.data} arps={value.arps} ip={ip} port={port} username={username} password={password}/>
-                    </ErrorBoundary>
+                      <div key={value.name} className="col-4">
+                      <ErrorBoundary>
+                        <InterfaceCard cpuMem={cpuMemStats.data} key={value.interface} value={value.data} arps={value.arps} ip={ip} port={port} username={username} password={password}/>
+                      </ErrorBoundary>
+                    </div>
                   ))}
               </div>
             </div>

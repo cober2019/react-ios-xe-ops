@@ -65,8 +65,9 @@ export  function InterfaceCard(props){
     }
   }
 
-  return <div key={props.value} className="col-4">
-            <div className="card text-white bg-dark" style={{marginTop: 10, height: '575px'}}>
+  console.log(props.value)
+
+  return  <div className="card text-white bg-dark" style={{marginTop: 10, height: '575px'}}>
               <div className="card-body">
               <h4 class="card-title">{props.value.name}</h4>
               <br/>
@@ -102,6 +103,5 @@ export  function InterfaceCard(props){
                   </div>
               </div>
             </div>
-          </div>
   }
   
