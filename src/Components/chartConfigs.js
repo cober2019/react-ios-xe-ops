@@ -233,12 +233,34 @@ export function TableHtml(tableRef) {
                 </div>
     }
 
+export function EnvTableHtml(tableRef) {
+
+    return  <div>
+                <div className="col-12">
+                    <div class="table-responsive">
+                            <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">State</th>
+                                        <th scope="col">Current</th>
+                                        <th scope="col">Meas.</th>
+                                    </tr>
+                                </thead>                               
+                            </table>
+                        </div>
+                    </div>
+                </div>
+    }
+
+
 export function CpuTableHtml(tableRef) {
 
     return  <div>
                 <div className="col-12">
                     <div class="table-responsive" style={{height: '550px'}}>
-                            <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
+                            <table ref={tableRef} className="table" style={{width: '100%'}}>
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Name</th>

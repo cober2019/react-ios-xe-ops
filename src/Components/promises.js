@@ -30,6 +30,14 @@ export function GetHwdStatus(ip, username, password, port) {
   });
 }
 
+export function GetEnvStatus(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/getenvirmoment', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
 export function GetSfpStatus(ip, username, password, port) {
   return new Promise(resolve => {
     setTimeout(() => {
