@@ -202,4 +202,17 @@ def get_bgp_status(ip, port, username, password):
     except:
         print('Something Went Wrong\n\nPress Enter')
         input('')
-                   
+
+def get_envirmoment(ip="192.168.152.20", port="443", username='admin', password='C!sco!@#'):
+    """Gets real time enviroment statistics using restconf/data/Cisco-IOS-XE-environment-oper:environment-sensors"""
+
+    data = {}
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-environment-oper:environment-sensors"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        data = json.loads(response.text)
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        pass
+
+    return data

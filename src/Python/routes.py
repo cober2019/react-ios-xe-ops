@@ -14,9 +14,9 @@ def ios_xe_login() -> dict:
     auth_dict = {'status': 'null'}
 
     try:
-        response = requests.get(
-            f"https://{request.json.get('ip')}:{request.json.get('port')}/restconf/data/netconf-state/capabilities",
+        response = requests.get(f"https://{request.json.get('ip')}:{request.json.get('port')}/restconf/data/netconf-state/capabilities",
             headers=headers_ios, verify=False, auth=(request.json.get('username'), request.json.get('password')))
+        print(response.text)
 
         if response.status_code == 200:
             auth_dict['status'] = 200
@@ -69,6 +69,14 @@ def get_hardware_status():
     cpu_status = GetInterfaces.get_hardware_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': cpu_status}
+
+@app.route('/getenvirmoment', methods=['POST', 'GET'])
+def get_enviroment():
+    """This page displays device interface"""
+
+    env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'data': env_status}
 
 @app.route('/sfpstatus', methods=['POST', 'GET'])
 def get_sfp_status():
