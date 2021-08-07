@@ -260,7 +260,7 @@ export function CpuTableHtml(tableRef) {
     return  <div>
                 <div className="col-12">
                     <div class="table-responsive" style={{height: '550px'}}>
-                            <table ref={tableRef} className="table" style={{width: '100%'}}>
+                            <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Name</th>
