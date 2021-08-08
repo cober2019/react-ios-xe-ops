@@ -42,6 +42,19 @@
   text-align: left;
 }
 
+.env-row-text{
+  color: greenyellow;
+  font-size: 5;
+}
+
+.env-row-text-warn{
+  color: orange;
+  font-size: 5;
+}
+
+body{
+  background-color: grey;
+}
 .fade-in {
   animation: fadeInAnimation ease 3s;
   animation-iteration-count: 1;
@@ -57,6 +70,20 @@
    }
 }
 
+.nav-tabs > li.active > a {
+  color: #000;
+  font-size: 16px;
+}
+.nav-tabs > li > a {
+  color: #575757;
+}
+
+.center-login {
+  margin-top: 200px;
+  width: 25%;
+  padding: 10px;
+  border-bottom: white solid thin;}
+  
 .export-button{ display: block;
   width: 150px;
   margin-left: 10px;
