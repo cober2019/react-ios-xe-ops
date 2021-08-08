@@ -140,7 +140,7 @@ def get_dp_neighbors(ip, port, username, password):
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-lldp-oper:lldp-entries"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        data = json.loads(response.text)
+        converted_json = json.loads(response.text)
         data.append(converted_json)
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
         pass
