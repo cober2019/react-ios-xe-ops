@@ -94,114 +94,6 @@ def get_hardware_status(ip, port, username, password):
 
     return data
 
-def get_sfp_status(ip, port, username, password):
-    """Gets SFP/Slot information OPENCONFIG\n
-        openconfig-platform:components/component"""
-
-    ###### Future Use
-    
-    try:
-        uri = f"https://{ip}:{port}/restconf/data/openconfig-platform:components/component"
-        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-
-        converted_json = json.loads(response.text)
-        get_keys = dict.fromkeys(converted_json)
-        parent_key = list(get_keys.keys())[0]
-
-        if isinstance (converted_json[parent_key], list):
-            for i in converted_json[parent_key]:
-                print(f'\Slot {i.get("state").get("name")}\n=====================\n')
-                print(i.get('state').get('name'))
-                print(i.get('state').get('type'))
-                print(i.get('state').get('id'))
-                print(i.get('state').get('description'))
-                print(i.get('state').get('mfg-name'))
-                print(i.get('state').get('version'))
-                print(i.get('state').get('serial-no'))
-                print(i.get('state').get('part-no'))
-                print(i.get('state').get('temperature').get('instant'))
-                print(i.get('state').get('temperature').get('avg'))
-                print(i.get('state').get('temperature').get('min'))
-                print(i.get('state').get('temperature').get('max'))
-                if isinstance(i.get('properties').get('property'), list):
-                    for prop in i.get('properties').get('property'):
-                        print('Properties\n=====================\n')
-                        print(prop.get('name'))
-                        print(prop.get('state').get('name'))
-                        print(prop.get('state').get('value'))
-                        print(prop.get('state').get('configurable'))
-    except:
-        print('Something Went Wrong\n\nPress Enter')
-        input('')
-
-def get_bgp_status(ip, port, username, password):
-    """Gets BGP neighbor statuses IOS-XE\n
-        Cisco-IOS-XE-bgp-oper:bgp-state-data/address-families/address-family"""
-
-    ###### Future Use
-
-    try:
-        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-bgp-oper:bgp-state-data/address-families/address-family"
-        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-
-        converted_json = json.loads(response.text)
-        get_keys = dict.fromkeys(converted_json)
-        parent_key = list(get_keys.keys())[0]
-
-        if isinstance (converted_json[parent_key], list):
-            for i in converted_json[parent_key]:
-                print(i.get('local-as'))
-                print(i.get('vrf-name'))
-                print(i.get('router-id'))
-                print(i.get('bgp-table-version'))
-                print(i.get('routing-table-version'))
-                print(i.get('prefixes').get('total-entries'))
-                print(i.get('prefixes').get('memory-usage'))
-                print(i.get('vrf-name'))
-                print(i.get('path').get('total-entries'))
-                print(i.get('path').get('memory-usage'))
-                print(i.get('as-path').get('total-entries'))
-                print(i.get('as-path').get('memory-usage'))
-                print(i.get('route-map').get('total-entries'))
-                print(i.get('route-map').get('memory-usage'))
-                print(i.get('filter-list').get('total-entries'))
-                print(i.get('filter-list').get('memory-usage'))
-                print(i.get('activities').get('prefixes'))
-                print(i.get('activities').get('paths'))
-                print(i.get('activities').get('scan-interval'))
-                print(i.get('total-memory'))
-                print('Neighbors')
-                if isinstance(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'), list):
-                    for neighbor in i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'):
-                        print(neighbor.get('id'))
-                        print(neighbor.get('bgp-version'))
-                        print(neighbor.get('messages-received'))
-                        print(neighbor.get('messages-sent'))
-                        print(neighbor.get('table-version'))
-                        print(neighbor.get('input-queue'))
-                        print(neighbor.get('output-queue'))
-                        print(neighbor.get('up-time'))
-                        print(neighbor.get('state'))
-                        print(neighbor.get('prefixes-received'))
-                        print(neighbor.get('dynamically-configured'))
-                        print(neighbor.get('as'))
-                elif isinstance(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'), dict):
-                    for neighbor in i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'):
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('id'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('bgp-version'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('messages-received'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('messages-sent'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('table-version'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('input-queue'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('output-queue'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('up-time'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('state'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('prefixes-received'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('dynamically-configured'))
-                        print(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary').get('as'))
-    except:
-        print('Something Went Wrong\n\nPress Enter')
-        input('')
 
 def get_envirmoment(ip, port, username, password):
     """Gets real time enviroment statistics using restconf/data/Cisco-IOS-XE-environment-oper:environment-sensors"""
@@ -216,3 +108,42 @@ def get_envirmoment(ip, port, username, password):
         pass
 
     return data
+
+def get_components(ip, port, username, password):
+    """Gets device components /restconf/data/openconfig-platform:components"""
+
+    data = {}
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/openconfig-platform:components"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        data = json.loads(response.text)
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        pass
+
+    return data
+
+def get_dp_neighbors(ip, port, username, password):
+    """Gets device components restconf/data/Cisco-IOS-XE-cdp-oper:cdp-neighbor-details"""
+
+    data = []
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-cdp-oper:cdp-neighbor-details"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        converted_json = json.loads(response.text)
+        data.append(converted_json)
+        
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        pass
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-lldp-oper:lldp-entries"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        data = json.loads(response.text)
+        data.append(converted_json)
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        pass
+
+    return data
+

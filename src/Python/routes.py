@@ -10,13 +10,12 @@ headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'applicat
 
 @app.route('/login', methods=['POST', 'GET'])
 def ios_xe_login() -> dict:
-    print(request.json)
+
     auth_dict = {'status': 'null'}
 
     try:
         response = requests.get(f"https://{request.json.get('ip')}:{request.json.get('port')}/restconf/data/netconf-state/capabilities",
             headers=headers_ios, verify=False, auth=(request.json.get('username'), request.json.get('password')))
-        print(response.text)
 
         if response.status_code == 200:
             auth_dict['status'] = 200
@@ -77,6 +76,23 @@ def get_enviroment():
     env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': env_status}
+
+@app.route('/getcomponents', methods=['POST', 'GET'])
+def get_components():
+    """This page displays device interface"""
+
+    components = GetInterfaces.get_components(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'data': components}
+
+@app.route('/neighbors', methods=['POST', 'GET'])
+def get_dp_neigh():
+    """This page displays device interface"""
+
+    neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'data': neighbors}
+
 
 @app.route('/sfpstatus', methods=['POST', 'GET'])
 def get_sfp_status():
