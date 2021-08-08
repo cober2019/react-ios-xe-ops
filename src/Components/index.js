@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { PollInterfaces, GetCpuStatus, GetEnvStatus} from './promises'
+import { PollInterfaces, GetCpuStatus, GetEnvStatus, GetDpNeighbors} from './promises'
 import { InterfaceCard} from './interfaceCard'
 import { CpuUsage} from './cpuUsages'
 import { Envirmoment} from './enviroment'
+import { DpNeighbors} from './dp_neighbors'
 import { DeviceAuth} from './login'
 import { ErrorBoundary } from './errorBoundry';
 
@@ -11,6 +12,7 @@ export  function Index(props){
   const [interfaces, setInterfaces] = useState([])
   const [cpuMemStats, setcpuMemStats] = useState([])
   const [envStats, setEnvStats] = useState([])
+  const [dpNeighbors, setDpNeighborS] = useState([])
   const [isAuth, setIsAuth] = useState(false)
   const [ip, setIp] = useState(null)
   const [username, setUserName] = useState(null)
@@ -28,7 +30,17 @@ export  function Index(props){
 
       try{
         var interfaces = await PollInterfaces(ip, username, password, port)
-        console.log(interfaces.data.data)
+        setInterfaces(interfaces.data.data)
+
+      }
+      catch(e){
+        console.log(e)
+      }
+      try{
+
+        var dp_neighbors = await GetDpNeighbors(ip, username, password, port)
+        setDpNeighborS(dp_neighbors.data.data)
+        console.log(dp_neighbors)
       }
       catch(e){
         console.log(e)
@@ -36,6 +48,8 @@ export  function Index(props){
       
       try{
         var cpu = await GetCpuStatus(ip, username, password, port)
+        console.log(cpu)
+        setcpuMemStats(cpu)
       }
       catch(e){
         console.log(e)
@@ -43,15 +57,11 @@ export  function Index(props){
 
       try{
         var env = await GetEnvStatus(ip, username, password, port)
-        console.log(env)
+        setEnvStats(env.data.data)
       }
       catch(e){
         console.log(e)
       }
-
-      setEnvStats(env.data.data)
-      setInterfaces(interfaces.data.data)
-      setcpuMemStats(cpu)
       setIsAuth(true)
     }
   }
@@ -66,31 +76,32 @@ export  function Index(props){
   else{
     return <div className="container-fluid">
       <div className="row">
-        <div className="col-3">
+        <div className="col-xl-3">
           <ErrorBoundary>
             <Envirmoment env={envStats}/>
           </ErrorBoundary>
         </div>
-        <div className="col-9">
+        <div className="col-xl-9">
           <div className="row">
-            <div className="col-12">
               <ErrorBoundary>
                 <CpuUsage cpuMem={cpuMemStats.data}/>
               </ErrorBoundary>
-            </div>
           </div>
           <div className="row">
-              { Object.values(interfaces).map((value) => (
-                  <div key={value.name} className="col-4">
-                  <ErrorBoundary>
-                    <InterfaceCard cpuMem={cpuMemStats.data} key={value.interface} value={value.data} arps={value.arps}/>
-                  </ErrorBoundary>
-                </div>
-              ))}
+              <ErrorBoundary>
+                <DpNeighbors dpNeighbors={dpNeighbors}/>
+              </ErrorBoundary>
           </div>
+        <div className="row">
+            { Object.values(interfaces).map((value) => (
+                <ErrorBoundary>
+                  <InterfaceCard cpuMem={cpuMemStats.data} key={value.interface} value={value.data} arps={value.arps}/>
+                </ErrorBoundary>
+            ))}
         </div>
       </div>
-     </div>
+    </div>
+  </div>
   }
 
   }

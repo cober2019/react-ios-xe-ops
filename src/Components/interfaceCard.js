@@ -65,41 +65,43 @@ export  function InterfaceCard(props){
     }
   }
 
-  return  <div className="card text-white bg-dark" style={{marginTop: 10, height: '575px'}}>
-              <div className="card-body">
-              <h4 class="card-title">{props.value.name}</h4>
-              <br/>
-              {showArp ? <div onClick={(e) => getArps(false, e)} className="overlay">{table}</div>: 
-              <div hidden>
-              {table}
-              </div>
-              }
-              <canvas ref={interfacesRef} style={{height: "100px"}}/>
-              <br/>
-                  <div className="row">
-                    <div className="col-6">
-                      <p className="card-text">Speed: {parseInt(props.value.speed) / 1e6 }</p>
-                      <p className="card-text">Status: {props.value['oper-status']}</p>
-                      <p className="card-text">IP: {props.value.ipv4}-{props.value['ipv4-subnet-mask']}</p>
-                      <p className="card-text">Descr: {props.value.description}</p>
-                      <p className="card-text">MTU: {props.value.mtu}</p>
-                      <p className="card-text">Mbps Out: {parseInt(props.value['statistics']['tx-kbps']) / 1000}</p>
-                      <p className="card-text">Mbps In: {parseInt(props.value['statistics']['rx-kbps']) / 1000}</p>
-                      <p className="card-text">PPs Out: {props.value['statistics']['rx-pps']}</p>
-                      <p className="card-text">PPs In: {props.value['statistics']['tx-pps']}</p>
+  return <div className="col-xl-4">
+            <div className="card text-white bg-dark mt-3">
+                      <div className="card-body">
+                      <h4 class="card-title">{props.value.name}</h4>
+                      <br/>
+                      {showArp ? <div onClick={(e) => getArps(false, e)} className="overlay">{table}</div>: 
+                      <div hidden>
+                      {table}
+                      </div>
+                      }
+                      <canvas ref={interfacesRef} style={{height: "100px"}}/>
+                      <br/>
+                          <div className="row">
+                            <div className="col-6">
+                              <p className="card-text">Speed: {parseInt(props.value.speed) / 1e6 }</p>
+                              <p className="card-text">Status: {props.value['oper-status']}</p>
+                              <p className="card-text">IP: {props.value.ipv4}-{props.value['ipv4-subnet-mask']}</p>
+                              <p className="card-text">Descr: {props.value.description}</p>
+                              <p className="card-text">MTU: {props.value.mtu}</p>
+                              <p className="card-text">Mbps Out: {parseInt(props.value['statistics']['tx-kbps']) / 1000}</p>
+                              <p className="card-text">Mbps In: {parseInt(props.value['statistics']['rx-kbps']) / 1000}</p>
+                              <p className="card-text">PPs Out: {props.value['statistics']['rx-pps']}</p>
+                              <p className="card-text">PPs In: {props.value['statistics']['tx-pps']}</p>
+                            </div>
+                            <div className="col-6">
+                              <p className="card-text">InDis: {props.value['statistics']['in-discards']}</p>
+                              <p className="card-text">OutDis: {props.value['statistics']['out-discards']}</p>
+                              <p className="card-text">InErr: {props.value['statistics']['in-errors']}</p>
+                              <p className="card-text">InDis: {props.value['statistics']['out-errors']}</p>
+                              <p className="card-text">CRC: {props.value['statistics']['in-crc-errors']}</p>
+                              <p className="card-text">InDis: {props.value['statistics']['num-flaps']}</p>
+                              <p className="card-text">LastChange: {props.value['statistics']['discontinuity-time'].split('.')[0]}</p>
+                              <a className="card-text" href="#" onClick={(e) => getArps(true, e)}>ARP Entries: <span style={{color: 'white'}}>{arpCount}</span></a>
+                            </div>
+                          </div>
+                      </div>
                     </div>
-                    <div className="col-6">
-                      <p className="card-text">InDis: {props.value['statistics']['in-discards']}</p>
-                      <p className="card-text">OutDis: {props.value['statistics']['out-discards']}</p>
-                      <p className="card-text">InErr: {props.value['statistics']['in-errors']}</p>
-                      <p className="card-text">InDis: {props.value['statistics']['out-errors']}</p>
-                      <p className="card-text">CRC: {props.value['statistics']['in-crc-errors']}</p>
-                      <p className="card-text">InDis: {props.value['statistics']['num-flaps']}</p>
-                      <p className="card-text">LastChange: {props.value['statistics']['discontinuity-time'].split('.')[0]}</p>
-                      <a className="card-text" href="#" onClick={(e) => getArps(true, e)}>ARP Entries: <span style={{color: 'white'}}>{arpCount}</span></a>
                     </div>
-                  </div>
-              </div>
-            </div>
   }
   

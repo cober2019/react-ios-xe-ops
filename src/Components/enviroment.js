@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InitialChartBuild, UpdateChart, TableHtml, EnvTableHtml } from './chartConfigs';
+import { EnvTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
@@ -15,9 +15,7 @@ export  function Envirmoment(props){
         $(envTableRef.current).DataTable().destroy()
           try{
             $(envTableRef.current).DataTable({
-              dom: 
-              "<'row'<'col-sm-12'tr>>" +
-              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+              dom: "",
               data: props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor'],
               pageLength: 50,
               columns:  [
@@ -28,13 +26,16 @@ export  function Envirmoment(props){
                 { data: 'sensor-units' }
             ],
             fnRowCallback: function (nRow, aData) {
-                if(aData['state'] === 'Normal'){
+                if(aData['state'] === 'Normal' ||  aData['state'] === 'GREEN'){
                     $('td:eq(2)', nRow).addClass('env-row-text')
                     $('td:eq(3)', nRow).addClass('env-row-text')
                 }
-                if(aData['state'] !== 'Normal' && !aData['state'].includes('Fan')){
-                    $('td:eq(2)', nRow).addClass('env-row-text-warn')
-                    $('td:eq(3)', nRow).addClass('env-row-text-warn')
+                else if(aData['state'].includes('Fan')){
+                  //pass
+              }
+                else if(aData['state'] !== 'Normal' || aData['state'] === 'GREEN'){
+                  $('td:eq(2)', nRow).addClass('env-row-text-warn')
+                  $('td:eq(3)', nRow).addClass('env-row-text-warn')
                 }
                 }});
           }
@@ -44,7 +45,7 @@ export  function Envirmoment(props){
       setChartStatus(true)
       }
 
-  }, [])
+  }, [props.env])
 
   return  <div className="card text-white bg-dark">
               <div className="card-body">

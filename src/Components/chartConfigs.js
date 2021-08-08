@@ -305,3 +305,48 @@ export function MemTableHtml(tableRef) {
                 </div>
     }
 
+    
+export function CdpTableHtml(tableRef) {
+
+    return  <div className="col-12">
+                <div class="table-responsive">
+                        <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
+                            <thead>
+                                <tr style={{textAlign: 'center'}}>
+                                    <th scope="col">Device</th>
+                                    <th scope="col">Platform</th>
+                                    <th scope="col">Version</th>
+                                    <th scope="col">Remote-Port</th>
+                                    <th scope="col">Duplex</th>
+                                    <th scope="col">Capability Avl.</th>
+                                    <th scope="col">Mgmt IP</th>
+                                    <th scope="col">IP</th>
+                                    <th scope="col">Local Int.</th>
+
+                                </tr>
+                            </thead>                               
+                        </table>
+                    </div>
+                </div>
+                
+    }
+
+export function LldpTableHtml(tableRef) {
+
+    return  <div className="col-12">
+                <div class="table-responsive">
+                        <table ref={tableRef} className="table row-text" style={{width: '100%'}}>
+                            <thead>
+                                <tr style={{textAlign: 'center'}}>
+                                    <th scope="col">Device</th>
+                                    <th scope="col">Local Int.</th>
+                                    <th scope="col">TTL</th>
+                                    <th scope="col">Remote Int.</th>                             
+                                </tr>
+                            </thead>                               
+                        </table>
+                    </div>
+                </div>
+                
+    }
+

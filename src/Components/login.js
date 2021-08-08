@@ -17,23 +17,24 @@ export function DeviceAuth(props){
         catch(e){
             alert('Login Failed')
             setloading(false)
-        }
-       
-        if(response.data.status === 200){
+        }       
+	if(response.data.status === 200){
             props.callback(ip, username, password, port)
         }
         else{
             alert('Login Failed')
 	    setloading(false)
         }
-
     }
 
 
     return (
-            <div>
-                <div className="card border-primary mb-3">
+        <div className="container-fluid  center-login">
+            <div className="col-12">
+                <div className="card">
                     <div className='card-body'>
+                    <h3 class="card-title mb-3" style={{textAlign: 'center'}}>IOS-XE Login</h3>
+                    <br/>
                     {loading ? <div className="overlay" onclick="off()" style={{display: "flex", justifyContent: "center"}}><div className='row'><p></p><div class="spinner"></div></div></div>: <div/>}
                     <form onSubmit={handleSubmit}>
                         <input  type="text" class="form-control input-text" value={ip} onChange={e => setIp(e.target.value)} placeholder="IP Address" name="ipAddress" required/>
@@ -44,12 +45,12 @@ export function DeviceAuth(props){
                         <br/>
                             <input  type="text" class="form-control input-text" value={port} onChange={e => setPort(e.target.value)} placeholder="Default 443" name="restconfPort" />
                         <br/>
-                        <br/>
-                        <input  onClick={() => setloading(true)} style={{marginTop: '30px', marginBottom: '30px'}} type="submit" value="Submit" className="btn btn-primary"/>
+                        <input  onClick={() => setloading(true)} style={{marginTop: '30px', marginBottom: '30px'}} type="submit" value="Login" className="btn btn-primary"/>
                         <br/>
                     </form>
                     </div>
                 </div>
+            </div>
             </div>
         );
     }

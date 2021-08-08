@@ -30,6 +30,22 @@ export function GetHwdStatus(ip, username, password, port) {
   });
 }
 
+export function GetComponents(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/getcomponents', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
+export function GetDpNeighbors(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/neighbors', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
 export function GetEnvStatus(ip, username, password, port) {
   return new Promise(resolve => {
     setTimeout(() => {
