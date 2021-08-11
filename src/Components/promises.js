@@ -46,6 +46,22 @@ export function GetDpNeighbors(ip, username, password, port) {
   });
 }
 
+export function GetVlans(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/vlans', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
+export function GetLayerTwoInterfaces(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/layertwointerfaces', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
 export function GetEnvStatus(ip, username, password, port) {
   return new Promise(resolve => {
     setTimeout(() => {
