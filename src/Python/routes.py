@@ -94,13 +94,21 @@ def get_dp_neigh():
     return {'data': neighbors}
 
 
-@app.route('/sfpstatus', methods=['POST', 'GET'])
-def get_sfp_status():
+@app.route('/vlans', methods=['POST', 'GET'])
+def get_vlans():
     """This page displays device interface"""
 
-    cpu_status = GetInterfaces.get_sfp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    vlans = GetInterfaces.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'data': cpu_status}
+    return {'data': vlans}
+
+@app.route('/layertwointerfaces', methods=['POST', 'GET'])
+def get_layertwo_interfaces():
+    """This page displays device interface"""
+
+    interfaces = GetInterfaces.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'trunks': interfaces[0], 'access': interfaces[1]}
 
 @app.route('/bgpstatus', methods=['POST', 'GET'])
 def get_bgp_status():

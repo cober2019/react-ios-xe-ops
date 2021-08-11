@@ -147,3 +147,93 @@ def get_dp_neighbors(ip, port, username, password):
 
     return data
 
+
+def get_vlans(ip, port, username, password):
+    """Gets device components /restconf/data/openconfig-platform:components"""
+
+    data = []
+
+    uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-vlan-oper:vlans"
+    response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+    vlans = json.loads(response.text)
+
+    for i in vlans.get('Cisco-IOS-XE-vlan-oper:vlans', {}).get('vlan', {}):
+        try:
+            if i.get('vlan-interfaces'):
+                data.append({"id": i.get('id'), "name": i.get('name'), "status": i.get('status'), "interfaces": ", ".join([interface.get('interface') for interface in i.get('vlan-interfaces')])})
+            else:
+                data.append({"id": i.get('id'), "name": i.get('name'), "status": i.get('status'), "interfaces": []})
+        except TypeError:
+            pass
+    
+    return data
+
+def get_switch(ip, port, username, password):
+    """Gets device components /restconf/data/openconfig-platform:components"""
+
+    data = {}
+    trunk =[]
+    access = []
+
+    try:
+        interfaces_configs = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/interface"
+        interface_status = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
+        config_response = requests.get(interfaces_configs, headers=headers, verify=False, auth=(username, password))
+        stats_response = requests.get(interface_status, headers=headers, verify=False, auth=(username, password))
+        config_json = json.loads(config_response.text)
+        stats_json = json.loads(stats_response.text)
+
+        for interface, v in config_json['Cisco-IOS-XE-native:interface'].items():
+            if isinstance(v, list):
+                mapped = [map_switchports(config, interface, stats_json) for config in v]
+                data[interface] = list(mapped)
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
+        pass
+    
+    for v in data.values():
+        for i in v:
+            if i[0].get('mode') == 'trunk':
+                trunk.append(i[0])
+            elif i[0].get('mode') == 'access':
+                access.append(i[0])
+
+    return trunk, access
+
+def map_switchports(config, interface, interfaces_statuses):
+
+    complete_interface = f"{interface}{config.get('name')}"
+    interface_mode = False
+    data = []
+    statistics = next((interface for interface in interfaces_statuses['Cisco-IOS-XE-interfaces-oper:interfaces']['interface'] if interface['name'] == complete_interface), None)
+
+    if config.get('switchport', {}).get('Cisco-IOS-XE-switch:mode', {}):
+        interface_mode =  list(config.get('switchport', {}).get('Cisco-IOS-XE-switch:mode', {}).keys())[0]
+
+    if interface_mode == 'access':
+        access_vlan = config.get('switchport').get('Cisco-IOS-XE-switch:access').get('vlan').get('vlan')
+        data.append({'mode': 'access','interface': complete_interface, 'vlan': access_vlan, 'status': statistics['oper-status'], 
+        'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
+
+    elif interface_mode == 'trunk':
+        if config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("allowed", {}).get("vlan", {}).get("vlans", {}):
+            trunked_vlans = config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("allowed", {}).get("vlan", {}).get("vlans", {})
+            native = config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("native", {}).get("vlan", {})
+        elif config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("allowed", {}).get("vlan", {}).get("add", {}):
+            trunked_vlans = config.get('switchport').get('Cisco-IOS-XE-switch:trunk').get('allowed').get('vlan').get('add').get('vlans')
+            native = config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("native", {}).get("vlan", {})
+        elif config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("allowed", {}).get("vlan", {}).get('vlans', {}):
+            trunked_vlans = config.get('switchport').get('Cisco-IOS-XE-switch:trunk').get('allowed').get('vlan').get('vlans')
+            native = config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("native", {}).get("vlan", {})
+        else:
+            trunked_vlans = 'all'
+            native = config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("native", {}).get("vlan", {})
+
+        data.append({'mode': 'trunk', 'interface': complete_interface, 'vlans': trunked_vlans, 'native': native, 'status': statistics['oper-status'], 
+        'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
+    else:
+        data.append({'mode': None, 'interface': complete_interface, 'status': statistics['oper-status'], 
+        'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
+
+    return data
+
