@@ -14,4 +14,4 @@ SnapShots:
 
 .. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/iosxeops-int-arp.PNG
 
-.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/iosxeops-int-arp.PNG
+.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/Layer2.png
