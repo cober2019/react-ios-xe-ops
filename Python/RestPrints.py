@@ -57,7 +57,6 @@ def get_interfaces(ip, port, username, password, ex_down=None):
                 convert_bandwidth = _convert_to_mbps(interface)
                 data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': []}
 
-    os.system('cls' if os.name == 'nt' else 'clear')
     print(f"{'Interface':<33} {'Status':<15} {'Mbps In':<10}{'Mbps Out':<10}{'PPS In':<10} {'PPS Out':<12}{'MTU':<12}{'IP':<22} {'Mask':<1}")
     print("-------------------------------------------------------------------------------------------------------------------------------------------")
     for v in data.values():
