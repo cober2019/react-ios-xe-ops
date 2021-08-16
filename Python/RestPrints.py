@@ -117,7 +117,6 @@ def map_switchports(config, interface, interfaces_statuses):
         interface_mode =  list(config.get('switchport', {}).get('Cisco-IOS-XE-switch:mode', {}).keys())[0]
 
     if interface_mode == 'access':
-        print(config.get('switchport').get('Cisco-IOS-XE-switch:access'))
         access_vlan = config.get('switchport').get('Cisco-IOS-XE-switch:access').get('vlan').get('vlan')
         data.append({'mode': 'access','interface': complete_interface, 'vlan': access_vlan, 'status': statistics['oper-status'], 
         'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
