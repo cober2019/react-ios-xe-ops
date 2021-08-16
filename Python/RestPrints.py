@@ -163,8 +163,9 @@ def get_dp_neighbors(ip, port, username, password):
         data.append(converted_json)
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
         data.append({})
-    
-    _print_dp_neighbors(data)
+        
+    if data:
+        _print_dp_neighbors(data)
             
     return data
 
