@@ -88,12 +88,13 @@ def get_switch(ip, port, username, password):
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
         pass
     
-    for v in data.values():
-        for i in v:
-            if i[0].get('mode') == 'trunk':
-                trunk.append(i[0])
-            elif i[0].get('mode') == 'access':
-                access.append(i[0])
+    id data:
+        for v in data.values():
+            for i in v:
+                if i[0].get('mode') == 'trunk':
+                    trunk.append(i[0])
+                elif i[0].get('mode') == 'access':
+                    access.append(i[0])
                 
     print(f"{'Interface':<30} {'Mode':<15} {'Status':<28}{'Mbps In':<20}{'Mbps Out':<17}{'Allow Vlans':<13}")
     print("-------------------------------------------------------------------------------------------------------------------------------------------")
