@@ -1,6 +1,8 @@
 from json.decoder import JSONDecodeError
 import requests
 import json
+import warnings
+warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
 headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
 
