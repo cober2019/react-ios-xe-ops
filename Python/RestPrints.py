@@ -88,7 +88,7 @@ def get_switch(ip, port, username, password):
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
         pass
     
-    id data:
+    if data:
         for v in data.values():
             for i in v:
                 if i[0].get('mode') == 'trunk':
