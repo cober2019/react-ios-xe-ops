@@ -173,7 +173,9 @@ def get_dp_neighbors(ip, port, username, password):
 
 def _print_dp_neighbors(data):
 
-    print(f"{'Device':<50} {'Local Int':<25} {'Remote-Port':<20}{'Capability':<25}{'Duplex':<30}{'Platform':<25}{'Mgmt IP':<20}{'IP':<20}")
+    def _print_dp_neighbors(data):
+
+    print(f"CDP {'Device':<50} {'Local Int':<25} {'Remote-Port':<20}{'Capability':<25}{'Duplex':<30}{'Platform':<25}{'Mgmt IP':<20}{'IP':<20}")
     print("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
     if data[0].get('Cisco-IOS-XE-cdp-oper:cdp-neighbor-details', {}).get('cdp-neighbor-detail', {}):
         for i in data:
@@ -183,7 +185,7 @@ def _print_dp_neighbors(data):
     else:
         print('No CDP Neighbors or CDP isnt Enabled\n')
 
-    print(f"\n{'Device':<38} {'Local Int':<30} {'Remote-Port':<33}{'Capability':<25}")
+    print(f"\nLLDP {'Device':<38} {'Local Int':<30} {'Remote-Port':<33}{'Capability':<25}")
     print("-------------------------------------------------------------------------------------------------------------------------------------------------------------------")
     if data[1].get('Cisco-IOS-XE-lldp-oper:lldp-entries', {}).get('lldp-entry'):
         for i in data:
