@@ -41,7 +41,6 @@ def get_interfaces(ip, port, username, password, ex_down=None) -> dict:
                 for i in converted_json[parent_key]:
                     try:
                         for entry in i.get('arp-oper'):
-                            print(entry)
                             if entry.get('interface') == interface.get('name'):
                                 entry.pop('interface')
                                 entry['time'] = entry.get('time').split('.')[0].strip('T00')
