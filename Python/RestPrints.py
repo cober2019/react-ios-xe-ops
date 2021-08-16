@@ -1,3 +1,4 @@
+"""Collections of functions that retrive data from a cisco device"""
 
 def get_switch(ip, port, username, password):
     """Gets device components /restconf/data/openconfig-platform:components"""
