@@ -66,7 +66,7 @@ def get_interfaces(ip, port, username, password, ex_down=None):
     return data
 
 def get_switch(ip, port, username, password):
-    """Gets device trunks and vlan from a cisco device"""
+    """Gets device trunks and access from a cisco device"""
 
     data = {}
     trunk =[]
