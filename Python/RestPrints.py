@@ -19,7 +19,6 @@ def get_interfaces(ip, port, username, password, ex_down=None):
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
-
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         converted_json = json.loads(response.text)
         interface_data = converted_json.get('Cisco-IOS-XE-interfaces-oper:interfaces').get('interface')
