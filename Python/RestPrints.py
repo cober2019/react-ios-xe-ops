@@ -98,7 +98,9 @@ def get_switch(ip, port, username, password):
         print(f"{'Interface':<30} {'Mode':<15} {'Status':<28}{'Mbps In':<20}{'Mbps Out':<17}{'Allow Vlans':<13}")
         print("-------------------------------------------------------------------------------------------------------------------------------------------")
         [print(f"{i.get('interface', {}):<30}{i.get('mode', {}):<10} {i.get('status', {}):<35}{i.get('mbpsOut'):<20}{i.get('mbpsIn'):<20}{i.get('vlans'):<20}") for i in trunk]
-
+        
+    print('\n')
+    
     if access:
         print(f"{'Interface':<35} {'Status':<28} {'Mbps Out':<19}{'Mbps In':<20}{'Vlans'}")
         print("-------------------------------------------------------------------------------------------------------------------------------------------")
