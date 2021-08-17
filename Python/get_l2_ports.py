@@ -91,6 +91,6 @@ def map_switchports(config, interface, interfaces_statuses) -> list:
 if __name__ == '__main__':
     
     try:
-      interfaces = get_switch()
+        get_switch()
     except TypeError:
-      input('Input credentials')
+        input('Input credentials')
