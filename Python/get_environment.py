@@ -28,3 +28,10 @@ def get_envirmoment(ip, port, username, password) -> dict:
             print("{0:<20}{1:<10}{2:<20}{3:<10}{4:<5}".format(i.get('name'), i.get('location'), i.get('state'), i.get('current-reading'), i.get('sensor-units')))
 
     return data
+
+if __name__ == '__main__':
+    
+    try:
+        get_envirmoment()
+    except TypeError:
+        input('Input credentials')
