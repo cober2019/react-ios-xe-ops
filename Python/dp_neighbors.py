@@ -53,3 +53,10 @@ def _print_dp_neighbors(data):
                     print(f"{a['device-id']:<40}{a.get('local-interface'):<30}{a.get('connecting-interface'):<33}{',  '.join(list(dict.fromkeys(a.get('capabilities', {})))):<25}")
     else:
         print('No LLDP Neighbors or LLDP isnt Enabled\n')
+
+ if __name__ == '__main__':
+    
+    try:
+        interfaces = get_interfaces()
+    except TypeError:
+        input('Input credentials')
