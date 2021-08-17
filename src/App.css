@@ -36,10 +36,52 @@
   background-color: palegreen !important;
 }
 
+th{
+  text-align: left;
+}
+
 .row-text{
   color: white;
   font-size: 5;
   text-align: left;
+}
+
+label{
+  color: white;
+}
+
+div[class~="dataTables_info"]{
+  color: white;
+}
+
+div[class~="dataTables_length"]{
+  color: white;
+}
+
+div[class~="dataTables_filter"]{
+  color: white;
+}
+
+input[type~="search"]{
+  color: white;
+}
+
+div[role="status"]{
+  color: white   !important;
+}
+
+a:link{
+  color: white   !important;
+}
+
+select{
+  color: white;
+  background-color: black;
+}
+
+option{
+  color: white;
+  background-color: black;
 }
 
 .env-row-text{
@@ -50,6 +92,27 @@
 .env-row-text-warn{
   color: orange;
   font-size: 5;
+}
+
+.box-text{
+  color: black;
+  font-size: 5;
+}
+
+.up {
+  height: 25px;
+  width: 25px;
+  background-color: greenyellow;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dow {
+  height: 25px;
+  width: 25px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 body{
