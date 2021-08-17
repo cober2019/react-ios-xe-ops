@@ -54,7 +54,7 @@ def _print_dp_neighbors(data):
     else:
         print('No LLDP Neighbors or LLDP isnt Enabled\n')
 
- if __name__ == '__main__':
+if __name__ == '__main__':
     
     try:
         get_dp_neighbors()
