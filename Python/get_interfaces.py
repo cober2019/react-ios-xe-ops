@@ -39,8 +39,6 @@ def get_interfaces(ip, port, username, password, ex_down=None):
                 data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': entries}
                 
         except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-           pass
-        finally:
             for interface in interface_data:
                 convert_bandwidth = _convert_to_mbps(interface)
                 data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': []}
