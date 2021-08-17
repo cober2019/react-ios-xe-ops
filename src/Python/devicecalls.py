@@ -1,4 +1,5 @@
 from json.decoder import JSONDecodeError
+from typing import final
 import requests
 import json
 import warnings
@@ -12,6 +13,7 @@ def get_interfaces(ip, port, username, password):
 
     data = {}
     interface_data = {}
+    joined_vlans = []
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
@@ -31,24 +33,49 @@ def get_interfaces(ip, port, username, password):
             parent_key = list(get_keys.keys())[0]
 
             for interface in interface_data:
-                entries = []
-                for i in converted_json[parent_key]:
-                    try:
-                        for entry in i.get('arp-oper'):
-                            if entry.get('interface') == interface.get('name'):
-                                entry.pop('interface')
-                                entry['time'] = entry.get('time').split('.')[0].strip('T00')
-                                entries.append(entry)
-                    except TypeError:
-                        pass
-
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': interface, 'arps': entries}
+                convert_bandwidth = convert_to_mbps(interface)
+                entries = [_get_arps(interface, i) for i in converted_json[parent_key]]
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': entries}
                 
-        except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError):
             for interface in interface_data:
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': interface, 'arps': []}
+                convert_bandwidth = convert_to_mbps(interface)
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': []}
 
-    return data
+    return data, joined_vlans
+
+def _map_vrfs(vrf, arps):
+
+    arps['vrf'] = vrf
+
+    return arps
+    
+def _get_arps(interface, i):
+    """Collects arp for the matching"""
+    entries = []
+
+    try:
+        for entry in i.get('arp-oper'):
+            if entry.get('interface') == interface.get('name'):
+                entry.pop('interface')
+                entry['time'] = entry.get('time').split('.')[0].strip('T00')
+                entries.append(entry)
+    except TypeError:
+        pass
+
+    return entry
+
+def convert_to_mbps(interface):
+    """Convert Kbps to Mbps"""
+
+    interface['statistics']['tx-kbps'] = int(interface.get('statistics').get('tx-kbps')) / 1000
+    interface['statistics']['rx-kbps'] = int(interface.get('statistics').get('tx-kbps')) / 1000
+    if interface['oper-status'] == 'if-oper-state-ready':
+        interface['oper-status'] = 'up'
+    else:
+        interface['oper-status'] = 'down'
+
+    return interface
 
 def get_cpu_usages(ip, port, username, password):
     """Gets real time CPU statistics using restconf/data/Cisco-IOS-XE-process-cpu-oper:cpu-usage"""
@@ -86,7 +113,6 @@ def get_hardware_status(ip, port, username, password):
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-platform-software-oper:cisco-platform-software/control-processes/control-process"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-
         converted_json = json.loads(response.text)
         get_keys = dict.fromkeys(converted_json)
         parent_key = list(get_keys.keys())[0]
@@ -125,6 +151,22 @@ def get_components(ip, port, username, password):
 
     return data
 
+def get_bridge(ip, port, username, password):
+    """Gets device components /restconf/data/openconfig-platform:components"""
+
+    data = {}
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-bridge-oper:bridge-matm-entry"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        data = json.loads(response.text)
+        print(data)
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        pass
+
+    return data
+
+
 def get_dp_neighbors(ip, port, username, password):
     """Gets device components restconf/data/Cisco-IOS-XE-cdp-oper:cdp-neighbor-details"""
 
@@ -135,9 +177,8 @@ def get_dp_neighbors(ip, port, username, password):
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         converted_json = json.loads(response.text)
         data.append(converted_json)
-        
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        pass
+         data.append({'Cisco-IOS-XE-cdp-oper:cdp-neighbor-details': {'cdp-neighbor-detail': []}})
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-lldp-oper:lldp-entries"
@@ -145,7 +186,7 @@ def get_dp_neighbors(ip, port, username, password):
         converted_json = json.loads(response.text)
         data.append(converted_json)
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        pass
+         data.append({'Cisco-IOS-XE-lldp-oper:lldp-entries': {'lldp-entry': []}})
 
     return data
 
@@ -178,6 +219,7 @@ def get_switch(ip, port, username, password):
     access = []
 
     try:
+        get_bridge(ip, port, username, password)
         interfaces_configs = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/interface"
         interface_status = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
         config_response = requests.get(interfaces_configs, headers=headers, verify=False, auth=(username, password))
@@ -213,6 +255,7 @@ def map_switchports(config, interface, interfaces_statuses):
         interface_mode =  list(config.get('switchport', {}).get('Cisco-IOS-XE-switch:mode', {}).keys())[0]
 
     if interface_mode == 'access':
+        print(config.get('switchport').get('Cisco-IOS-XE-switch:access'))
         access_vlan = config.get('switchport').get('Cisco-IOS-XE-switch:access').get('vlan').get('vlan')
         data.append({'mode': 'access','interface': complete_interface, 'vlan': access_vlan, 'status': statistics['oper-status'], 
         'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
