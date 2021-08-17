@@ -1,5 +1,6 @@
 import './App.css';
 import { Index }  from './Components/index'
+import { LayerTwo }  from './Components/layerTwo'
 import {
   BrowserRouter as Router,
   Switch,
@@ -10,14 +11,16 @@ import {
 
 function App() {
   return (
+    <div classname="App">
       <Router>
-        <div classname="App">
-        <Redirect to='/index' />
-        </div>
         <Switch>
+          <Route exact path="/layerTwo" component={LayerTwo}/>
           <Route exact path="/index" component={Index}/>
+          <Route exact path="/" component={Index}/>
         </Switch>
     </Router>
+    </div>
+
   );
 }
 
