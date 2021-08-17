@@ -45,4 +45,9 @@ def _print_vlans_extended(index, vlan, vlan_data):
     except IndexError:
         pass
     
+ if __name__ == '__main__':
     
+    try:
+        get_vlans()
+    except TypeError:
+        input('Input credentials')
