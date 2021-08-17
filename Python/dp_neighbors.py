@@ -57,6 +57,6 @@ def _print_dp_neighbors(data):
  if __name__ == '__main__':
     
     try:
-        interfaces = get_interfaces()
+        get_dp_neighbors()
     except TypeError:
         input('Input credentials')
