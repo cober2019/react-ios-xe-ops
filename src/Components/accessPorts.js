@@ -8,16 +8,23 @@ export  function AccessPorts(props){
   const accesssTableRef = React.createRef()
   const accessstable = AccessTableHtml(accesssTableRef)
 
+
   useEffect(() => {
-    console.log(props.ports.entries())
+    $(accesssTableRef.current).DataTable().clear()
+    $(accesssTableRef.current).DataTable().rows.add(Object.values(props.ports))
+    $(accesssTableRef.current).DataTable().draw(false)
+    }, [props.ports])
+
+
+  useEffect(() => {
         $(accesssTableRef.current).DataTable().destroy()
         try{
           $(accesssTableRef.current).DataTable({
-            dom: "",
+            pageLength: 50,
             data: props.ports,
             columns:  [
               { data: 'interface' },
-              { data: 'vlan' },
+              { data: 'vlan'},
               { data: 'status' },
               { data: 'mbpsOut' },
               { data: 'mbpsIn' }
@@ -29,7 +36,7 @@ export  function AccessPorts(props){
             else{
               $('td:eq(2)', nRow).addClass('env-row-text-warn')
             }
-            }});
+            }})
         }
       catch{}
       setChartStatus(true)

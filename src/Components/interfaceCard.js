@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InitialChartBuild, UpdateChart, TableHtml } from './chartConfigs';
+import { InitialChartBuild, UpdateChart, ArpTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
@@ -11,7 +11,7 @@ export  function InterfaceCard(props){
   const [showArp, setShowArp]= useState(false)
   const interfacesRef = React.createRef()
   const arpTableRef = React.createRef()
-  const table = TableHtml(arpTableRef)
+  const table = ArpTableHtml(arpTableRef)
 
   useEffect(() => {
     if(chart){
@@ -25,6 +25,7 @@ export  function InterfaceCard(props){
   
 
   useEffect(() => {
+    console.log(props.arps)
     if(chartStatus !== true){
       var chart = InitialChartBuild(interfacesRef.current.getContext('2d'), parseInt(props.value['statistics']['tx-kbps']), parseInt(props.value['statistics']['rx-kbps']));
       setChart(chart)
@@ -65,17 +66,17 @@ export  function InterfaceCard(props){
     }
   }
 
-  return <div className="col-xl-4">
-            <div className="card text-white bg-dark mt-3">
+  return <div className="col-xl-3">
+            <div className="card text-white bg-dark mt-3 border-0">
                       <div className="card-body">
-                      <h4 class="card-title">{props.value.name}</h4>
+                      <h4 class="card-title text-center">{props.value.name}</h4>
                       <br/>
                       {showArp ? <div onClick={(e) => getArps(false, e)} className="overlay">{table}</div>: 
-                      <div hidden>
-                      {table}
-                      </div>
+                      <div hidden>{table}</div>
                       }
-                      <canvas ref={interfacesRef} style={{height: "100px"}}/>
+                      <div className="row">
+                        <canvas ref={interfacesRef} heistyle={{height: "100px"}}/>
+                      </div>
                       <br/>
                           <div className="row">
                             <div className="col-6">
@@ -84,8 +85,8 @@ export  function InterfaceCard(props){
                               <p className="card-text">IP: {props.value.ipv4}-{props.value['ipv4-subnet-mask']}</p>
                               <p className="card-text">Descr: {props.value.description}</p>
                               <p className="card-text">MTU: {props.value.mtu}</p>
-                              <p className="card-text">Mbps Out: {parseInt(props.value['statistics']['tx-kbps']) / 1000}</p>
-                              <p className="card-text">Mbps In: {parseInt(props.value['statistics']['rx-kbps']) / 1000}</p>
+                              <p className="card-text">Mbps Out: {props.value['statistics']['tx-kbps']}</p>
+                              <p className="card-text">Mbps In: {props.value['statistics']['rx-kbps']}</p>
                               <p className="card-text">PPs Out: {props.value['statistics']['rx-pps']}</p>
                               <p className="card-text">PPs In: {props.value['statistics']['tx-pps']}</p>
                             </div>
@@ -102,6 +103,6 @@ export  function InterfaceCard(props){
                           </div>
                       </div>
                     </div>
-                    </div>
+                  </div>
   }
   

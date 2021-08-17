@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { GetLayerTwoInterfaces, GetVlans} from './promises'
+import { GetLayerTwoInterfaces, GetVlans, GetDpNeighbors} from './promises'
+import { DpNeighbors} from './dp_neighbors'
 import { Trunks} from './trunks'
 import { AccessPorts} from './accessPorts'
 import { Vlans} from './vlans'
@@ -9,7 +10,7 @@ import { ErrorBoundary } from './errorBoundry';
 
 export  function LayerTwo(props){
   const [isAuth, setIsAuth] = useState(false)
-  const [interfaces, setInterfaces] = useState([])
+  const [dpNeighbors, setDpNeighborS] = useState([])
   const [vlans, setVlans] = useState([])
   const [trunks, setTrunks] = useState([])
   const [access, setAccess] = useState([])
@@ -36,6 +37,16 @@ export  function LayerTwo(props){
       catch(e){
         console.log(e)
       }
+
+      try{
+
+        var dp_neighbors = await GetDpNeighbors(ip, username, password, port)
+        setDpNeighborS(dp_neighbors.data.data)
+      }
+      catch(e){
+        console.log(e)
+      }
+
       setIsAuth(true)
     }
   }
@@ -49,6 +60,11 @@ export  function LayerTwo(props){
   }
   else{
     return <div className="container-fluid">
+            <div className="row">
+              <ErrorBoundary>
+                <DpNeighbors dpNeighbors={dpNeighbors}/>
+              </ErrorBoundary>
+            </div>
             <div className="row">
                 <ErrorBoundary>
                   <Vlans vlans={vlans}/>

@@ -10,10 +10,16 @@ export  function Trunks(props){
   const trunkstable = TrunkTableHtml(trunksTableRef)
 
   useEffect(() => {
+    $(trunksTableRef.current).DataTable().clear()
+    $(trunksTableRef.current).DataTable().rows.add(Object.values(props.ports))
+    $(trunksTableRef.current).DataTable().draw(false)
+    }, [props.ports])
+
+  useEffect(() => {
         $(trunksTableRef.current).DataTable().destroy()
         try{
           $(trunksTableRef.current).DataTable({
-            dom: "",
+            pageLength: 50,
             data: props.ports,
             columns:  [
               { data: 'interface' },
@@ -34,7 +40,7 @@ export  function Trunks(props){
       catch{}
       setChartStatus(true)
 
-  }, [props.ports])
+  }, [])
 
   return  <div className="col-12">
           <div className="card text-white bg-dark">
