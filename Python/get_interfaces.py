@@ -1,3 +1,5 @@
+"""Set of functions to collect interface stats"""
+
 from json.decoder import JSONDecodeError
 import requests
 import json
