@@ -1,3 +1,5 @@
+"""Function that gets device enviromental stats"""
+
 from json.decoder import JSONDecodeError
 import requests
 import json
