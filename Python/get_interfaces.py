@@ -87,6 +87,6 @@ def _get_arps(interface, i):
 if __name__ == '__main__':
     
     try:
-      interfaces = get_interfaces()
+        interfaces = get_interfaces()
     except TypeError:
-      input('Input credentials')
+        input('Input credentials')
