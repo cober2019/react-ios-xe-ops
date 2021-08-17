@@ -1,3 +1,5 @@
+"""Set of fuctions which collects vlan data"""
+
 from json.decoder import JSONDecodeError
 import requests
 import json
