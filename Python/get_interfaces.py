@@ -83,7 +83,7 @@ def _get_arps(interface, i):
 
     return entry
   
-  if __name__ == '__main__':
+if __name__ == '__main__':
     
     try:
       interfaces = get_interfaces()
