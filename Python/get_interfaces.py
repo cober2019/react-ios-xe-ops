@@ -7,6 +7,7 @@ import time
 import os
 import warnings
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
 
 def get_interfaces(ip, port, username, password, ex_down=None):
     """Gets real time interface statistics using IOS-XE\n
