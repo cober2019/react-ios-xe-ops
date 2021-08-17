@@ -35,7 +35,7 @@ def get_interfaces(ip, port, username, password, ex_down=None):
 
             for interface in interface_data:
                 convert_bandwidth = _convert_to_mbps(interface)
-                entries = [_get_arps(interface, i) for i in converted_json[parent_key]]
+                entries = [_get_arps(interface, i) for i in converted_json[parent_key]][0]
                 data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': entries}
                 
         except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
@@ -70,17 +70,20 @@ def _convert_to_mbps(interface):
     return interface
 
 def _get_arps(interface, i):
+    """Collects arp for the matching interface"""
+
+    entries = []
 
     try:
         for entry in i.get('arp-oper'):
             if entry.get('interface') == interface.get('name'):
                 entry.pop('interface')
                 entry['time'] = entry.get('time').split('.')[0].strip('T00')
-                entry.append(entry)
+                entries.append(entry)
     except TypeError:
         pass
 
-    return entry
+    return entries
   
 if __name__ == '__main__':
     
