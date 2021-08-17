@@ -1,3 +1,5 @@
+"""Function for getting CPU data from a device"""
+
 from json.decoder import JSONDecodeError
 import requests
 import json
