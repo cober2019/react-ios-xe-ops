@@ -1,3 +1,5 @@
+""" Set of fuctions which collects CDP and LLDP neighbor info"""
+
 from json.decoder import JSONDecodeError
 import requests
 import json
