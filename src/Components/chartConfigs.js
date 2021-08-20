@@ -171,20 +171,20 @@ export function UpdateChart(chart, response, responseTwo) {
             chart.data.labels.shift();
             chart.data.labels.push(time.getSeconds());
             dataset.data.shift();
-            dataset.data.push(parseInt(response) / 1000);
+            dataset.data.push(parseInt(response));
         }
         else{
             dataset.data.shift();
-            dataset.data.push(parseInt(responseTwo) / 1000);
+            dataset.data.push(parseInt(responseTwo));
         }
     }
     else{
         if(index === 0){
             chart.data.labels.push(time.getSeconds());
-            dataset.data.push(parseInt(response) / 1000);
+            dataset.data.push(parseInt(response));
         }
         else{
-            dataset.data.push(parseInt(responseTwo) / 1000);
+            dataset.data.push(parseInt(responseTwo));
 
             }
         }
@@ -240,7 +240,7 @@ export function EnvTableHtml(tableRef) {
     return  <div>
                 <div className="col-12">
                     <div class="table-responsive">
-                            <table ref={tableRef} className="table  table-dark row-text" style={{width: '100%'}}>
+                            <table ref={tableRef} className="table table-dark row-text" style={{width: '100%'}}>
                                 <thead class="thead-light">
                                     <tr>
                                         <th >Name</th>
@@ -394,7 +394,7 @@ export function AccessTableHtml(tableRef) {
  
 export function InterfacesTableHtml(tableRef) {
         return  <div class="table-responsive">
-                    <table ref={tableRef} className="table table-dark row-text" style={{width: '100%'}}>
+                    <table ref={tableRef} className="table table-dark" style={{width: '100%'}}>
                         <thead>
                             <tr style={{textAlign: 'center'}}>
                                 <th >Interface</th>
@@ -413,19 +413,3 @@ export function InterfacesTableHtml(tableRef) {
                     
         }
     
-export function Navbar() {
-
-    return  <div>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                    <a class="navbar-brand"  style={{color: 'white'}}>Bandwidth Monitor | </a>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <Link className="nav-items" to="/index">Home</Link>
-                            <Link className="nav-items" to="/layerTwo">LayerTwo</Link>
-                        </ul>
-                    </div>
-                </div>
-            </nav>                      
-        </div>
-    }

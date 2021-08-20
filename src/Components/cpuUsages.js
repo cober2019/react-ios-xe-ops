@@ -6,12 +6,13 @@ $.DataTable = require('datatables.net');
 
 export function CpuUsage(props){
     const [chart, setChart] = useState(false)
+    const [error, setError] = useState(false)
     const cpuTableRef = React.createRef()
     const proccessRef = React.createRef()
     const proccessTable = CpuTableHtml(proccessRef);
     $.fn.dataTable.ext.errMode = 'none';
 
-    if(parseInt(props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 15 || props.cpuMem.mem[0]['memory-stats']['memory-status'] !== 'Healthy'){
+    if(parseInt(props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 1 || props.cpuMem[1][0]['memory-stats']['memory-status'] !== 'Healthy'){
         var cpuMemCss = {color: 'orange', textAlign: 'center', fontSize: 40}
     }
     else{
@@ -20,13 +21,13 @@ export function CpuUsage(props){
 
     useEffect(() => {
         if(chart){
-            let updatedChart = UpdateCpuChart(chart, props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
+            let updatedChart = UpdateCpuChart(chart, props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
             setChart(updatedChart)
             updatedChart.update()
         }
         try{
             $(proccessRef.current).DataTable().clear()
-            $(proccessRef.current).DataTable().rows.add(props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'])
+            $(proccessRef.current).DataTable().rows.add(props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'])
             $(proccessRef.current).DataTable().draw(false)
           }
           catch(e){
@@ -36,12 +37,18 @@ export function CpuUsage(props){
       
     
     useEffect(() => {
-       
-        let chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
+        
+        try{
+            var chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
+        }
+        catch{}
 
         $(proccessRef.current).DataTable().destroy()
         $(proccessRef.current).DataTable({
-            data: props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
+            data: props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
+            language: {
+                emptyTable: "No CPU Processes Found"
+              },
             columns:  [
                 { data: 'name' },
                 { data: 'total-run-time' },
@@ -49,7 +56,22 @@ export function CpuUsage(props){
                 { data: 'five-seconds' },
                 { data: 'one-minute' },
                 { data: 'five-minutes' }
-            ]})
+            ],
+            
+            fnRowCallback: function (nRow, aData) {
+                try{
+                    if(parseFloat(aData['five-seconds']) > 5 ){
+                        $('td:eq(3)', nRow).addClass('env-row-text-warn')
+                        }
+                    if(parseFloat(aData['one-minute']) > 5 ){
+                        $('td:eq(4)', nRow).addClass('env-row-text-warn')
+                        }
+                    if(parseFloat(aData['five-minutes']) > 5 ){
+                        $('td:eq(5)', nRow).addClass('env-row-text-warn')
+                        }
+                    }
+                catch{}
+            }})
 
         setChart(chart)
 
@@ -58,7 +80,7 @@ export function CpuUsage(props){
     return <div className="col-12">
             <div className="card text-white bg-dark">
                 <div className="card-body">
-                    <h4 class="card-title">CPU/Memory Statistics</h4>
+                    <h4 class="card-title mb-3">CPU/Memory Statistics</h4>
                     <div className="row" style={{marginTop: '20px'}}>
                         <div className="col-7">
                             <div className="row" style={{height: "225px"}}>
@@ -80,11 +102,11 @@ export function CpuUsage(props){
                                     </thead>  
                                     <tbody>
                                     <tr className="fade-in">
-                                        <td style={cpuMemCss}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
-                                        <td style={cpuMemCss}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
-                                        <td style={cpuMemCss}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
-                                        <td href="#" style={cpuMemCss}>{props.cpuMem.data['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
-                                        <td style={cpuMemCss}>{props.cpuMem.mem[0]['memory-stats']['available-percent']}</td>
+                                        <td style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
+                                        <td style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
+                                        <td style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
+                                        <td href="#" style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
+                                        <td style={cpuMemCss}>{props.cpuMem[1][0]['memory-stats']['available-percent']}</td>
                                     </tr>
                                     </tbody>                             
                                 </table>
@@ -103,8 +125,8 @@ export function CpuUsage(props){
                 </div>
             </div>
         </div>
+    }
 
-}
         
         
         

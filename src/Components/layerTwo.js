@@ -1,89 +1,95 @@
-import React, { useState } from 'react';
-import { GetLayerTwoInterfaces, GetVlans, GetDpNeighbors} from './promises'
+import React, { useState, useEffect } from 'react';
+import { PollL2Page } from './promises'
+import { VlansData, TrunkData, AccessData, DpData } from './errorData'
 import { DpNeighbors} from './dp_neighbors'
 import { Trunks} from './trunks'
 import { AccessPorts} from './accessPorts'
 import { Vlans} from './vlans'
-import { DeviceAuth} from './login'
+import { Navbar } from './navbar';
 import { ErrorBoundary } from './errorBoundry';
 
-
 export  function LayerTwo(props){
-  const [isAuth, setIsAuth] = useState(false)
-  const [dpNeighbors, setDpNeighborS] = useState([])
-  const [vlans, setVlans] = useState([])
-  const [trunks, setTrunks] = useState([])
-  const [access, setAccess] = useState([])
+  const [update, setUpdate] = useState(0)
 
-
-  const setAuthTrue = async (ip, username, password, port) => {
-
-    try{
-      var vlans = await GetVlans(ip, username, password, port)
-      setVlans(vlans.data.data)
-    }
-    catch(e){
-      console.log(e)
-    }
-
-    while (true){
-
+  useEffect(() => {
+    (async () => {
       try{
-        var layerTwoInts = await GetLayerTwoInterfaces(ip, username, password, port)
-        console.log(layerTwoInts.data.access)
-        setTrunks(layerTwoInts.data.trunks)
-        setAccess(layerTwoInts.data.access)
+        //let indexData = await PollL2Page(localStorage.getItem('ip'), localStorage.getItem('username'), localStorage.getItem('password'), localStorage.getItem('port'))
+        //localStorage.setItem('trunks', JSON.stringify(indexData.data.trunks));
+        //localStorage.setItem('access', JSON.stringify(indexData.data.access));
+        //localStorage.setItem('dpNeighbors', JSON.stringify(indexData.data.dpNeighbors));
+        //localStorage.setItem('vlans', JSON.stringify(indexData.data.vlans));
+        localStorage.setItem('vlans', JSON.stringify(VlansData));
+        localStorage.setItem('trunks', JSON.stringify(TrunkData));
+        localStorage.setItem('access', JSON.stringify(AccessData));
+        localStorage.setItem('dpNeighbors', JSON.stringify(DpData));
+        let render = update + 1
+        setUpdate(render)
       }
-      catch(e){
-        console.log(e)
+      catch{
+        localStorage.setItem('trunks', JSON.stringify(ErrorDataL2));
+        localStorage.setItem('access', JSON.stringify(ErrorDataL2));
+        localStorage.setItem('dpNeighbors', JSON.stringify(ErrorDataL2));
+        localStorage.setItem('vlans', JSON.stringify(ErrorDataL2));
+        let render = update + 1
+        setUpdate(render)
       }
+      })()
+  }, [update])
+  
 
-      try{
+useEffect(() => {
+  localStorage.setItem('ip', props.ip);
+  localStorage.setItem('username', props.username);
+  localStorage.setItem('password', props.password);
+  localStorage.setItem('port', props.port);
+  let render = update + 1
+  setUpdate(render)
+}, [])
 
-        var dp_neighbors = await GetDpNeighbors(ip, username, password, port)
-        setDpNeighborS(dp_neighbors.data.data)
-      }
-      catch(e){
-        console.log(e)
-      }
 
-      setIsAuth(true)
-    }
-  }
 
-  if (isAuth === false){
-    return <div>
+if (localStorage.getItem('vlans') !== null){
+  return <div className="container-fluid">
+          <Navbar ip={localStorage.getItem('ip')}/>
+          <div className="row">
             <ErrorBoundary>
-              <DeviceAuth callback={setAuthTrue}/>
+              <DpNeighbors dpNeighbors={JSON.parse(localStorage.getItem('dpNeighbors'))}/>
             </ErrorBoundary>
           </div>
-  }
-  else{
-    return <div className="container-fluid">
-            <div className="row">
+          <div className="row">
               <ErrorBoundary>
-                <DpNeighbors dpNeighbors={dpNeighbors}/>
+                <Vlans vlans={JSON.parse(localStorage.getItem('vlans'))}/>
               </ErrorBoundary>
-            </div>
-            <div className="row">
-                <ErrorBoundary>
-                  <Vlans vlans={vlans}/>
-                </ErrorBoundary>
-                <div className="col-xl-6">
-                  <div className="row">
-                    <ErrorBoundary>
-                      <Trunks ports={trunks}/>
-                    </ErrorBoundary>
-                  </div>
-                  <div className='row'>
-                    <ErrorBoundary>
-                      <AccessPorts ports={access}/>
-                    </ErrorBoundary>
-                  </div>
+              <div className="col-xl-6">
+                <div className="row">
+                  <ErrorBoundary>
+                    <Trunks ports={JSON.parse(localStorage.getItem('trunks'))}/>
+                  </ErrorBoundary>
+                </div>
+                <div className='row'>
+                  <ErrorBoundary>
+                    <AccessPorts ports={JSON.parse(localStorage.getItem('access'))}/>
+                  </ErrorBoundary>
                 </div>
               </div>
             </div>
-  }
+          </div>
+}
+else if (update < 2){
+  return  <div>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data</h4>
+            <div class="loader text-center"></div>
+        </div>
+}
+else if (update < 3){
+
+  return   <div>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>This Sure Is Slow</h4>
+            <div class="loader text-center"></div>
+          </div>
+ 
+}
 
   }
     

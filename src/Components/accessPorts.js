@@ -7,6 +7,7 @@ export  function AccessPorts(props){
   const [chartStatus, setChartStatus] = useState(false)
   const accesssTableRef = React.createRef()
   const accessstable = AccessTableHtml(accesssTableRef)
+  $.fn.dataTable.ext.errMode = 'none';
 
 
   useEffect(() => {
@@ -20,8 +21,10 @@ export  function AccessPorts(props){
         $(accesssTableRef.current).DataTable().destroy()
         try{
           $(accesssTableRef.current).DataTable({
-            pageLength: 50,
             data: props.ports,
+            language: {
+              emptyTable: "No Access Ports Assigned"
+            },
             columns:  [
               { data: 'interface' },
               { data: 'vlan'},
@@ -30,7 +33,8 @@ export  function AccessPorts(props){
               { data: 'mbpsIn' }
           ],
           fnRowCallback: function (nRow, aData) {
-            if(aData['status'].includes('ready')){
+            //Change Back to 'ready'
+            if(aData['status'].includes('up')){
                 $('td:eq(2)', nRow).addClass('env-row-text')
             }
             else{
@@ -45,7 +49,7 @@ export  function AccessPorts(props){
   return  <div className="col-12">
             <div className="card text-white bg-dark mt-3">
               <div className="card-body">
-              <h4 class="card-title">Access Ports</h4>
+              <h4 class="card-title mb-3">Access Ports</h4>
                 {accessstable}
               </div>
             </div>

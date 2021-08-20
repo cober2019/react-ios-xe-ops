@@ -21,8 +21,10 @@ export  function InterfaceTable(props){
     $(interfacesTableRef.current).DataTable().destroy()
     try{
       $(interfacesTableRef.current).DataTable({
-        pageLength: 10,
         data: Object.values(props.interfaces),
+        language: {
+          emptyTable: "No Interfaces Found"
+        },
         columns:  [
           { data: 'data.name'},
           { data: 'data.oper-status'},
@@ -41,9 +43,9 @@ export  function InterfaceTable(props){
 }, [])
 
   return  <div className="col-12">
-            <div className="card text-white bg-dark">
+            <div className="card bg-dark">
                 <div className="card-body">
-                <h4 class="card-title mb-4">Interfaces</h4>
+                <h4 class="card-title mb-3">Interfaces</h4>
                   {interfacestable}
                 </div>
               </div>

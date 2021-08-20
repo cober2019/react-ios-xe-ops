@@ -8,6 +8,7 @@ export  function Arps(props){
   const [chartStatus, setChartStatus] = useState(false)
   const arpTableRef = React.createRef()
   const table = ArpTableHtml(arpTableRef)
+  $.fn.dataTable.ext.errMode = 'none';
 
   useEffect(() => {
     console.log(props.arps)

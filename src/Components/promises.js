@@ -86,4 +86,30 @@ export function GeBgpStatus(ip, username, password, port) {
   });
 }
 
+export function PollIndexPage(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/pollIndexPage', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
+export function PollL2Page(ip, username, password, port) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/pollL2Page', {'ip': ip, 'username': username, 'password': password, 'port': port}));
+    }, 5000);
+  });
+}
+
+export function ApiCheck() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(axios.post('/apistatus'));
+    }, 5000);
+  });
+}
+
+
+
  

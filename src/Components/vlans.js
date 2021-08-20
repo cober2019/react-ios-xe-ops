@@ -14,6 +14,9 @@ export  function Vlans(props){
           try{
             $(vlanTableRef.current).DataTable({
               data: props.vlans,
+              language: {
+                emptyTable: "No Vlans Configured"
+              },
               columns:  [
                 { data: 'id' },
                 { data: 'name' },
@@ -30,7 +33,7 @@ export  function Vlans(props){
   return  <div className="col-xl-6">
             <div className="card text-white bg-dark">
               <div className="card-body">
-              <h4 class="card-title">Vlans</h4>
+              <h4 class="card-title mb-3">Vlans</h4>
               {vlantable}
               </div>
             </div>

@@ -19,8 +19,10 @@ export  function Trunks(props){
         $(trunksTableRef.current).DataTable().destroy()
         try{
           $(trunksTableRef.current).DataTable({
-            pageLength: 50,
-            data: props.ports,
+            data: props.ports
+            ,language: {
+              emptyTable: "No Trunks Configured"
+            },
             columns:  [
               { data: 'interface' },
               { data: 'vlans' },
@@ -29,13 +31,17 @@ export  function Trunks(props){
               { data: 'mbpsIn' }
           ],
           fnRowCallback: function (nRow, aData) {
-            if(aData['status'].includes('ready')){
-                $('td:eq(2)', nRow).addClass('env-row-text')
+            try{
+              //Change Back to 'ready'
+              if(aData['status'].includes('up')){
+                  $('td:eq(2)', nRow).addClass('env-row-text')
+              }
+              else{
+                $('td:eq(2)', nRow).addClass('env-row-text-warn')
+              }
             }
-            else{
-              $('td:eq(2)', nRow).addClass('env-row-text-warn')
-            }
-            }});
+            catch{}
+          }});
         }
       catch{}
       setChartStatus(true)
@@ -45,7 +51,7 @@ export  function Trunks(props){
   return  <div className="col-12">
           <div className="card text-white bg-dark">
                 <div className="card-body">
-                <h4 class="card-title">Trunks</h4>
+                <h4 class="card-title mb-3">Trunks</h4>
                   {trunkstable}
                 </div>
               </div>
