@@ -8,16 +8,25 @@ export  function Envirmoment(props){
   const [chartStatus, setChartStatus] = useState(false)
   const envTableRef = React.createRef()
   const table = EnvTableHtml(envTableRef)
+  $.fn.dataTable.ext.errMode = 'none';
   
   useEffect(() => {
-      console.log(props.env)
+    $(envTableRef.current).DataTable().clear()
+    //$(envTableRef.current).DataTable().rows.add(Object.values(props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']))
+    $(envTableRef.current).DataTable().rows.add(Object.values(props.env))
+    $(envTableRef.current).DataTable().draw(false)
+    }, [props.env])
+
+  useEffect(() => {
     if(chartStatus !== true){
         $(envTableRef.current).DataTable().destroy()
           try{
             $(envTableRef.current).DataTable({
-              dom: "",
-              data: props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor'],
-              pageLength: 50,
+              language: {
+                emptyTable: "No Environment Detected"
+              },
+              //props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']
+              data: props.env,
               columns:  [
                 { data: 'name' },
                 { data: 'location' },
@@ -26,6 +35,8 @@ export  function Envirmoment(props){
                 { data: 'sensor-units' }
             ],
             fnRowCallback: function (nRow, aData) {
+
+              try{
                 if(aData['state'] === 'Normal' ||  aData['state'] === 'GREEN'){
                     $('td:eq(2)', nRow).addClass('env-row-text')
                     $('td:eq(3)', nRow).addClass('env-row-text')
@@ -37,7 +48,10 @@ export  function Envirmoment(props){
                   $('td:eq(2)', nRow).addClass('env-row-text-warn')
                   $('td:eq(3)', nRow).addClass('env-row-text-warn')
                 }
-                }});
+              }
+              catch{}
+            }
+              });
           }
         catch{}
 
@@ -45,11 +59,11 @@ export  function Envirmoment(props){
       setChartStatus(true)
       }
 
-  }, [props.env])
+  }, [])
 
   return  <div className="card text-white bg-dark">
               <div className="card-body">
-              <h4 class="card-title">Environment Stats</h4>
+              <h4 class="card-title mb-3">Environment Stats</h4>
               {table}
               </div>
             </div>

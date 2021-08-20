@@ -12,6 +12,7 @@ export  function InterfaceCard(props){
   const interfacesRef = React.createRef()
   const arpTableRef = React.createRef()
   const table = ArpTableHtml(arpTableRef)
+  $.fn.dataTable.ext.errMode = 'none';
 
   useEffect(() => {
     if(chart){
