@@ -37,13 +37,34 @@ def ios_xe_login() -> dict:
     return auth_dict
 
 
+@app.route('/pollIndexPage', methods=['POST', 'GET'])
+def index_page():
+    """This page displays device interface"""
+
+    interfaces = GetInterfaces.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'interfaces': interfaces[0], 'arps': interfaces[1], 'cpu': cpu_status, 'env': env_status, 'dp': neighbors}
+
+@app.route('/pollL2Page', methods=['POST', 'GET'])
+def layer_2__page():
+    """This page displays device interface"""
+
+    interfaces = GetInterfaces.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    vlans = GetInterfaces.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans}
+
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
     """This page displays device interface"""
 
     interfaces = GetInterfaces.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'data': interfaces}
+    return {'interfaces': interfaces[0], 'arps': interfaces[1]}
 
 @app.route('/getinterfacestats', methods=['POST', 'GET'])
 def interface_stats():
@@ -118,6 +139,11 @@ def get_bgp_status():
 
     return {'data': cpu_status}
 
+@app.route('/apistatus', methods=['POST', 'GET'])
+def get_api_status():
+    """This page displays device interface"""
+
+    return "<h4>API Is Up</h4>"
 
 if __name__ == '__main__':
     app.run(debug=True)
