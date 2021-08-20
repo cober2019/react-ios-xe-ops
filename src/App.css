@@ -217,6 +217,17 @@ body{
 
 .input-text{text-align: center;}
 
+.status-loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-bottom: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
 .submitButton{ display: block;
                 max-width: 300px;
                 width: 150px;
