@@ -13,6 +13,6 @@ Notes:
 Why?
 -----
 
-CSR dont produce environmental data, doesnt have Qos, and not a layer 2 device.
+CSRs' don't produce environmental data, Qos, and it's not a layer 2 device.
   
  
