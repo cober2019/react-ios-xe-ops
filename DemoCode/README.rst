@@ -1,15 +1,18 @@
 IOS-XE-Ops
 ============
 
-**! This code is not complete but is functional !**
+Demo aviable at http://13.92.41.254:3001/
 
-SnapShots:
-----------
+Notes:
+-------
 
-.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/mem-cpu.PNG
+- Only interfaces and CPU are real device data
+- Interface Bandwidth is randomly generate
+- Layer Two tables are static with random bandwidth if category exist.
 
-.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/XEOps.png
+Why?
+-----
 
-.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/iosxeops-int.PNG
-
-.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/iosxeops-int-arp.PNG
+CSR dont produce environmental data, doesnt have Qos, and not a layer 2 device.
+  
+ 
