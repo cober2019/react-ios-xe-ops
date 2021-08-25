@@ -7,7 +7,7 @@ Notes:
 -------
 
 - Only interfaces and CPU are real device data
-- Interface Bandwidth is randomly generate
+- *Interface Bandwidth is randomly generate
 - Layer Two tables are static with random bandwidth if category exist.
 
 Why?
