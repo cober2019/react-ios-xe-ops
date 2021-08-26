@@ -37,12 +37,11 @@ def get_interfaces(ip, port, username, password):
             for interface in interface_data:
                 convert_bandwidth = convert_to_mbps(interface)
                 entries = [_get_arps(interface, i) for i in converted_json[parent_key]]
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': entries, 'qos': qos_stats}
-                
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': entries, 'qos': {'allocation': 200, 'direction': 'outbound', 'policy': 'Parent_Shaper'}}
         except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, UnboundLocalError):
             for interface in interface_data:
                 convert_bandwidth = convert_to_mbps(interface)
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': []}
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': [], 'qos': {'allocation': 200, 'direction': 'outbound', 'policy': 'Parent_Shaper'}}
 
     return data, joined_vlans
 
@@ -111,13 +110,9 @@ def _get_arps(interface, i):
 def convert_to_mbps(interface):
     """Convert Kbps to Mbps"""
 
-    interface['statistics']['tx-kbps'] = random.randint(0,9)
-    interface['statistics']['rx-kbps'] = random.randint(0,9)
-    if interface['oper-status'] == 'if-oper-state-ready':
-        interface['oper-status'] = 'up'
-    else:
-        interface['oper-status'] = 'down'
-
+    interface['statistics']['tx-kbps'] = random.randint(100,250)
+    interface['statistics']['rx-kbps'] = random.randint(100,250)
+    
     return interface
 
 def get_cpu_usages(ip, port, username, password):
