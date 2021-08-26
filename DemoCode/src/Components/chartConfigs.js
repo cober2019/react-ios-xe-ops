@@ -351,8 +351,6 @@ export function CpuTableHtml(tableRef) {
                             <thead class="thead-light">
                                 <tr>
                                     <th >Name</th>
-                                    <th >Run Time</th>
-                                    <th >Avg-run-time</th>
                                     <th >Five-seconds</th>
                                     <th >One-minute</th>
                                     <th >Five-minutes</th>        
@@ -490,8 +488,11 @@ export function InterfacesTableHtml(tableRef) {
                                 <th >IP</th>
                                 <th >Mask</th>
                                 <th >Speed (Mbps)</th>
+				<th >Allocation</th>
                                 <th >Trans Band</th> 
-                                <th >RecieveBand</th>              
+                                <th >RecieveBand</th>
+				<th >Direction</th>
+				<th >Policy</th>             
                             </tr>
                         </thead>                               
                     </table>

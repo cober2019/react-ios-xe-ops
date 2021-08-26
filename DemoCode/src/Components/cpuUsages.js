@@ -51,9 +51,8 @@ export function CpuUsage(props){
                 emptyTable: "No CPU Processes Found"
               },
             columns:  [
-                { data: 'name' },
-                { data: 'total-run-time' },
-                { data: 'avg-run-time' },
+                { data: 'name' }
+,
                 { data: 'five-seconds' },
                 { data: 'one-minute' },
                 { data: 'five-minutes' }
@@ -62,13 +61,13 @@ export function CpuUsage(props){
             fnRowCallback: function (nRow, aData) {
                 try{
                     if(parseFloat(aData['five-seconds']) > 25 ){
-                        $('td:eq(3)', nRow).addClass('env-row-text-warn')
+                        $('td:eq(3)', nRow).addClass('env-row-text-warn blinking')
                         }
                     if(parseFloat(aData['one-minute']) > 25 ){
-                        $('td:eq(4)', nRow).addClass('env-row-text-warn')
+                        $('td:eq(4)', nRow).addClass('env-row-text-warn blinking')
                         }
                     if(parseFloat(aData['five-minutes']) > 25 ){
-                        $('td:eq(5)', nRow).addClass('env-row-text-warn')
+                        $('td:eq(5)', nRow).addClass('env-row-text-warn blinking')
                         }
                     }
                 catch{}
