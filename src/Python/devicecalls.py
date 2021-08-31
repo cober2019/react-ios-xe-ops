@@ -1,25 +1,70 @@
 from json.decoder import JSONDecodeError
-from typing import final
+import classmaps 
 import requests
 import json
 import warnings
+import random
+
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
 headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
 
-def get_interfaces(ip, port, username, password):
+def _check_api_error(response) -> bool:
+
+    is_error = False
+
+    if list(response.keys())[0] == 'errors':
+        is_error = True
+    
+    return is_error
+
+def get_arps(ip, port, username, password) -> list:
+    """Collects arp for the matching"""
+
+    entries = []
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-arp-oper:arp-data/arp-vrf"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        arp_entries = json.loads(response.text, strict=False)
+
+        check_error = _check_api_error(arp_entries)
+
+        if check_error:
+            raise AttributeError
+
+        try:
+            for i in  arp_entries.get('Cisco-IOS-XE-arp-oper:arp-vrf'):
+                for entry in i.get('arp-oper'):
+                    entry.pop('interface')
+                    entry['vrf'] = i.get('vrf')
+                    entry['time'] = entry.get('time').split('.')[0].strip('T00')
+                    entries.append(entry)
+        except (TypeError, AttributeError):
+            pass
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError):
+        entries = [{}]
+
+    return entries
+
+
+def get_interfaces(ip, port, username, password) -> dict:
     """Gets real time interface statistics using IOS-XE\n
         Cisco-IOS-XE-interfaces-oper:interfaces and live arp data via Cisco-IOS-XE-arp-oper:arp-data/arp-vrf"""
 
     data = {}
     interface_data = {}
-    joined_vlans = []
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        converted_json = json.loads(response.text)
-        interface_data = converted_json.get('Cisco-IOS-XE-interfaces-oper:interfaces').get('interface')
+        interface_data = json.loads(response.text).get('Cisco-IOS-XE-interfaces-oper:interfaces').get('interface')
+        check_error = _check_api_error(interface_data)
+
+        if check_error:
+            raise AttributeError
+
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
         pass
     
@@ -33,43 +78,131 @@ def get_interfaces(ip, port, username, password):
             parent_key = list(get_keys.keys())[0]
 
             for interface in interface_data:
+                #Collect inter qos statistics. Commence policy breakdown
+                qos_stats = collect_qos_stats(interface, ip, port, username, password)
                 convert_bandwidth = convert_to_mbps(interface)
-                entries = [_get_arps(interface, i) for i in converted_json[parent_key]]
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': entries}
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'qos': qos_stats}
                 
-        except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError):
+        except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
             for interface in interface_data:
                 convert_bandwidth = convert_to_mbps(interface)
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'arps': []}
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth}
 
-    return data, joined_vlans
+    return data
 
-def _map_vrfs(vrf, arps):
+def collect_qos_stats(interface, ip, port, username, password) -> list:
+    """Collect interface service policies, breaks down policy."""
 
-    arps['vrf'] = vrf
+    qos = []
 
-    return arps
+    # The following code will compare two sets of data. Interface queue stats and service policy config. Unfortunently we cant get this data as one
+
+    for policy in interface.get('diffserv-info', {}):
+        try:
+            #Get qos policy map details using rest and a name filter in out url path
+            uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/policy/policy-map={policy.get('policy-name')}"
+            response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+            check_error = _check_api_error(json.loads(response.text))
+
+            if check_error:
+                raise AttributeError
+
+            #Get policy detials. Type, Allocation etc.
+            allocation = _get_qos_bandwidth(json.loads(response.text))
+
+            if not policy.get('diffserv-target-classifier-stats'):
+                qos = []
+            elif isinstance(policy.get('diffserv-target-classifier-stats'), list):
+                #Use list comp to get out queue details, also map other details
+
+                if not allocation:
+                    qos = []
+                elif len(allocation) == 1:
+                    qos = {'interface_policy': policy.get('policy-name', {}), 'allocation': allocation[0].get('allocation', {}), 
+                    'direction': policy.get('direction', {}).split('-')[1], 'queues': _map_queues(allocation[0], policy)}
+                else:
+                    qos = [
+                        
+                        {'interface_policy': policy.get('policy-name', {}), 'allocation': i.get('allocation', {}), 
+                        'direction': policy.get('direction', {}).split('-')[1], 'queues': _map_queues(i, policy)}
+                        
+                        for i in allocation
+                    
+                        ]
+        except AttributeError:
+             pass
+
+    return qos
+
+def _get_qos_bandwidth(policy) -> list:
+    """Break down each child policy"""
+
+    parent_queues = []
+
+    #Get parent policy actions and action type. ie.e bandwdith, service-policy, fair-queue etc.
+    for queue in policy.get('Cisco-IOS-XE-policy:policy-map', {}).get('class', {}):
+        if isinstance(queue.get('action-list', {}), list):
+            allocation = [_allocation_type(action) for action in queue.get('action-list', {})]
+            parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[1]})
+
+    return parent_queues
+
+def _allocation_type(action) -> tuple:
+    """Get details of child policy"""
+
+    allocation = '---'
+    action_type = '---'
+
+    if action.get("action-type",{}) == 'shape':
+        if 'bit-rate' in action.get('shape',{}).get('average',{}):
+            allocation = str(round(int(action.get("shape",{}).get("average",{}).get("bit-rate",{})) / 1e+6)) + " Mbps"
+        elif 'percent' in action.get('shape',{}).get('average'):
+            allocation = action.get("shape",{}).get("average",{}).get("percent",{}) + "%"
+
+    elif action.get("action-type",{}) == 'bandwidth':
+        if 'kilo-bits' in action.get('bandwidth', {}):
+            allocation = str(round(int(action.get("bandwidth",{}).get("kilo-bits",{})) * 1000 / 1e+6)) + " Mbps"
+        elif 'percent' in action.get('bandwidth', {}):
+            allocation = action.get("bandwidth",{}).get("percent",{}) + '%'
+
+    if action.get("action-type",{}) == 'service-policy':
+        action_type = 'service-policy'
+    elif action.get("action-type",{}) == 'fair-queue':
+        action_type = 'fair-queue'
+
+    return allocation, action_type
     
-def _get_arps(interface, i):
-    """Collects arp for the matching"""
-    entries = []
+def _map_queues(i, policy) -> list:
+    
+    queues = []
 
-    try:
-        for entry in i.get('arp-oper'):
-            if entry.get('interface') == interface.get('name'):
-                entry.pop('interface')
-                entry['time'] = entry.get('time').split('.')[0].strip('T00')
-                entries.append(entry)
-    except TypeError:
-        pass
+    # Check if policy type is service policy. When then can get our queue detiials
+    if 'service-policy' in i.get('type'):
+        for queue in policy.get('diffserv-target-classifier-stats', {}):
+            print(queue)
+            #Parent path provided allows use to check if the queue is a child queue. 1st path part is Parent Policy, second is a paren queue, anything after is child
+            if len(queue.get('parent-path').split()) != 2:
+                queues.append({'queue-name': queue.get('classifier-entry-name'), 'parent': " ".join(queue.get('parent-path').split(" ")[0:2]),
+                'rate': queue.get('classifier-entry-stats').get('classified-rate'), 'bytes': queue.get('classifier-entry-stats').get('classified-bytes'),
+                'pkts': queue.get('classifier-entry-stats').get('classified-pkts'), 'drops': queue.get('queuing-stats').get('drop-bytes')})
+            elif len(queue.get('parent-path').split()) == 2 and queue.get('classifier-entry-name') == i.get('queue'):
+                queues.append({'queue-name': f'Parent Queue: {queue.get("classifier-entry-name")}'})
 
-    return entry
+    elif '---' in i.get('type'):
+        # This maps if the queue is not service policy. A single queue with no child
+        queues = [
+                    {'queue-name': f'Parent Queue: {queue.get("classifier-entry-name")}'} 
+                    for queue in policy.get('diffserv-target-classifier-stats', {}) 
+                    if len(queue.get('parent-path').split()) == 2 and queue.get('classifier-entry-name') == i.get('queue')
+                ]
+    return queues
+
 
 def convert_to_mbps(interface):
     """Convert Kbps to Mbps"""
 
-    interface['statistics']['tx-kbps'] = int(interface.get('statistics').get('tx-kbps')) / 1000
-    interface['statistics']['rx-kbps'] = int(interface.get('statistics').get('tx-kbps')) / 1000
+    interface['statistics']['tx-kbps'] = random.randint(0,9)
+    interface['statistics']['rx-kbps'] = random.randint(0,9)
     if interface['oper-status'] == 'if-oper-state-ready':
         interface['oper-status'] = 'up'
     else:
@@ -87,18 +220,28 @@ def get_cpu_usages(ip, port, username, password):
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         cpu_stats = json.loads(response.text)
+        check_error = _check_api_error(cpu_stats)
+
+        if check_error:
+            raise AttributeError
+
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        cpu_stats = {'Cisco-IOS-XE-process-cpu-oper:cpu-utilization': {'cpu-usage-processes': {'cpu-usage-process': []},'five-seconds': []}}
+        cpu_stats = {'Cisco-IOS-XE-process-cpu-oper:cpu-utilization': {'cpu-usage-processes': {'cpu-usage-process': []}},'five-seconds': []}
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-platform-software-oper:cisco-platform-software/control-processes/control-process"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        converted_json = json.loads(response.text)
-        get_keys = dict.fromkeys(converted_json)
-        parent_key = list(get_keys.keys())[0]
-        memory_stats = converted_json[parent_key]
+        memory_stats = json.loads(response.text)
+
+        check_error = _check_api_error(cpu_stats)
+
+        if check_error:
+            raise AttributeError
+
+        memory_stats = memory_stats.get('memory-stats').get('memory-status')
+
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        memory_stats = {'memory-stats': {'memory-status': 'Unknown'}}
+        memory_stats = [{'memory-stats': {'memory-status': 'Unknown'}}]
     
     return cpu_stats, memory_stats
 
@@ -113,11 +256,18 @@ def get_hardware_status(ip, port, username, password):
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-platform-software-oper:cisco-platform-software/control-processes/control-process"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        converted_json = json.loads(response.text)
-        get_keys = dict.fromkeys(converted_json)
+        hardware_status = json.loads(response.text)
+
+        check_error = _check_api_error(hardware_status)
+        
+        if check_error:
+            raise AttributeError
+
+        get_keys = dict.fromkeys(hardware_status)
         parent_key = list(get_keys.keys())[0]
-        data = converted_json[parent_key]
-    except:
+        data = hardware_status[parent_key]
+
+    except AttributeError:
         pass
 
     return data
@@ -126,16 +276,22 @@ def get_hardware_status(ip, port, username, password):
 def get_envirmoment(ip, port, username, password):
     """Gets real time enviroment statistics using restconf/data/Cisco-IOS-XE-environment-oper:environment-sensors"""
 
-    data = {}
+    env_data = {}
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-environment-oper:environment-sensors"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        data = json.loads(response.text)
-    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        data = {'Cisco-IOS-XE-environment-oper:environment-sensors': {'environment-sensor': []}}
+        env_data = json.loads(response.text)
 
-    return data
+        check_error = _check_api_error(env_data)
+        
+        if check_error:
+            raise AttributeError
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        env_data = {'Cisco-IOS-XE-environment-oper:environment-sensors': {'environment-sensor': []}}
+
+    return env_data
 
 def get_components(ip, port, username, password):
     """Gets device components /restconf/data/openconfig-platform:components"""
@@ -174,16 +330,30 @@ def get_dp_neighbors(ip, port, username, password):
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-cdp-oper:cdp-neighbor-details"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        converted_json = json.loads(response.text)
-        data.append(converted_json)
+        cdp_data = json.loads(response.text)
+
+        check_error = _check_api_error(cdp_data)
+        
+        if check_error:
+            raise AttributeError
+
+        data.append(cdp_data)
+
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
          data.append({'Cisco-IOS-XE-cdp-oper:cdp-neighbor-details': {'cdp-neighbor-detail': []}})
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-lldp-oper:lldp-entries"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        converted_json = json.loads(response.text)
-        data.append(converted_json)
+        lldp_data = json.loads(response.text)
+
+        check_error = _check_api_error(lldp_data)
+        
+        if check_error:
+            raise AttributeError
+
+        data.append(lldp_data)
+
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
         data.append({'Cisco-IOS-XE-lldp-oper:lldp-entries': {'lldp-entry': []}})
 
@@ -193,23 +363,31 @@ def get_dp_neighbors(ip, port, username, password):
 def get_vlans(ip, port, username, password):
     """Gets device components /restconf/data/openconfig-platform:components"""
 
-    data = []
+    vlan_data = []
+
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-vlan-oper:vlans"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         vlans = json.loads(response.text)
 
+        check_error = _check_api_error(vlans)
+        
+        if check_error:
+            raise AttributeError
+
         for i in vlans.get('Cisco-IOS-XE-vlan-oper:vlans', {}).get('vlan', {}):
             try:
                 if i.get('vlan-interfaces'):
-                    data.append({"id": i.get('id'), "name": i.get('name'), "status": i.get('status'), "interfaces": ", ".join([interface.get('interface') for interface in i.get('vlan-interfaces')])})
+                    vlan_data.append({"id": i.get('id'), "name": i.get('name'), "status": i.get('status'), "interfaces": ", ".join([interface.get('interface') for interface in i.get('vlan-interfaces')])})
                 else:
-                    data.append({"id": i.get('id'), "name": i.get('name'), "status": i.get('status'), "interfaces": []})
+                    vlan_data.append({"id": i.get('id'), "name": i.get('name'), "status": i.get('status'), "interfaces": []})
             except TypeError:
                 pass
+
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
          pass
-    return data
+        
+    return vlan_data
 
 def get_switch(ip, port, username, password):
     """Gets device components /restconf/data/openconfig-platform:components"""
@@ -222,16 +400,25 @@ def get_switch(ip, port, username, password):
         interfaces_configs = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/interface"
         interface_status = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
         config_response = requests.get(interfaces_configs, headers=headers, verify=False, auth=(username, password))
-        stats_response = requests.get(interface_status, headers=headers, verify=False, auth=(username, password))
         config_json = json.loads(config_response.text)
-        stats_json = json.loads(stats_response.text)
+        check_error = _check_api_error(config_json)
+        
+        if check_error:
+            raise AttributeError
+
+        stats_response = requests.get(interface_status, headers=headers, verify=False, auth=(username, password))
+        interface_stats = json.loads(stats_response.text)
+        check_error = _check_api_error(interface_stats)
+        
+        if check_error:
+            raise AttributeError
 
         for interface, v in config_json['Cisco-IOS-XE-native:interface'].items():
             if isinstance(v, list):
-                mapped = [map_switchports(config, interface, stats_json) for config in v]
+                mapped = [map_switchports(config, interface, interface_stats) for config in v]
                 data[interface] = list(mapped)
 
-    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, KeyError):
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, KeyError, AttributeError):
         pass
 
     if data:
@@ -257,7 +444,7 @@ def map_switchports(config, interface, interfaces_statuses):
     if interface_mode == 'access':
         access_vlan = config.get('switchport').get('Cisco-IOS-XE-switch:access').get('vlan').get('vlan')
         data.append({'mode': 'access','interface': complete_interface, 'vlan': access_vlan, 'status': statistics['oper-status'], 
-        'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
+        'mbpsOut': random.randint(0,100), 'mbpsIn': random.randint(0,100)})
 
     elif interface_mode == 'trunk':
         if config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("allowed", {}).get("vlan", {}).get("vlans", {}):
@@ -273,7 +460,7 @@ def map_switchports(config, interface, interfaces_statuses):
             trunked_vlans = 'all'
             native = config.get("switchport").get("Cisco-IOS-XE-switch:trunk", {}).get("native", {}).get("vlan", {})
 
-        data.append({'mode': 'trunk', 'interface': complete_interface, 'vlans': trunked_vlans, 'native': native, 'status': statistics['oper-status'], 
+        data.append({'mode': 'trunk', 'interface': complete_interface, 'vlans': trunked_vlans, 'native': native, 'status': statistics['oper-status'], 'speed': statistics['speed'], 
         'mbpsOut': int(statistics['statistics']['tx-kbps'])/1000, 'mbpsIn': int(statistics['statistics']['rx-kbps'])/1000})
     else:
         data.append({'mode': None, 'interface': complete_interface, 'status': statistics['oper-status'], 
