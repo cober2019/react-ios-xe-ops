@@ -62,9 +62,18 @@ export  function DpNeighbors(props){
                 { data: 'mgmt-address' },
                 { data: 'ip-address' },
                 { data: 'local-intf-name' }
-            ],});
-          }
-        catch{}
+            ],
+	fnRowCallback: function (nRow, aData) {
+            try{
+              
+              if(aData['duplex'].includes('half')){
+                  $(nRow).addClass('env-row-text-warn')
+              }
+            }
+            catch{}
+          }});
+        }
+      catch{}
 
         $(lldpTableRef.current).DataTable().destroy()
           try{

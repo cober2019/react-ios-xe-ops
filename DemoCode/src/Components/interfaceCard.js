@@ -76,7 +76,7 @@ export  function InterfaceCard(props){
                       <div hidden>{table}</div>
                       }
                       <div className="row">
-                        <canvas ref={interfacesRef} heistyle={{height: "100px"}}/>
+                        <canvas ref={interfacesRef} style={{height: "100px"}}/>
                       </div>
                       <br/>
                           <div className="row">
