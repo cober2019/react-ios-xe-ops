@@ -17,21 +17,17 @@ export  function InterfaceCard(props){
   useEffect(() => {
     if(chart){
       let updatedChart = UpdateChart(chart, parseInt(props.value['statistics']['tx-kbps']),parseInt(props.value['statistics']['rx-kbps']));
-      setChart(updatedChart)
-      setArpCount(props.arps.length)
       updatedChart.update()
+      setChart(updatedChart)
     }
     
   }, [props.arps])
   
 
   useEffect(() => {
-    console.log(props.arps)
     if(chartStatus !== true){
       var chart = InitialChartBuild(interfacesRef.current.getContext('2d'), parseInt(props.value['statistics']['tx-kbps']), parseInt(props.value['statistics']['rx-kbps']));
       setChart(chart)
-      setArpCount(props.arps.length)
-      setChartStatus(true)
       }
 
   }, [])
@@ -67,7 +63,7 @@ export  function InterfaceCard(props){
     }
   }
 
-  return <div className="col-xl-3">
+  return <div className="col-xl-4">
             <div className="card text-white bg-dark mt-3 border-0">
                       <div className="card-body">
                       <h4 class="card-title text-center">{props.value.name}</h4>
@@ -81,7 +77,7 @@ export  function InterfaceCard(props){
                       <br/>
                           <div className="row">
                             <div className="col-6">
-                              <p className="card-text">Speed: {parseInt(props.value.speed) / 1e6 }</p>
+                              <p className="card-text">Speed: {Math.round(parseInt(props.value.speed) / 1000000000) * 1000 } (Mbps)</p>
                               <p className="card-text">Status: {props.value['oper-status']}</p>
                               <p className="card-text">IP: {props.value.ipv4}-{props.value['ipv4-subnet-mask']}</p>
                               <p className="card-text">Descr: {props.value.description}</p>
@@ -100,6 +96,7 @@ export  function InterfaceCard(props){
                               <p className="card-text">InDis: {props.value['statistics']['num-flaps']}</p>
                               <p className="card-text">LastChange: {props.value['statistics']['discontinuity-time'].split('.')[0]}</p>
                               <a className="card-text" href="#" onClick={(e) => getArps(true, e)}>ARP Entries: <span style={{color: 'white'}}>{arpCount}</span></a>
+                              <p className="card-text">Qos/Direction: {props.qos['policy']} - {props.qos['direction']}</p>
                             </div>
                           </div>
                       </div>

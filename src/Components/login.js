@@ -58,7 +58,7 @@ export function DeviceAuth(props){
                 </div>
             );
         }
-        else{
+        else if(isAuth){
             return(
             <Redirect push to={{pathname: '/index'}} from='/login'/>
             )

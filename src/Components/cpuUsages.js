@@ -12,7 +12,7 @@ export function CpuUsage(props){
     const proccessTable = CpuTableHtml(proccessRef);
     $.fn.dataTable.ext.errMode = 'none';
 
-    if(parseInt(props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 1 || props.cpuMem[1][0]['memory-stats']['memory-status'] !== 'Healthy'){
+    if(parseInt(props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 1 || props.mem[0]['memory-stats']['memory-status'] !== 'Healthy'){
         var cpuMemCss = {color: 'orange', textAlign: 'center', fontSize: 40}
     }
     else{
@@ -21,31 +21,31 @@ export function CpuUsage(props){
 
     useEffect(() => {
         if(chart){
-            let updatedChart = UpdateCpuChart(chart, props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
+            let updatedChart = UpdateCpuChart(chart, props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
             setChart(updatedChart)
             updatedChart.update()
         }
         try{
             $(proccessRef.current).DataTable().clear()
-            $(proccessRef.current).DataTable().rows.add(props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'])
+            $(proccessRef.current).DataTable().rows.add(props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'])
             $(proccessRef.current).DataTable().draw(false)
           }
           catch(e){
             console.log(e)
           }
-      }, [props.cpuMem])
+      }, [props.cpu, props.mem])
       
     
     useEffect(() => {
         
         try{
-            var chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
+            var chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
         }
         catch{}
 
         $(proccessRef.current).DataTable().destroy()
         $(proccessRef.current).DataTable({
-            data: props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
+            data: props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
             language: {
                 emptyTable: "No CPU Processes Found"
               },
@@ -60,13 +60,13 @@ export function CpuUsage(props){
             
             fnRowCallback: function (nRow, aData) {
                 try{
-                    if(parseFloat(aData['five-seconds']) > 5 ){
+                    if(parseFloat(aData['five-seconds']) > 25 ){
                         $('td:eq(3)', nRow).addClass('env-row-text-warn')
                         }
-                    if(parseFloat(aData['one-minute']) > 5 ){
+                    if(parseFloat(aData['one-minute']) > 25 ){
                         $('td:eq(4)', nRow).addClass('env-row-text-warn')
                         }
-                    if(parseFloat(aData['five-minutes']) > 5 ){
+                    if(parseFloat(aData['five-minutes']) > 25 ){
                         $('td:eq(5)', nRow).addClass('env-row-text-warn')
                         }
                     }
@@ -102,11 +102,11 @@ export function CpuUsage(props){
                                     </thead>  
                                     <tbody>
                                     <tr className="fade-in">
-                                        <td style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
-                                        <td style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
-                                        <td style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
-                                        <td href="#" style={cpuMemCss}>{props.cpuMem[0]['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
-                                        <td style={cpuMemCss}>{props.cpuMem[1][0]['memory-stats']['available-percent']}</td>
+                                        <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
+                                        <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
+                                        <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
+                                        <td href="#" style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
+                                        <td style={cpuMemCss}>{props.mem[0]['memory-stats']['available-percent']}</td>
                                     </tr>
                                     </tbody>                             
                                 </table>

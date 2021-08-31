@@ -1,9 +1,29 @@
-import {Chart, LineController, CategoryScale, LineElement, PointElement, LinearScale, Title, Legend } from "chart.js";
+import {Chart, LineController, CategoryScale, LineElement, PointElement, LinearScale, Title, Legend, BarController, BarElement } from "chart.js";
 import { Link } from "react-router-dom";
 import "datatables.net-dt/js/dataTables.dataTables"
 import "datatables.net-dt/css/jquery.dataTables.min.css"
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
+
+export function BarCharts(){
+        const config = {plugins: {
+                            legend: {
+                                display: false
+                                    },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+                                    }
+                                }]
+                            }
+                        }
+                    }
+}
+          
+        
+    
+
 
 export function CpuChartConfig() {
 
@@ -105,6 +125,73 @@ export function ChartConfig() {
 
     return config
 }
+
+export function BarChart(ctx, inbound, drops){
+    Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Legend, BarController, BarElement);
+    var chart = new Chart(ctx, {
+    type: 'bar',
+    options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+            },
+        ticks: {
+            color: "white"
+            },
+          },
+          x: {
+            grid: {
+                   borderColor: 'white',
+            },
+               ticks: {
+                   stepSize: 1,
+                   color: "white",
+                },
+               title: {
+                   display: false,
+                   text: 'Mbps',
+                   color: "white"
+   
+               }
+           }
+        }
+      },
+    data: {
+        labels: ['Mbps'],
+        datasets: [{
+            label: ['Mbps'],
+            data: [inbound],
+            backgroundColor: [
+                'rgba(144, 198, 149, 1)',
+
+            ],
+            borderColor: [
+                'rgba(30, 130, 76, 1)',
+            ],
+            borderWidth: 1,
+            barThickness: 80
+        }]
+    },
+    })
+
+return chart
+
+}
+
+
+export function BarChartUpdate(chart, data){
+
+    chart.data.labels.pop();
+    chart.data.labels.push('Rate');
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data.pop();
+        dataset.data.push(data);
+    })
+    
+    return chart
+}
+
 
 export function InitialChartBuild(ctx, response, responseTwo){
 
@@ -217,15 +304,16 @@ export function ArpTableHtml(tableRef) {
 
     return  <div>
                 <div className="col-12">
-                    <div class="table-responsive" style={{height: '550px'}}>
+                    <div class="table-responsive">
                             <table ref={tableRef} className="table  table-dark row-text" style={{width: '100%'}}>
                                 <thead class="thead-light">
                                     <tr>
                                         <th >Address</th>
-                                        <th >Type</th>
-                                        <th >MAC</th>
-                                        <th >Type</th>
+                                        <th >Encap Type</th>
+                                        <th >Mac</th>
+                                        <th >Mode</th>
                                         <th >Time</th>
+                                        <th >Link Type</th>
                                         <th >Vrf</th>    
                                     </tr>
                                 </thead>                               
@@ -234,6 +322,7 @@ export function ArpTableHtml(tableRef) {
                     </div>
                 </div>
     }
+
 
 export function EnvTableHtml(tableRef) {
 
@@ -396,16 +485,18 @@ export function InterfacesTableHtml(tableRef) {
         return  <div class="table-responsive">
                     <table ref={tableRef} className="table table-dark" style={{width: '100%'}}>
                         <thead>
-                            <tr style={{textAlign: 'center'}}>
+                            <tr>
                                 <th >Interface</th>
                                 <th >Status</th>
                                 <th >Description</th>
                                 <th >IP</th>
                                 <th >Mask</th>
+                                <th >Speed (Mbps)</th>
+                                <th >Qos Allocation</th>
                                 <th >Trans Band</th> 
                                 <th >RecieveBand</th>
-                                <th >TransPack</th>
-                                <th >RecievePack</th>                          
+                                <th >Qos Policy</th>
+                                <th >Policy Direction</th>                          
                             </tr>
                         </thead>                               
                     </table>

@@ -12,7 +12,7 @@ export  function Envirmoment(props){
   
   useEffect(() => {
     $(envTableRef.current).DataTable().clear()
-    //$(envTableRef.current).DataTable().rows.add(Object.values(props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']))
+    $(envTableRef.current).DataTable().rows.add(Object.values(props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']))
     $(envTableRef.current).DataTable().rows.add(Object.values(props.env))
     $(envTableRef.current).DataTable().draw(false)
     }, [props.env])
@@ -25,8 +25,7 @@ export  function Envirmoment(props){
               language: {
                 emptyTable: "No Environment Detected"
               },
-              //props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']
-              data: props.env,
+              data: props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor'],
               columns:  [
                 { data: 'name' },
                 { data: 'location' },
@@ -45,8 +44,8 @@ export  function Envirmoment(props){
                   //pass
               }
                 else if(aData['state'] !== 'Normal' || aData['state'] === 'GREEN'){
-                  $('td:eq(2)', nRow).addClass('env-row-text-warn')
-                  $('td:eq(3)', nRow).addClass('env-row-text-warn')
+                  $(nRow).addClass('env-row-text-warn')
+                  $(nRow).addClass('env-row-text-warn')
                 }
               }
               catch{}

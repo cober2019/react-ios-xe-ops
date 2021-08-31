@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { PollL2Page } from './promises'
-import { VlansData, TrunkData, AccessData, DpData } from './errorData'
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { DpNeighbors} from './dp_neighbors'
 import { Trunks} from './trunks'
 import { AccessPorts} from './accessPorts'
@@ -10,46 +9,63 @@ import { ErrorBoundary } from './errorBoundry';
 
 export  function LayerTwo(props){
   const [update, setUpdate] = useState(0)
+  const errorRef = useRef(false)
 
   useEffect(() => {
-    (async () => {
-      try{
-        //let indexData = await PollL2Page(localStorage.getItem('ip'), localStorage.getItem('username'), localStorage.getItem('password'), localStorage.getItem('port'))
-        //localStorage.setItem('trunks', JSON.stringify(indexData.data.trunks));
-        //localStorage.setItem('access', JSON.stringify(indexData.data.access));
-        //localStorage.setItem('dpNeighbors', JSON.stringify(indexData.data.dpNeighbors));
-        //localStorage.setItem('vlans', JSON.stringify(indexData.data.vlans));
-        localStorage.setItem('vlans', JSON.stringify(VlansData));
-        localStorage.setItem('trunks', JSON.stringify(TrunkData));
-        localStorage.setItem('access', JSON.stringify(AccessData));
-        localStorage.setItem('dpNeighbors', JSON.stringify(DpData));
+
+    const source = axios.CancelToken.source()
+
+    if(update !== 0){
+
+      axios.post('/pollL2Page', {cancelToken: source.token, headers: {'Content-Type': 'application/json'}, 'ip': 
+
+      localStorage.getItem('ip'), 
+      'username': localStorage.getItem('username'), 
+      'password': localStorage.getItem('password'), 
+      'port': localStorage.getItem('port')}).then(data => {
+
+        localStorage.setItem('trunks', JSON.stringify(data.data.trunks));
+        localStorage.setItem('access', JSON.stringify(data.data.access));
+        localStorage.setItem('dpNeighbors', JSON.stringify(data.data.dpNeighbors));
+        localStorage.setItem('vlans', JSON.stringify(data.data.vlans));
+        errorRef.current = false
         let render = update + 1
         setUpdate(render)
-      }
-      catch{
-        localStorage.setItem('trunks', JSON.stringify(ErrorDataL2));
-        localStorage.setItem('access', JSON.stringify(ErrorDataL2));
-        localStorage.setItem('dpNeighbors', JSON.stringify(ErrorDataL2));
-        localStorage.setItem('vlans', JSON.stringify(ErrorDataL2));
-        let render = update + 1
-        setUpdate(render)
-      }
-      })()
+
+      }).catch(() => {
+          errorRef.current = true
+          let render = update + 1
+          setUpdate(render)
+      });
+    }
+
+    return () => {
+      source.cancel()}
+
   }, [update])
   
 
 useEffect(() => {
-  localStorage.setItem('ip', props.ip);
-  localStorage.setItem('username', props.username);
-  localStorage.setItem('password', props.password);
-  localStorage.setItem('port', props.port);
-  let render = update + 1
-  setUpdate(render)
+  if(update === 0){
+    localStorage.setItem('ip', props.ip);
+    localStorage.setItem('username', props.username);
+    localStorage.setItem('password', props.password);
+    localStorage.setItem('port', props.port);
+    let render = update + 1
+    setUpdate(render)
+  }
+
+      
 }, [])
 
 
-
-if (localStorage.getItem('vlans') !== null){
+if (errorRef.current){
+  return  <div>
+            <Navbar update={update} ip={localStorage.getItem('ip')}/>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>Error Collecting Data</h4>
+        </div>
+}
+else if (update >= 2 && !errorRef.current){
   return <div className="container-fluid">
           <Navbar ip={localStorage.getItem('ip')}/>
           <div className="row">
@@ -78,20 +94,12 @@ if (localStorage.getItem('vlans') !== null){
 }
 else if (update < 2){
   return  <div>
-            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data</h4>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 Data</h4>
             <div class="loader text-center"></div>
         </div>
 }
-else if (update < 3){
 
-  return   <div>
-            <h4 class="text-center fade-in" style={{marginTop: 100}}>This Sure Is Slow</h4>
-            <div class="loader text-center"></div>
-          </div>
- 
 }
-
-  }
     
   
   

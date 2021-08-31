@@ -11,7 +11,6 @@ export  function Arps(props){
   $.fn.dataTable.ext.errMode = 'none';
 
   useEffect(() => {
-    console.log(props.arps)
     try{
         $(arpTableRef.current).DataTable().clear()
         $(arpTableRef.current).DataTable().rows.add(props.arps)
@@ -22,7 +21,7 @@ export  function Arps(props){
   }, [props.arps])
   
   useEffect(() => {
-    console.log(props.arps)
+    $(arpTableRef.current).DataTable().destroy()
     try{
         $(arpTableRef.current).DataTable({
           data: props.arps,
@@ -31,10 +30,11 @@ export  function Arps(props){
           },
           columns:  [
             { data: 'address' },
+            { data: 'enctype' },
             { data: 'hardware' },
             { data: 'mode' },
-            { data: 'type' },
             { data: 'time' },
+            { data: 'type' },
             { data: 'vrf' }
         ]});
         setChartStatus(true)
@@ -50,4 +50,3 @@ export  function Arps(props){
             </div>
         </div>
   }
-  
