@@ -201,8 +201,6 @@ def _map_queues(i, policy) -> list:
 def convert_to_mbps(interface):
     """Convert Kbps to Mbps"""
 
-    interface['statistics']['tx-kbps'] = random.randint(0,9)
-    interface['statistics']['rx-kbps'] = random.randint(0,9)
     if interface['oper-status'] == 'if-oper-state-ready':
         interface['oper-status'] = 'up'
     else:
