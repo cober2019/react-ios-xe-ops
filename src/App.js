@@ -32,11 +32,14 @@ function App() {
                                                   port={localStorage.getItem('port')} 
                                                   />)}/>
 
-          <Route path="/" render={props => (<Index username={'developer'} 
-                                                  password={'C1sco12345'} 
-                                                  ip={'sandbox-iosxe-latest-1.cisco.com'} 
-                                                  port={443} 
+          <Route path="/index" render={props => (<Index username={localStorage.getItem('username')} 
+                                                  password={localStorage.getItem('password')} 
+                                                  ip={localStorage.getItem('ip')} 
+                                                  port={localStorage.getItem('port')} 
                                                   />)}/>
+                                                    
+          <Route path="/logout" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
+          <Route path="/" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
          
         </Switch>
     </Router>
