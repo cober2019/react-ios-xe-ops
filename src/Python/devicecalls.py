@@ -86,7 +86,7 @@ def get_interfaces(ip, port, username, password) -> dict:
         except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
             for interface in interface_data:
                 convert_bandwidth = convert_to_mbps(interface)
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth}
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'qos': []}
 
     return data
 
