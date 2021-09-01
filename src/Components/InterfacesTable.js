@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { InterfacesTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 export  function InterfaceTable(props){
-  const [chartStatus, setChartStatus] = useState(false)
   const interfacesTableRef = React.createRef()
   const interfacestable = InterfacesTableHtml(interfacesTableRef)
   $.fn.dataTable.ext.errMode = 'none';
   
   useEffect(() => {
-    $(interfacesTableRef.current).DataTable().clear()
-    $(interfacesTableRef.current).DataTable().rows.add(Object.values(props.interfaces))
-    $(interfacesTableRef.current).DataTable().draw(false)
+    if(interfacesTableRef.current !== null){
+      $(interfacesTableRef.current).DataTable().clear()
+      $(interfacesTableRef.current).DataTable().rows.add(Object.values(props.interfaces))
+      $(interfacesTableRef.current).DataTable().draw(false)
+    }
 
     }, [props.interfaces])
 
 
   useEffect(() => {
     $(interfacesTableRef.current).DataTable().destroy()
-    try{
       $(interfacesTableRef.current).DataTable({
         data: Object.values(props.interfaces),
         language: {
@@ -64,14 +64,7 @@ export  function InterfaceTable(props){
           catch(e){
             console.log(e)
           }
-      
-      
       }});
-
-    }
-  catch{}
-  setChartStatus(true)
-
 }, [])
 
   return  <div className="col-12">

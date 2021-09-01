@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { AccessTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 export  function AccessPorts(props){
-  const [chartStatus, setChartStatus] = useState(false)
   const accesssTableRef = React.createRef()
   const accessstable = AccessTableHtml(accesssTableRef)
   $.fn.dataTable.ext.errMode = 'none';
 
 
   useEffect(() => {
-    $(accesssTableRef.current).DataTable().clear()
-    $(accesssTableRef.current).DataTable().rows.add(Object.values(props.ports))
-    $(accesssTableRef.current).DataTable().draw(false)
+    if(accesssTableRef.current !== null){
+      $(accesssTableRef.current).DataTable().clear()
+      $(accesssTableRef.current).DataTable().rows.add(Object.values(props.ports))
+      $(accesssTableRef.current).DataTable().draw(false)
+    }
     }, [props.ports])
 
 
   useEffect(() => {
         $(accesssTableRef.current).DataTable().destroy()
-        try{
+        
           $(accesssTableRef.current).DataTable({
             data: props.ports,
             language: {
@@ -33,17 +34,20 @@ export  function AccessPorts(props){
               { data: 'mbpsIn' }
           ],
           fnRowCallback: function (nRow, aData) {
+            try{
             //Change Back to 'ready'
-            if(aData['status'].includes('up')){
+            if(aData['status'].includes('ready')){
+                $('td:eq(2)', nRow).html('up')
                 $('td:eq(2)', nRow).addClass('env-row-text')
             }
             else{
+              $('td:eq(2)', nRow).html('down')
               $('td:eq(2)', nRow).addClass('env-row-text-warn')
             }
-            }})
+          }
+            catch{}
         }
-      catch{}
-      setChartStatus(true)
+            });
   }, [])
 
   return  <div className="col-12">

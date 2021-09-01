@@ -58,8 +58,7 @@ useEffect(() => {
     localStorage.setItem('username', props.username);
     localStorage.setItem('password', props.password);
     localStorage.setItem('port', props.port);
-    let render = update + 1
-    setUpdate(render)
+    setUpdate(1)
   }
 
 }, [])
@@ -108,7 +107,6 @@ else if (update >= 2  && !errorRef.current){
                                   <InterfaceTable interfaces={JSON.parse(localStorage.getItem('interfaces'))}/>
                                 </ErrorBoundary>
                               </div> 
-
                               <div class="tab-pane " id="qos" role="tabpanel">
                                 <div className="row">
                                 { Object.values(JSON.parse(localStorage.getItem('interfaces'))).map(value =>

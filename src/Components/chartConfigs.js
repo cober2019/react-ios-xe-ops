@@ -367,9 +367,9 @@ export function CpuTableHtml(tableRef) {
 export function MemTableHtml(tableRef) {
 
     return  <div class="table-responsive">
-                        <table ref={tableRef} className="table table-dark row-text" style={{width: '100%'}}>
+                        <table ref={tableRef} className="table table-dark row-text"  style={{width: '100%'}}>
                             <thead class="thead-light">
-                                <tr style={{textAlign: 'center'}}>
+                                <tr>
                                     <th >Total</th>
                                     <th >Used</th>
                                     <th >Used%</th>

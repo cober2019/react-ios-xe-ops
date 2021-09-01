@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { UpdateCpuChart, InitialCpuChartBuild, CpuTableHtml, MemTableHtml } from './chartConfigs';
+import React, { useEffect, useRef} from 'react';
+import { UpdateCpuChart, CpuTableHtml, MemTableHtml, InitialCpuChartBuild } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 
 export function CpuUsage(props){
-    const [chart, setChart] = useState(false)
-    const [error, setError] = useState(false)
+    const cpuChart = useRef(null)
     const cpuTableRef = React.createRef()
     const proccessRef = React.createRef()
+    const memRef = React.createRef()
+    const memTable = MemTableHtml(memRef);
     const proccessTable = CpuTableHtml(proccessRef);
     $.fn.dataTable.ext.errMode = 'none';
 
-    if(parseInt(props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 1 || props.mem[0]['memory-stats']['memory-status'] !== 'Healthy'){
+    if(parseInt(props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 25 || props.mem['memory-status'] !== 'Healthy'){
         var cpuMemCss = {color: 'orange', textAlign: 'center', fontSize: 40}
     }
     else{
@@ -20,28 +21,31 @@ export function CpuUsage(props){
     }
 
     useEffect(() => {
-        if(chart){
-            let updatedChart = UpdateCpuChart(chart, props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
-            setChart(updatedChart)
+
+        if(cpuChart.current !== null){
+            let updatedChart = UpdateCpuChart(cpuChart.current, props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
+            cpuChart.current = updatedChart
             updatedChart.update()
         }
+
         try{
             $(proccessRef.current).DataTable().clear()
             $(proccessRef.current).DataTable().rows.add(props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'])
             $(proccessRef.current).DataTable().draw(false)
+            $(memRef.current).DataTable().clear()
+            $(memRef.current).DataTable().rows.add(props.mem)
           }
           catch(e){
             console.log(e)
           }
+
       }, [props.cpu, props.mem])
       
     
     useEffect(() => {
-        
-        try{
-            var chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
-        }
-        catch{}
+
+        let chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
+        cpuChart.current = chart
 
         $(proccessRef.current).DataTable().destroy()
         $(proccessRef.current).DataTable({
@@ -72,15 +76,29 @@ export function CpuUsage(props){
                     }
                 catch{}
             }})
-
-        setChart(chart)
-
+        
+            $(memRef.current).DataTable().destroy()
+            $(memRef.current).DataTable({
+                language: {
+                    emptyTable: "No CPU Processes Found"
+                },
+                data: [props.mem],
+                columns:  [
+                    { data: 'total'},
+                    { data: 'used-number' },
+                    { data: 'used-percent' },
+                    { data: 'free-number' },
+                    { data: 'free-percent' },
+                    { data: 'available-number' },
+                    { data: 'available-percent'},
+                ],});
+        
     }, [])
 
     return <div className="col-12">
             <div className="card text-white bg-dark">
                 <div className="card-body">
-                    <h4 class="card-title mb-3">CPU/Memory Statistics</h4>
+                    <h4 class="card-title mb-3">CPU/Memory Summary</h4>
                     <div className="row" style={{marginTop: '20px'}}>
                         <div className="col-7">
                             <div className="row" style={{height: "225px"}}>
@@ -106,7 +124,7 @@ export function CpuUsage(props){
                                         <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
                                         <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
                                         <td href="#" style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
-                                        <td style={cpuMemCss}>{props.mem[0]['memory-stats']['available-percent']}</td>
+                                        <td style={cpuMemCss}>{props.mem['used-percent']}</td>
                                     </tr>
                                     </tbody>                             
                                 </table>
@@ -117,6 +135,17 @@ export function CpuUsage(props){
             </div>
             <div className="card bg-dark mt-3">
                 <div className="card-body">
+                <h4 class="card-title mb-3">Memory Statistics</h4>
+                    <div className="row">
+                        <div className="col-12">
+                            {memTable}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="card bg-dark mt-3">
+                <div className="card-body">
+                <h4 class="card-title mb-3">CPU Processes</h4>
                     <div className="row">
                         <div className="col-12">
                             {proccessTable}

@@ -1,76 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { InitialChartBuild, UpdateChart, ArpTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 
 export  function InterfaceCard(props){
-  const [chart, setChart] = useState(undefined)
-  const [chartStatus, setChartStatus] = useState(false)
-  const [arpCount, setArpCount] = useState(0)
-  const [showArp, setShowArp]= useState(false)
+  const interfacesChart = useRef(null)
   const interfacesRef = React.createRef()
-  const arpTableRef = React.createRef()
-  const table = ArpTableHtml(arpTableRef)
   $.fn.dataTable.ext.errMode = 'none';
 
   useEffect(() => {
-    if(chart){
-      let updatedChart = UpdateChart(chart, parseInt(props.value['statistics']['tx-kbps']),parseInt(props.value['statistics']['rx-kbps']));
+    if(interfacesChart.current !== null){
+      let updatedChart = UpdateChart(interfacesChart.current, parseInt(props.value['statistics']['tx-kbps']),parseInt(props.value['statistics']['rx-kbps']));
       updatedChart.update()
-      setChart(updatedChart)
+      interfacesChart.current = updatedChart
     }
     
-  }, [props.arps])
+  }, [props.value])
   
 
   useEffect(() => {
-    if(chartStatus !== true){
-      var chart = InitialChartBuild(interfacesRef.current.getContext('2d'), parseInt(props.value['statistics']['tx-kbps']), parseInt(props.value['statistics']['rx-kbps']));
-      setChart(chart)
-      }
-
+      let chart = InitialChartBuild(interfacesRef.current.getContext('2d'), parseInt(props.value['statistics']['tx-kbps']), parseInt(props.value['statistics']['rx-kbps']));
+      interfacesChart.current = chart
   }, [])
 
   
-  const getArps = (value) => {
-
-    if(value){
-      $(arpTableRef.current).DataTable().destroy()
-        if(props.arps.length !== 0)
-          try{
-            $(arpTableRef.current).DataTable({
-              dom: 
-              "<'row'<'col-sm-12'tr>>" +
-              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              data: props.arps,
-              pagingType: "full_numbers",
-              columns:  [
-                { data: 'address' },
-                { data: 'hardware' },
-                { data: 'mode' },
-                { data: 'type' },
-                { data: 'time' }
-            ],
-            fnRowCallback: function (nRow) {$(nRow).addClass('row-text')}});
-          }
-        catch{}
-
-      setShowArp(true)
-    }
-    else{
-      setShowArp(false)
-    }
-  }
-
   return <div className="col-xl-4">
             <div className="card text-white bg-dark mt-3 border-0">
                       <div className="card-body">
                       <h4 class="card-title text-center">{props.value.name}</h4>
                       <br/>
-                      {showArp ? <div onClick={(e) => getArps(false, e)} className="overlay">{table}</div>: 
-                      <div hidden>{table}</div>
-                      }
                       <div className="row">
                         <canvas ref={interfacesRef} heistyle={{height: "100px"}}/>
                       </div>
@@ -95,7 +54,6 @@ export  function InterfaceCard(props){
                               <p className="card-text">CRC: {props.value['statistics']['in-crc-errors']}</p>
                               <p className="card-text">InDis: {props.value['statistics']['num-flaps']}</p>
                               <p className="card-text">LastChange: {props.value['statistics']['discontinuity-time'].split('.')[0]}</p>
-                              <a className="card-text" href="#" onClick={(e) => getArps(true, e)}>ARP Entries: <span style={{color: 'white'}}>{arpCount}</span></a>
                               <p className="card-text">Qos/Direction: {props.qos['policy']} - {props.qos['direction']}</p>
                             </div>
                           </div>

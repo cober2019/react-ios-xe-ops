@@ -44,7 +44,7 @@ export  function Qos(props){
       <h6 class="card-title mt-3">Allocation: {props.qos.allocation}</h6>
       <div className="row">
         { props.qos.queues.map(queueDetails => (
-          <div className="col-sm">
+          <div className="col-2">
             <ErrorBoundary>
                 <QosChart queue={queueDetails}/>
             </ErrorBoundary>

@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { TrunkTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 export  function Trunks(props){
-  const [chart, setChart] = useState(undefined)
-  const [chartStatus, setChartStatus] = useState(false)
   const trunksTableRef = React.createRef()
   const trunkstable = TrunkTableHtml(trunksTableRef)
 
   useEffect(() => {
-    $(trunksTableRef.current).DataTable().clear()
-    $(trunksTableRef.current).DataTable().rows.add(Object.values(props.ports))
-    $(trunksTableRef.current).DataTable().draw(false)
+    if(trunksTableRef.current !== null){
+      $(trunksTableRef.current).DataTable().clear()
+      $(trunksTableRef.current).DataTable().rows.add(Object.values(props.ports))
+      $(trunksTableRef.current).DataTable().draw(false)
+    }
     }, [props.ports])
 
   useEffect(() => {
         $(trunksTableRef.current).DataTable().destroy()
-        try{
           $(trunksTableRef.current).DataTable({
             data: props.ports
             ,language: {
@@ -33,20 +32,19 @@ export  function Trunks(props){
           fnRowCallback: function (nRow, aData) {
             try{
               //Change Back to 'ready'
-              if(aData['status'].includes('up')){
+              if(aData['status'].includes('ready')){
+                  $('td:eq(2)', nRow).html('up')
                   $('td:eq(2)', nRow).addClass('env-row-text')
               }
               else{
+                $('td:eq(2)', nRow).html('down')
                 $('td:eq(2)', nRow).addClass('env-row-text-warn')
               }
             }
             catch{}
           }});
-        }
-      catch{}
-      setChartStatus(true)
 
-  }, [])
+      }, [])
 
   return  <div className="col-12">
           <div className="card text-white bg-dark">

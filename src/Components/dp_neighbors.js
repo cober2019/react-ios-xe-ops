@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { CdpTableHtml, LldpTableHtml } from './chartConfigs';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 export  function DpNeighbors(props){
-  const [chart, setChart] = useState(undefined)
-  const [chartStatus, setChartStatus] = useState(false)
   const cdpTableRef = React.createRef()
   const cdptable = CdpTableHtml(cdpTableRef)
   const lldpTableRef = React.createRef()
@@ -13,29 +11,16 @@ export  function DpNeighbors(props){
   $.fn.dataTable.ext.errMode = 'none';
 
   useEffect(() => {
-    try{
+    if(cdpTableRef.current !== null){
       $(cdptable.current).DataTable().clear()
       $(cdptable.current).DataTable().rows.add(props.dpNeighbors[0]['Cisco-IOS-XE-cdp-oper:cdp-neighbor-details']['cdp-neighbor-detail'])
       $(cdptable.current).DataTable().draw(false)
     }
-    catch(e){
-      console.log(e)
-    }
-
-    try{
-      if(props.dpNeighbors[1]['Cisco-IOS-XE-lldp-oper:lldp-entries'].length == 0){
-        $(lldpTableRef.current).DataTable().clear()
-        $(lldpTableRef.current).DataTable().rows.add([[]])
-        $(lldpTableRef.current).DataTable().draw(false)
-      }
-      else{
-        $(lldpTableRef.current).DataTable().clear()
-        $(lldpTableRef.current).DataTable().rows.add(props.dpNeighbors[1]['Cisco-IOS-XE-lldp-oper:lldp-entries']['lldp-entry'])
-        $(lldpTableRef.current).DataTable().draw(false)
-      }
-    }
-    catch(e){
-      console.log(e)
+    
+    if(lldpTableRef.current !== null){
+      $(lldpTableRef.current).DataTable().clear()
+      $(lldpTableRef.current).DataTable().rows.add(props.dpNeighbors[1]['Cisco-IOS-XE-lldp-oper:lldp-entries']['lldp-entry'])
+      $(lldpTableRef.current).DataTable().draw(false)
     }
     }, [props.dp])
 
@@ -76,8 +61,6 @@ export  function DpNeighbors(props){
           ]});
         }
       catch{}
-    setChart(chart)
-    setChartStatus(true)
       
   }, [])
     return   <div className="col-12">
