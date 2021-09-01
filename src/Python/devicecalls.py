@@ -144,7 +144,11 @@ def _get_qos_bandwidth(policy) -> list:
         try:
             if isinstance(queue.get('action-list', {}), list):
                 allocation = [_allocation_type(action) for action in queue.get('action-list', {})]
-                parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[1]})
+              
+                if len(allocation) == 1 and str(allocation) != '[(\'---\', \'---\')]':
+                    parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[0][1]})
+                elif len(allocation) == 2:
+                    parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[1]})
         except IndexError:
             pass
 
