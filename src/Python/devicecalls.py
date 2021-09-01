@@ -141,9 +141,12 @@ def _get_qos_bandwidth(policy) -> list:
 
     #Get parent policy actions and action type. ie.e bandwdith, service-policy, fair-queue etc.
     for queue in policy.get('Cisco-IOS-XE-policy:policy-map', {}).get('class', {}):
-        if isinstance(queue.get('action-list', {}), list):
-            allocation = [_allocation_type(action) for action in queue.get('action-list', {})]
-            parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[1]})
+        try:
+            if isinstance(queue.get('action-list', {}), list):
+                allocation = [_allocation_type(action) for action in queue.get('action-list', {})]
+                parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[1]})
+        except IndexError:
+            pass
 
     return parent_queues
 
