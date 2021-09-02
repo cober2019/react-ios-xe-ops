@@ -3,8 +3,6 @@ IOS-XE-Ops
 
 **! This code is not complete but is functional !**
  
-Layer 2 page isn't currently in routing but the components are  available for viewing
-
 Not into web apps, look in the Python folder for basic prints from the programs rest calls
 
 SnapShots:
