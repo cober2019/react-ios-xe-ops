@@ -48,51 +48,57 @@ export function CpuUsage(props){
         let chart = InitialCpuChartBuild(cpuTableRef.current.getContext('2d'), props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds'])
         cpuChart.current = chart
 
-        $(proccessRef.current).DataTable().destroy()
-        $(proccessRef.current).DataTable({
-            data: props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
-            language: {
-                emptyTable: "No CPU Processes Found"
-              },
-            columns:  [
-                { data: 'name' },
-                { data: 'total-run-time' },
-                { data: 'avg-run-time' },
-                { data: 'five-seconds' },
-                { data: 'one-minute' },
-                { data: 'five-minutes' }
-            ],
-            
-            fnRowCallback: function (nRow, aData) {
-                try{
-                    if(parseFloat(aData['five-seconds']) > 25 ){
-                        $('td:eq(3)', nRow).addClass('env-row-text-warn')
-                        }
-                    if(parseFloat(aData['one-minute']) > 25 ){
-                        $('td:eq(4)', nRow).addClass('env-row-text-warn')
-                        }
-                    if(parseFloat(aData['five-minutes']) > 25 ){
-                        $('td:eq(5)', nRow).addClass('env-row-text-warn')
-                        }
-                    }
-                catch{}
-            }})
-        
-            $(memRef.current).DataTable().destroy()
-            $(memRef.current).DataTable({
+        try{
+            $(proccessRef.current).DataTable().destroy()
+            $(proccessRef.current).DataTable({
+                data: props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'],
                 language: {
                     emptyTable: "No CPU Processes Found"
                 },
-                data: [props.mem],
                 columns:  [
-                    { data: 'total'},
-                    { data: 'used-number' },
-                    { data: 'used-percent' },
-                    { data: 'free-number' },
-                    { data: 'free-percent' },
-                    { data: 'available-number' },
-                    { data: 'available-percent'},
-                ],});
+                    { data: 'name' },
+                    { data: 'total-run-time' },
+                    { data: 'avg-run-time' },
+                    { data: 'five-seconds' },
+                    { data: 'one-minute' },
+                    { data: 'five-minutes' }
+                ],
+                
+                fnRowCallback: function (nRow, aData) {
+                    try{
+                        if(parseFloat(aData['five-seconds']) > 25 ){
+                            $('td:eq(3)', nRow).addClass('env-row-text-warn')
+                            }
+                        if(parseFloat(aData['one-minute']) > 25 ){
+                            $('td:eq(4)', nRow).addClass('env-row-text-warn')
+                            }
+                        if(parseFloat(aData['five-minutes']) > 25 ){
+                            $('td:eq(5)', nRow).addClass('env-row-text-warn')
+                            }
+                        }
+                    catch{}
+                }})
+            }
+            catch{}
+                
+            try{
+                $(memRef.current).DataTable().destroy()
+                $(memRef.current).DataTable({
+                    language: {
+                        emptyTable: "No CPU Processes Found"
+                    },
+                    data: [props.mem],
+                    columns:  [
+                        { data: 'total'},
+                        { data: 'used-number' },
+                        { data: 'used-percent' },
+                        { data: 'free-number' },
+                        { data: 'free-percent' },
+                        { data: 'available-number' },
+                        { data: 'available-percent'},
+                    ],});
+                }
+                catch{}
         
     }, [])
 

@@ -41,7 +41,7 @@ export  function MacTable(props){
   return  <div className="col-12">
             <div className="card  bg-dark mt-3">
                 <div className="card-body">
-                <h4 class="card-title mb-3">MAC-Addresses</h4>
+                <h4 class="card-title mb-3">Mac-Addresses</h4>
                   {macTable}
                 </div>
               </div>

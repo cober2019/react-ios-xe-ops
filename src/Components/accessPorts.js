@@ -23,7 +23,6 @@ export  function AccessPorts(props){
 
   useEffect(() => {
         $(accesssTableRef.current).DataTable().destroy()
-        
           $(accesssTableRef.current).DataTable({
             data: props.ports,
             language: {

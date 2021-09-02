@@ -6,6 +6,7 @@ $.DataTable = require('datatables.net');
 export  function Trunks(props){
   const trunksTableRef = React.createRef()
   const trunkstable = TrunkTableHtml(trunksTableRef)
+  console.log(props.ports, 'yes')
 
   useEffect(() => {
     if(trunksTableRef.current !== null){
