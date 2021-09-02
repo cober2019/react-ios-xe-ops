@@ -86,7 +86,7 @@ def get_interfaces(ip, port, username, password) -> dict:
         except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
             for interface in interface_data:
                 convert_bandwidth = convert_to_mbps(interface)
-                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'qos': []}
+                data[interface.get('name')] = {'interface': interface.get('name'), 'data': convert_bandwidth, 'qos': [[]]}
 
     return data
 
@@ -144,7 +144,7 @@ def _get_qos_bandwidth(policy) -> list:
         try:
             if isinstance(queue.get('action-list', {}), list):
                 allocation = [_allocation_type(action) for action in queue.get('action-list', {})]
-              
+                print(allocation)
                 if len(allocation) == 1 and str(allocation) != '[(\'---\', \'---\')]':
                     parent_queues.append({'queue': queue.get('name'), 'allocation': allocation[0][0], 'type': allocation[0][1]})
                 elif len(allocation) == 2:
@@ -186,7 +186,6 @@ def _map_queues(i, policy) -> list:
     # Check if policy type is service policy. When then can get our queue detiials
     if 'service-policy' in i.get('type'):
         for queue in policy.get('diffserv-target-classifier-stats', {}):
-            print(queue)
             #Parent path provided allows use to check if the queue is a child queue. 1st path part is Parent Policy, second is a paren queue, anything after is child
             if len(queue.get('parent-path').split()) != 2:
                 queues.append({'queue-name': queue.get('classifier-entry-name'), 'parent': " ".join(queue.get('parent-path').split(" ")[0:2]),
@@ -208,6 +207,8 @@ def _map_queues(i, policy) -> list:
 def convert_to_mbps(interface):
     """Convert Kbps to Mbps"""
 
+    interface['statistics']['tx-kbps'] = random.randint(0,9)
+    interface['statistics']['rx-kbps'] = random.randint(0,9)
     if interface['oper-status'] == 'if-oper-state-ready':
         interface['oper-status'] = 'up'
     else:
@@ -237,16 +238,18 @@ def get_cpu_usages(ip, port, username, password):
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-platform-software-oper:cisco-platform-software/control-processes/control-process"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         memory_stats = json.loads(response.text)
+        print(memory_stats.get('Cisco-IOS-XE-platform-software-oper:control-process')[0].get('memory-stats', {}))
 
         check_error = _check_api_error(cpu_stats)
 
         if check_error:
             raise AttributeError
 
-        memory_stats = memory_stats.get('memory-stats').get('memory-status')
+        memory_stats = memory_stats.get('Cisco-IOS-XE-platform-software-oper:control-process')[0].get('memory-stats', {})
 
-    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        memory_stats = [{'memory-stats': {'memory-status': 'Unknown'}}]
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError) as e:
+        print(e)
+        memory_stats = {'memory-status': '?'}
     
     return cpu_stats, memory_stats
 
@@ -315,16 +318,20 @@ def get_components(ip, port, username, password):
 def get_bridge(ip, port, username, password):
     """Gets device components /restconf/data/openconfig-platform:components"""
 
-    data = {}
+    mac_table = []
 
     try:
-        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-bridge-oper:bridge-matm-entry"
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-matm-oper:matm-oper-data"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         data = json.loads(response.text)
+        for i in data['Cisco-IOS-XE-matm-oper:matm-oper-data']['matm-table']:
+            if i.get('matm-mac-entry', {}):
+                [mac_table.append(i) for i in i.get('matm-mac-entry', {})]
+                
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
         pass
 
-    return data
+    return mac_table
 
 
 def get_dp_neighbors(ip, port, username, password):
@@ -400,7 +407,6 @@ def get_switch(ip, port, username, password):
     data = {}
     trunk =[]
     access = []
-
     try:
         interfaces_configs = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/interface"
         interface_status = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
