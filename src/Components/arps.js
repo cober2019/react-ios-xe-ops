@@ -11,9 +11,12 @@ export  function Arps(props){
 
   useEffect(() => {
     if(arpTableRef.current !== null){
-      $(arpTableRef.current).DataTable().clear()
-      $(arpTableRef.current).DataTable().rows.add(props.arps)
-      $(arpTableRef.current).DataTable().draw(false)
+      try{
+        $(arpTableRef.current).DataTable().clear()
+        $(arpTableRef.current).DataTable().rows.add(props.arps)
+        $(arpTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
 
   }, [props.arps])

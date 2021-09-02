@@ -10,9 +10,12 @@ export  function InterfaceTable(props){
   
   useEffect(() => {
     if(interfacesTableRef.current !== null){
-      $(interfacesTableRef.current).DataTable().clear()
-      $(interfacesTableRef.current).DataTable().rows.add(Object.values(props.interfaces))
-      $(interfacesTableRef.current).DataTable().draw(false)
+      try{
+        $(interfacesTableRef.current).DataTable().clear()
+        $(interfacesTableRef.current).DataTable().rows.add(Object.values(props.interfaces))
+        $(interfacesTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
 
     }, [props.interfaces])

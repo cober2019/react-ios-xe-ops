@@ -22,7 +22,7 @@ export  function Vlans(props){
         ]});
   }, [])
 
-  return  <div className="col-xl-6">
+  return  <div className="col-xl-7">
             <div className="card text-white bg-dark">
               <div className="card-body">
               <h4 class="card-title mb-3">Vlans</h4>

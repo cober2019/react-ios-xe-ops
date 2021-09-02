@@ -9,18 +9,26 @@ export  function DpNeighbors(props){
   const lldpTableRef = React.createRef()
   const lldptable = LldpTableHtml(lldpTableRef)
   $.fn.dataTable.ext.errMode = 'none';
+  console.log(props.dpNeighbors)
 
   useEffect(() => {
     if(cdpTableRef.current !== null){
-      $(cdptable.current).DataTable().clear()
-      $(cdptable.current).DataTable().rows.add(props.dpNeighbors[0]['Cisco-IOS-XE-cdp-oper:cdp-neighbor-details']['cdp-neighbor-detail'])
-      $(cdptable.current).DataTable().draw(false)
+      try{
+        $(cdptable.current).DataTable().clear()
+        $(cdptable.current).DataTable().rows.add(props.dpNeighbors[0]['Cisco-IOS-XE-cdp-oper:cdp-neighbor-details']['cdp-neighbor-detail'])
+        $(cdptable.current).DataTable().draw(false)
+      }
+      catch{}
     }
+
     
     if(lldpTableRef.current !== null){
-      $(lldpTableRef.current).DataTable().clear()
-      $(lldpTableRef.current).DataTable().rows.add(props.dpNeighbors[1]['Cisco-IOS-XE-lldp-oper:lldp-entries']['lldp-entry'])
-      $(lldpTableRef.current).DataTable().draw(false)
+      try{
+        $(lldpTableRef.current).DataTable().clear()
+        $(lldpTableRef.current).DataTable().rows.add(props.dpNeighbors[1]['Cisco-IOS-XE-lldp-oper:lldp-entries']['lldp-entry'])
+        $(lldpTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
     }, [props.dp])
 
@@ -44,7 +52,7 @@ export  function DpNeighbors(props){
           ],});
         }
       catch{}
-
+      
       $(lldpTableRef.current).DataTable().destroy()
         try{
           $(lldpTableRef.current).DataTable({

@@ -23,9 +23,12 @@ export function CpuUsage(props){
     useEffect(() => {
 
         if(cpuChart.current !== null){
-            let updatedChart = UpdateCpuChart(cpuChart.current, props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
-            cpuChart.current = updatedChart
-            updatedChart.update()
+            try{
+                let updatedChart = UpdateCpuChart(cpuChart.current, props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']);
+                cpuChart.current = updatedChart
+                updatedChart.update()
+            }
+            catch{}
         }
 
         try{
@@ -35,9 +38,7 @@ export function CpuUsage(props){
             $(memRef.current).DataTable().clear()
             $(memRef.current).DataTable().rows.add(props.mem)
           }
-          catch(e){
-            console.log(e)
-          }
+          catch{}
 
       }, [props.cpu, props.mem])
       

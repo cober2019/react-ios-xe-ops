@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { DpNeighbors} from './dp_neighbors'
+import { MacTable} from './macAddress'
 import { Trunks} from './trunks'
 import { AccessPorts} from './accessPorts'
 import { Vlans} from './vlans'
@@ -25,6 +26,7 @@ export  function LayerTwo(props){
       'port': localStorage.getItem('port')}).then(data => {
 
         localStorage.setItem('trunks', JSON.stringify(data.data.trunks));
+        localStorage.setItem('macs', JSON.stringify(data.data.mac_addresses));
         localStorage.setItem('access', JSON.stringify(data.data.access));
         localStorage.setItem('dpNeighbors', JSON.stringify(data.data.dpNeighbors));
         localStorage.setItem('vlans', JSON.stringify(data.data.vlans));
@@ -77,7 +79,7 @@ else if (update >= 2 && !errorRef.current){
               <ErrorBoundary>
                 <Vlans vlans={JSON.parse(localStorage.getItem('vlans'))}/>
               </ErrorBoundary>
-              <div className="col-xl-6">
+              <div className="col-xl-5">
                 <div className="row">
                   <ErrorBoundary>
                     <Trunks ports={JSON.parse(localStorage.getItem('trunks'))}/>
@@ -87,6 +89,11 @@ else if (update >= 2 && !errorRef.current){
                   <ErrorBoundary>
                     <AccessPorts ports={JSON.parse(localStorage.getItem('access'))}/>
                   </ErrorBoundary>
+                  <div className='row'>
+                  <ErrorBoundary>
+                    <MacTable macs={JSON.parse(localStorage.getItem('macs'))}/>
+                  </ErrorBoundary>
+                </div>
                 </div>
               </div>
             </div>

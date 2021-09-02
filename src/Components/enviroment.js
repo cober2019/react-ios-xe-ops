@@ -10,10 +10,13 @@ export  function Envirmoment(props){
   
   useEffect(() => {
     if(envTableRef.current !== null){
-      $(envTableRef.current).DataTable().clear()
-      $(envTableRef.current).DataTable().rows.add(Object.values(props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']))
-      $(envTableRef.current).DataTable().rows.add(Object.values(props.env))
-      $(envTableRef.current).DataTable().draw(false)
+      try{  
+        $(envTableRef.current).DataTable().clear()
+        $(envTableRef.current).DataTable().rows.add(Object.values(props.env['Cisco-IOS-XE-environment-oper:environment-sensors']['environment-sensor']))
+        $(envTableRef.current).DataTable().rows.add(Object.values(props.env))
+        $(envTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
     }, [props.env])
 

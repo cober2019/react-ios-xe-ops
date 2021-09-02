@@ -9,9 +9,12 @@ export  function Trunks(props){
 
   useEffect(() => {
     if(trunksTableRef.current !== null){
-      $(trunksTableRef.current).DataTable().clear()
-      $(trunksTableRef.current).DataTable().rows.add(Object.values(props.ports))
-      $(trunksTableRef.current).DataTable().draw(false)
+      try{
+        $(trunksTableRef.current).DataTable().clear()
+        $(trunksTableRef.current).DataTable().rows.add(Object.values(props.ports))
+        $(trunksTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
     }, [props.ports])
 

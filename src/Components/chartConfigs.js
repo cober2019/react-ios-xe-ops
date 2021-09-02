@@ -364,6 +364,23 @@ export function CpuTableHtml(tableRef) {
                     </div>
     }
 
+export function MacTableHtml(tableRef) {
+
+        return <div class="table-responsive">
+                            <table ref={tableRef} className="table table-dark row-text" style={{width: '100%'}}>
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th >Vlan</th>
+                                        <th >MAC</th>
+                                        <th >Type</th>
+                                        <th >Port</th>       
+                                    </tr>
+                                </thead>                               
+                            </table>
+                        </div>
+        }
+    
+
 export function MemTableHtml(tableRef) {
 
     return  <div class="table-responsive">

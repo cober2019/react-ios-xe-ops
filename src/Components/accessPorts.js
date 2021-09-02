@@ -11,9 +11,12 @@ export  function AccessPorts(props){
 
   useEffect(() => {
     if(accesssTableRef.current !== null){
-      $(accesssTableRef.current).DataTable().clear()
-      $(accesssTableRef.current).DataTable().rows.add(Object.values(props.ports))
-      $(accesssTableRef.current).DataTable().draw(false)
+      try{
+        $(accesssTableRef.current).DataTable().clear()
+        $(accesssTableRef.current).DataTable().rows.add(Object.values(props.ports))
+        $(accesssTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
     }, [props.ports])
 

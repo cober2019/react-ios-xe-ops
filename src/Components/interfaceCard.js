@@ -11,17 +11,23 @@ export  function InterfaceCard(props){
 
   useEffect(() => {
     if(interfacesChart.current !== null){
-      let updatedChart = UpdateChart(interfacesChart.current, parseInt(props.value['statistics']['tx-kbps']),parseInt(props.value['statistics']['rx-kbps']));
-      updatedChart.update()
-      interfacesChart.current = updatedChart
+      try{
+        let updatedChart = UpdateChart(interfacesChart.current, parseInt(props.value['statistics']['tx-kbps']),parseInt(props.value['statistics']['rx-kbps']));
+        updatedChart.update()
+        interfacesChart.current = updatedChart
+      }
+      catch{}
     }
     
   }, [props.value])
   
 
   useEffect(() => {
+    try{
       let chart = InitialChartBuild(interfacesRef.current.getContext('2d'), parseInt(props.value['statistics']['tx-kbps']), parseInt(props.value['statistics']['rx-kbps']));
       interfacesChart.current = chart
+    }
+    catch{}
   }, [])
 
   
