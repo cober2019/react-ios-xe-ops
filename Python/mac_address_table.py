@@ -1,4 +1,4 @@
-"""Set of function that get and print mac address table"""
+"""Set of functions that get and print mac address table"""
 
 from json.decoder import JSONDecodeError
 import requests
