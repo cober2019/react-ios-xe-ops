@@ -34,7 +34,7 @@ def get_bridge(ip, port, username, password) -> list:
                 [_print_macs(i) for i in i.get('matm-mac-entry', {})]
                 
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError, KeyError):
-        print('No macs found. Please check device compatability with this mode')
+        print('No macs found. Please check device compatability with this model')
 
     return mac_table
 
