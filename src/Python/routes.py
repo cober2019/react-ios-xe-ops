@@ -1,15 +1,31 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 import os
 import json
 import requests
 import devicecalls as GetInterfaces
+import ssl
 
+headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
-headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+
+@app.route('/token', methods=['POST', 'GET'])
+def token() -> dict:
+    token = create_access_token(identity=request.json.get('username'))
+    return jsonify(token)
 
 @app.route('/login', methods=['POST', 'GET'])
+@jwt_required()
 def ios_xe_login() -> dict:
+    print(request.json.get('headers'))
 
     auth_dict = {'status': 'null'}
 
@@ -38,6 +54,7 @@ def ios_xe_login() -> dict:
 
 
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
+@jwt_required()
 def index_page():
     """This page displays device interface"""
 
@@ -45,18 +62,32 @@ def index_page():
     cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    arps = GetInterfaces.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'interfaces': interfaces[0], 'arps': interfaces[1], 'cpu': cpu_status[0], 'env': env_status, 'dp': neighbors, 'mem': cpu_status[1]}
+    return {'interfaces': interfaces, 'arps': arps, 'cpu': cpu_status[0], 'env': env_status, 'dp': neighbors, 'mem': cpu_status[1]}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
+@jwt_required()
 def layer_2__page():
     """This page displays device interface"""
 
     interfaces = GetInterfaces.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     vlans = GetInterfaces.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    mac_addresses = GetInterfaces.get_bridge(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    span_table = GetInterfaces.get_span_tree(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans}
+    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
+
+@app.route('/pollRouting', methods=['POST', 'GET'])
+@jwt_required()
+def routing_page():
+    """This page displays device interface"""
+
+    ospf = GetInterfaces.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    bgp = GetInterfaces.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+  
+    return {'ospf': ospf[0], 'ospf_ints': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1]}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
@@ -146,5 +177,4 @@ def get_api_status():
     return "<h4>API Is Up</h4>"
 
 if __name__ == '__main__':
-    app.run(host="10.0.0.4")
-
+    app.run(debug=True, ssl_context=ctx)
