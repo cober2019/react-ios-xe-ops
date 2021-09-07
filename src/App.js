@@ -2,6 +2,7 @@ import './App.css';
 import { Index }  from './Components/index'
 import { LayerTwo }  from './Components/layerTwo'
 import { DeviceAuth }  from './Components/login'
+import { Routing }  from './Components/routing'
 import {
   BrowserRouter as Router,
   Switch,
@@ -37,7 +38,12 @@ function App() {
                                                   ip={localStorage.getItem('ip')} 
                                                   port={localStorage.getItem('port')} 
                                                   />)}/>
-                                                    
+          <Route path="/routing" render={props => (<Routing username={'developer'} 
+                                                  password={'C1sco12345'} 
+                                                  ip={'sandbox-iosxe-latest-1.cisco.com'} 
+                                                  port={443} 
+                                                  />)}/>
+                     
           <Route path="/logout" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
           <Route path="/" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
          
