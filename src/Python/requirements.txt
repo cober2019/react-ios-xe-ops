@@ -1,2 +1,3 @@
 requests
 flask
+flask_jwt_extended
