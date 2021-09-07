@@ -32,11 +32,15 @@ export  function Navbar(props){
                                 <Link className="nav-items" style={{paddingLeft:15 , paddingRight: 15, fontSize: 20, color: "white", textDecoration: 'none'}} to="/index">Home</Link>
                             </li>
                             <li class="nav-item">
-                            <Link className="nav-items" style={{fontSize: 20, paddingRight: 1375, color: "white", textDecoration: 'none'}} to="/layerTwo">LayerTwo</Link>
-                                </li>
+                                <Link className="nav-items" style={{fontSize: 20, color: "white", textDecoration: 'none'}} to="/layerTwo">LayerTwo</Link>
+                            </li>
+                            <li class="nav-item">
+                                <Link className="nav-items" style={{paddingLeft:15, fontSize: 20, paddingRight: 1100, color: "white", textDecoration: 'none'}} to="/routing">Routing</Link>
+                            </li>
                             <li class="nav-item">
                                 <Link style={{fontSize: 18, color: "white", textDecoration: 'none'}} className="nav-items" to='/logout'>| Logout({props.ip})</Link>
                             </li>
+                            
                         </ul>            
                     </div>
                     {apiStatus ? <div class="fa fa-circle env-row-text nav-items"><span style={{fontWeight: 'normal', paddingLeft: 5}}>API Reachable</span></div> 

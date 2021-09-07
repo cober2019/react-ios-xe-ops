@@ -7,6 +7,7 @@ export  function QosChart(props){
   const qosChartRef = useRef(null)
   const chartCanvasRef = React.createRef()
   $.fn.dataTable.ext.errMode = 'none';
+  console.log(props.queue)
   
   useEffect(() => {
     if(qosChartRef.current !== null){

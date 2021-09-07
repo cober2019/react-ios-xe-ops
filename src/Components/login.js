@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from "react-router-dom";
-import { Login } from './promises'
+import { Login , Token} from './promises'
 
 export function DeviceAuth(props){
     const [loading, setloading] = useState(false);
@@ -15,9 +15,10 @@ export function DeviceAuth(props){
         evt.preventDefault();
         localStorage.clear();
         try{
-            var response = await Login(ip, username, password, port)
+            let token = await Token()
+            let response = await Login(ip, username, password, port, token.data)
             if(response.data.status === 200){
-                props.callback(ip, username, password, port)
+                props.callback(ip, username, password, port, token.data)
                 setAuth(true)
             }
             else{

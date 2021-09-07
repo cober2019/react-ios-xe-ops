@@ -1,10 +1,17 @@
 import axios from 'axios';
 
-export function Login(ip, username, password, port) {
+export function Login(ip, username, password, port, token) {
     return new Promise(resolve => {
-      resolve(axios.post('/login', {'ip': ip, 'username': username, 'password': password, 'port': port}))}
+      resolve(axios.post('/login', {'ip': ip, 'username': username, 'password': password, 'port': port}, {'headers': {'Authorization': 'Bearer ' + token}}))}
     );
   }
+
+export function Token() {
+    return new Promise(resolve => {
+      resolve(axios.post('/token', {'username': 'test', 'password': 'password'}))}
+    ); 
+  }
+
 
 export function PollInterfaces(ip, username, password, port) {
   return new Promise(resolve => {

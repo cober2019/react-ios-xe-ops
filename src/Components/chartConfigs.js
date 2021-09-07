@@ -400,7 +400,122 @@ export function MemTableHtml(tableRef) {
                     </div>
     }
 
-    
+export function OpsfTableHtml(tableRef) {
+
+        return  <div class="table-responsive">
+                    <table ref={tableRef} className="table table-dark row-text"  style={{width: '100%'}}>
+                        <thead class="thead-light">
+                            <tr>
+                                <th >Neighbor ID</th>
+                                <th >Address</th>
+                                <th >State</th>
+                                <th >DR</th>
+                                <th >bdr</th>
+                            </tr>
+                        </thead>                               
+                    </table>
+                </div>
+        }
+
+export function OpsfIntsTableHtml(tableRef) {
+
+            return  <div class="table-responsive">
+                        <table ref={tableRef} className="table table-dark row-text"  style={{width: '100%'}}>
+                            <thead class="thead-light">
+                                <tr>
+                                    <th >Name</th>
+                                    <th >Net Type</th>
+                                    <th >Area</th>
+                                    <th >BDR</th>
+                                    <th >DR</th>
+                                    <th >Cost</th>
+                                    <th >Dead Int.</th>
+                                    <th >Hello In.</th>
+                                    <th >Hello Timer</th>
+                                    <th >Priority</th>
+                                </tr>
+                            </thead>                               
+                        </table>
+                    </div>
+            }
+
+export function BgpTableHtml(tableRef) {
+
+    return  <div class="table-responsive">
+                <table ref={tableRef} className="table table-dark row-text"  style={{width: '100%'}}>
+                    <thead class="thead-light">
+                        <tr>
+                            <th >ID</th>
+                            <th >Version</th>
+                            <th >Mess. Recieved</th>
+                            <th >Mess Sent</th>
+                            <th >Tabler Ver.</th>
+                            <th >Input Queue</th>
+                            <th >Output Queue</th>
+                            <th >Uptime</th>
+                            <th >State</th>
+                            <th >Prefix Rec.</th>
+                            <th >Configured Dynam.</th>
+                            <th >AS</th>
+                        </tr>
+                    </thead>                               
+                </table>
+            </div>
+    }
+
+export function SpanTreeHtml(tableRef) {
+
+        return  <div class="table-responsive">
+                    <table ref={tableRef} className="table table-dark row-text" style={{height: 175, width: '100%'}}>
+                        <thead class="thead-light">
+                            <tr>
+                                <th >Name</th>
+                                <th >Cost</th>
+                                <th >Port Priority</th>
+                                <th >Role</th>
+                                <th >State</th>
+                                <th >Fwd. Transistion</th>
+                                <th >Link Type</th>
+                            </tr>
+                        </thead>                               
+                    </table>
+                </div>
+        }
+
+export function GlobalSpanTreeHtml(data) {
+        console.log(data)
+        if(data !== undefined){
+            return  <div className="card bg-dark">
+                    <div className="card-body">
+                        <div className="row">
+                            <div className="col-2">
+                                <h4 class="card-title mb-3">Mode: {data.mode}</h4>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-3">
+                                {data['bridge-assurance'] ? <p className="card-text">Bridge Assurance:</p> : <div></div>}
+                                {data['loop-guard'] ? <p className="card-text">Loop Guard:</p> : <div></div>}
+                                {data['bpdu-guard'] ? <p className="card-text">BPDU Guard:</p> : <div></div>}
+                                {data['etherchannel-misconfig-guard'] ? <p className="card-text">EtherChannel Mis.</p> : <div></div>}
+                            </div>
+                            <div className="col-2">
+                                <p className="card-text">{data['bridge-assurance'][0] === null ? 'Disabled' : data['bridge-assurance']}</p>
+                                <p className="card-text">{data['loop-guard'][0] === null ? 'Disabled' : data['loop-guard']}</p>
+                                <p className="card-text">{data['bpdu-guard'] && data['bpdu-guard'][0] === null ? 'Disabled' : data['bpdu-guard']}</p>
+                                <p className="card-text">{data['etherchannel-misconfig-guard'][0] === null ? 'Disabled' : data['etherchannel-misconfig-guard']}</p>
+                            </div>
+                            <div className="col-8"></div>
+                        </div>
+                        </div>
+                    </div>
+            }
+            else{
+                return <h4 style={{textAlign: 'center'}}>Spanning Tree Not Enabled</h4>
+            }
+            }
+
+            
 export function CdpTableHtml(tableRef) {
 
     return  <div className="col-12">
