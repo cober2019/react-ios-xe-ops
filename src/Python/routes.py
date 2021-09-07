@@ -10,8 +10,7 @@ import devicecalls as GetInterfaces
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
@@ -23,7 +22,6 @@ def token() -> dict:
     return jsonify(token)
 
 @app.route('/login', methods=['POST', 'GET'])
-@jwt_required()
 def ios_xe_login() -> dict:
     print(request.json.get('headers'))
 
@@ -54,7 +52,6 @@ def ios_xe_login() -> dict:
 
 
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
-@jwt_required()
 def index_page():
     """This page displays device interface"""
 
@@ -67,7 +64,6 @@ def index_page():
     return {'interfaces': interfaces, 'arps': arps, 'cpu': cpu_status[0], 'env': env_status, 'dp': neighbors, 'mem': cpu_status[1]}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
-@jwt_required()
 def layer_2__page():
     """This page displays device interface"""
 
@@ -80,7 +76,6 @@ def layer_2__page():
     return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
-@jwt_required()
 def routing_page():
     """This page displays device interface"""
 
@@ -177,4 +172,4 @@ def get_api_status():
     return "<h4>API Is Up</h4>"
 
 if __name__ == '__main__':
-    app.run(debug=True, ssl_context=ctx)
+    app.run(debug=True)
