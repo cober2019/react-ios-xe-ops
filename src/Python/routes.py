@@ -13,7 +13,7 @@ headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'applicat
 
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_SECRET_KEY"] = "super-secret" 
 jwt = JWTManager(app)
 
 @app.route('/token', methods=['POST', 'GET'])
