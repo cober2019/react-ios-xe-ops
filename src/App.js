@@ -38,10 +38,10 @@ function App() {
                                                   ip={localStorage.getItem('ip')} 
                                                   port={localStorage.getItem('port')} 
                                                   />)}/>
-          <Route path="/routing" render={props => (<Routing username={'developer'} 
-                                                  password={'C1sco12345'} 
-                                                  ip={'sandbox-iosxe-latest-1.cisco.com'} 
-                                                  port={443} 
+          <Route path="/routing" render={props => (<Routing username={localStorage.getItem('username')} 
+                                                            password={localStorage.getItem('password')} 
+                                                            ip={localStorage.getItem('ip')} 
+                                                            port={localStorage.getItem('port')} 
                                                   />)}/>
                      
           <Route path="/logout" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
