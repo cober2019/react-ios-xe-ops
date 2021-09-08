@@ -10,6 +10,8 @@ import devicecalls as GetInterfaces
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
+
+# Create certs in api directory befor unmarking
 # ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 # ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
