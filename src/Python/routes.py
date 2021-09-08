@@ -16,7 +16,7 @@ headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'applicat
 # ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_SECRET_KEY"] = "CHANGE ME!!!" 
 jwt = JWTManager(app)
 
 def parse_config(config, parent_key):
