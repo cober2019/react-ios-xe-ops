@@ -210,6 +210,7 @@ export  function RestConfig(props){
                                                 <h5> Model:</h5>
                                                 <div className="col-12">
                                                     <select name="model" value={model} onChange={handleChange}>
+                                                        <option >Select...</option>
                                                         {
                                                         avaiableUrls.current.map(option => (
                                                             <option key={option} value={option}>{option}</option>
@@ -271,6 +272,7 @@ export  function RestConfig(props){
                                                     <h5> Model:</h5>
                                                     <div className="col-12">
                                                         <select name="model" value={model} onChange={handleChange}>
+                                                            <option >Select...</option>
                                                             {
                                                             avaiableUrls.current.map(option => (
                                                                 <option key={option} value={option}>{option}</option>
