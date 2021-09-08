@@ -3,6 +3,7 @@ import { Index }  from './Components/index'
 import { LayerTwo }  from './Components/layerTwo'
 import { DeviceAuth }  from './Components/login'
 import { Routing }  from './Components/routing'
+import { RestConfig }  from './Components/config'
 import {
   BrowserRouter as Router,
   Switch,
@@ -43,7 +44,11 @@ function App() {
                                                             ip={localStorage.getItem('ip')} 
                                                             port={localStorage.getItem('port')} 
                                                   />)}/>
-                     
+          <Route path="/config" render={props => (<RestConfig username={localStorage.getItem('username')} 
+                                                  password={localStorage.getItem('password')} 
+                                                  ip={localStorage.getItem('ip')} 
+                                                  port={localStorage.getItem('port')} 
+                                                  />)}/>
           <Route path="/logout" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
           <Route path="/" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
          
