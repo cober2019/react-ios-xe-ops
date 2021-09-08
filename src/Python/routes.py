@@ -10,8 +10,8 @@ import devicecalls as GetInterfaces
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+# ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+# ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
@@ -191,6 +191,7 @@ def get_api_status():
     return "<h4>API Is Up</h4>"
 
 @app.route('/query', methods=['POST', 'GET'])
+@jwt_required()
 def device_query() -> dict:
 
     response_dict = {} 
@@ -223,4 +224,5 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True, ssl_context=ctx)
+    # ssl_context=ctx <-- Add to app.run as argument
+    app.run(debug=True)
