@@ -10,11 +10,26 @@ import devicecalls as GetInterfaces
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret" 
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
+
+def parse_config(config, parent_key):
+    """Collect config and all keys for next config options"""
+
+    leafs = []
+    data = []
+    if isinstance(config[parent_key], list):
+        lists = [k for k in config[parent_key]]
+        leafs = [leaf for leaf in lists[0].keys()]
+        data = [i.get(leafs[0]) for i in lists]
+    elif isinstance(config[parent_key], dict):
+        data = [k for k in config[parent_key].keys()]
+
+    return data, leafs
 
 @app.route('/token', methods=['POST', 'GET'])
 def token() -> dict:
@@ -22,6 +37,7 @@ def token() -> dict:
     return jsonify(token)
 
 @app.route('/login', methods=['POST', 'GET'])
+@jwt_required()
 def ios_xe_login() -> dict:
     print(request.json.get('headers'))
 
@@ -52,6 +68,7 @@ def ios_xe_login() -> dict:
 
 
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
+@jwt_required()
 def index_page():
     """This page displays device interface"""
 
@@ -64,6 +81,7 @@ def index_page():
     return {'interfaces': interfaces, 'arps': arps, 'cpu': cpu_status[0], 'env': env_status, 'dp': neighbors, 'mem': cpu_status[1]}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
+@jwt_required()
 def layer_2__page():
     """This page displays device interface"""
 
@@ -76,6 +94,7 @@ def layer_2__page():
     return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
+@jwt_required()
 def routing_page():
     """This page displays device interface"""
 
@@ -171,5 +190,37 @@ def get_api_status():
 
     return "<h4>API Is Up</h4>"
 
+@app.route('/query', methods=['POST', 'GET'])
+def device_query() -> dict:
+
+    response_dict = {} 
+
+    response = requests.get(request.json.get('url'), 
+                            headers=headers_ios, verify=False,
+                            auth=(request.json.get('username'),
+                            request.json.get('password')))
+    
+    if response.status_code == 200:
+        try:
+            converted_json = json.loads(response.text, strict=False)
+            get_keys = dict.fromkeys(converted_json)
+            parent_key = list(get_keys.keys())[0]
+            config = parse_config(converted_json, parent_key)
+            response_dict['status'] = 200
+            response_dict['data'] = config[0]
+            response_dict['leafs'] = config[1]
+            response_dict['parent'] = list(get_keys.keys())[0]
+            response_dict['config'] = response.text
+        except json.decoder.JSONDecodeError as error:
+            response_dict['status'] = 500
+    elif response.status_code == 204:
+        response_dict['status'] = 200
+    elif response.status_code == 401:
+        response_dict['status'] = 401
+    elif response.status_code == 404:
+        response_dict['status'] = 404
+
+    return response_dict
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=ctx)
