@@ -35,7 +35,10 @@ export  function Navbar(props){
                                 <Link className="nav-items" style={{fontSize: 20, color: "white", textDecoration: 'none'}} to="/layerTwo">LayerTwo</Link>
                             </li>
                             <li class="nav-item">
-                                <Link className="nav-items" style={{paddingLeft:15, fontSize: 20, paddingRight: 1100, color: "white", textDecoration: 'none'}} to="/routing">Routing</Link>
+                                <Link className="nav-items" style={{paddingLeft:20, fontSize: 20 , color: "white", textDecoration: 'none'}} to="/routing">Routing</Link>
+                            </li>
+                            <li class="nav-item">
+                                <Link className="nav-items" style={{paddingLeft:15, fontSize: 20, paddingRight: 890, color: "white", textDecoration: 'none'}} to="/config">Cfg/Oper Browser</Link>
                             </li>
                             <li class="nav-item">
                                 <Link style={{fontSize: 18, color: "white", textDecoration: 'none'}} className="nav-items" to='/logout'>| Logout({props.ip})</Link>
