@@ -23,7 +23,7 @@ export  function Bgp(props){
       catch{}
       try{
         bgpTopology.current = UpdateTopology(bgpTopology.current, props.neighbors, props.details[2])
-        bgpTopologyRef.current =  bgpTopology.current.update()
+        bgpTopologyRef.current =  bgpTopology.current
       }
       catch{}
       }
@@ -64,9 +64,10 @@ export  function Bgp(props){
               }
             }
           });
-
-          bgpTopology.current = TopologyBuild(bgpTopologyRef.current, props.neighbors, props.details[0], props.details[2], props.details[5], props.topology)
-          bgpTopologyRef.current =  bgpTopology.current
+          if(props.neighbors.length > 1){
+            bgpTopology.current = TopologyBuild(bgpTopologyRef.current, props.neighbors, props.details[0], props.details[2], props.details[5], props.topology)
+            bgpTopologyRef.current =  bgpTopology.current
+          }
 
       }, [])
 
@@ -105,7 +106,7 @@ export  function Bgp(props){
                               <p className="card-text">{props.details[19]}</p>
                           </div>
                           <div className="col-8">
-                            <div className="row">
+                            <div className="row border-start border-success">
                               <div className="card text-white bg-dark ">
                                   <div className="card-body">
                                   <h4 class="card-title mb-3">BGP Neighbors</h4>
@@ -114,7 +115,7 @@ export  function Bgp(props){
                               </div>
                             </div>
                           <div className="row">
-                                <div ref={bgpTopologyRef} className="bg-dark" style={{width: '1500px', height: '300px'}}/>
+                                <div ref={bgpTopologyRef} className="bg-dark border-start border-success" style={{width: '1500px', height: '300px'}}/>
                             </div>
                           </div>
                       </div>
