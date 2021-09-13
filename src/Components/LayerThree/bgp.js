@@ -10,7 +10,6 @@ export  function Bgp(props){
   const bgpTopology = useRef(null)
   const bgpTable = BgpTableHtml(bgpTableRef)
   $.fn.dataTable.ext.errMode = 'none';
-  console.log(props.neighbors)
 
   useEffect(() => {
     console.log(bgpTopology.current)
