@@ -10,21 +10,26 @@ export function UpdateTopology(ref, neighbors, routerId){
 
   
   Object.entries(neighbors).forEach((details, i) => {
-    let test = Math.floor(Math.random() * 2)
-    console.log(test)
-    if(test === 0){
+    
+    if(details[1].state === 'established'){
 
         ref.body.data.edges.update({id: details[1]['neighbor-id'],
                     from: routerId, 
                     to: details[1]['neighbor-id'], 
-                    color: 'green', label: details[1].state, 
+                    color: 'green', 
+		    label: details[1].state,
+		    arrows:{to:arrowEnabled,from:arrowEnabled}
+	
                     });
   }
   else{
       ref.body.data.edges.update({id: details[1]['neighbor-id'],
                   from: routerId, 
                   to: details[1]['neighbor-id'], 
-                  color: 'yellow', });
+                  color: 'yellow',
+		  label: details[1].state,
+		  arrows:{to:arrowEnabled,from:arrowEnabled}
+ });
   }
 })
 
