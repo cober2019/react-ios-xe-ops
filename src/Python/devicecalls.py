@@ -562,6 +562,8 @@ def get_bgp_status(ip, port, username, password):
 
     bgp_neighbors = []
     bgp_details = []
+    bgp_topology = {}
+    router_id = None
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-bgp-oper:bgp-state-data/address-families/address-family"
@@ -578,7 +580,7 @@ def get_bgp_status(ip, port, username, password):
 
         if isinstance (bgp_data[parent_key], list):
             for i in bgp_data[parent_key]:
-
+                
                 bgp_details.append(i.get('local-as'))
                 bgp_details.append(i.get('vrf-name'))
                 bgp_details.append(i.get('router-id'))
@@ -600,14 +602,41 @@ def get_bgp_status(ip, port, username, password):
                 bgp_details.append(i.get('activities').get('scan-interval'))
                 bgp_details.append(i.get('total-memory'))
 
-                if isinstance(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'), list):
-                    for neighbor in i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'):
-                       bgp_neighbors.append(neighbor)
-                elif isinstance(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'), dict):
-                    bgp_neighbors.append(i.get('bgp-neighbor-summaries').get('bgp-neighbor-summary'))
-
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, KeyError, AttributeError) as e:
         pass
+    
+    try:
+
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-bgp-oper:bgp-state-data/neighbors"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        bgp_data = json.loads(response.text)
+
+        check_error = _check_api_error(bgp_data)
+        
+        if check_error:
+            raise AttributeError
+
+        for i in bgp_data.get('Cisco-IOS-XE-bgp-oper:neighbors', {}).get('neighbor', {}):
+
+            bgp_topology[i.get('neighbor-id', {})] = i.get('as')
+
+            bgp_neighbors.append({  'remote-as': i.get('as'),
+                                    'neighbor-id': i.get('neighbor-id', {}),
+                                    'localIp': i.get('transport').get('local-host'), 
+                                    'remote-ip': i.get('transport').get('foreign-host', {}),
+                                    'local-port': i.get('transport').get('local-port'),
+                                    'remote-port': i.get('transport').get('foreign-port'),
+                                    'last-reset': i.get('connection').get('last-reset'), 
+                                    'state': i.get('connection').get('state'),
+                                    'prefixes-sent': i.get('prefix-activity').get('sent').get('current-prefixes'),
+                                     'received-prefixes': i.get('prefix-activity').get('received').get('current-prefixes'),
+                                     'installed-prefixes': i.get('installed-prefixes', {})})
 
 
-    return bgp_neighbors, bgp_details
+        print(bgp_neighbors)
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, KeyError, AttributeError) as e:
+        print(e)
+        pass
+
+    return bgp_neighbors, bgp_details, bgp_topology 
