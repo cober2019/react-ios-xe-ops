@@ -29,6 +29,7 @@ export  function Routing(props){
         localStorage.setItem('bgp', JSON.stringify(data.data.bgp));
         localStorage.setItem('bgpDetails', JSON.stringify(data.data.bgpDetails));
         localStorage.setItem('bgpTopology', JSON.stringify(data.data.bgpToplogy));
+        localStorage.setItem('ospfTopology', JSON.stringify(data.data.ospfToplogy));
 
         errorRef.current = false
         let render = update + 1
@@ -79,7 +80,7 @@ else if (update >= 2 && !errorRef.current){
                         </div>
                         <div className="row mt-3 mb-3">
                             <div className="col-12">
-                                <Ospf neighbors={JSON.parse(localStorage.getItem('ospf'))} interfaces={JSON.parse(localStorage.getItem('ospfInts'))}/>
+                                <Ospf neighbors={JSON.parse(localStorage.getItem('ospf'))} interfaces={JSON.parse(localStorage.getItem('ospfInts'))} topology={JSON.parse(localStorage.getItem('ospfTopology'))}/>
                             </div>
                         </div>
                     </div>

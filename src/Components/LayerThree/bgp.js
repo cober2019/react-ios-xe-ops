@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { BgpTableHtml } from '../Other/chartConfigs';
-import { TopologyBuild, UpdateTopology } from './topology';
+import { BgpTopologyBuild, UpdateBgpTopology } from './topology';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
@@ -10,6 +10,7 @@ export  function Bgp(props){
   const bgpTopology = useRef(null)
   const bgpTable = BgpTableHtml(bgpTableRef)
   $.fn.dataTable.ext.errMode = 'none';
+  console.log(props.neighbors)
 
   useEffect(() => {
     console.log(bgpTopology.current)
@@ -21,7 +22,7 @@ export  function Bgp(props){
       }
       catch{}
       try{
-        bgpTopology.current = UpdateTopology(bgpTopology.current, props.neighbors, props.details[2])
+        bgpTopology.current = UpdateBgpTopology(bgpTopology.current, props.neighbors, props.details[2])
         bgpTopologyRef.current =  bgpTopology.current
       }
       catch{}
@@ -63,8 +64,8 @@ export  function Bgp(props){
               }
             }
           });
-          if(props.neighbors.length > 1){
-            bgpTopology.current = TopologyBuild(bgpTopologyRef.current, props.neighbors, props.details[0], props.details[2], props.details[5], props.topology)
+          if(props.neighbors.length >= 1){
+            bgpTopology.current = BgpTopologyBuild(bgpTopologyRef.current, props.neighbors, props.details[0], props.details[2], props.details[5], props.topology)
             bgpTopologyRef.current =  bgpTopology.current
           }
 
