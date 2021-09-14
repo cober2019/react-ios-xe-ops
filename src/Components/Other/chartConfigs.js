@@ -433,6 +433,11 @@ export function OpsfIntsTableHtml(tableRef) {
                                     <th >Hello In.</th>
                                     <th >Hello Timer</th>
                                     <th >Priority</th>
+                                    <th >Neighbor ID</th>
+                                    <th >Address</th>
+                                    <th >State</th>
+                                    <th >DR</th>
+                                    <th >bdr</th>
                                 </tr>
                             </thead>                               
                         </table>
