@@ -2,6 +2,7 @@ from json.decoder import JSONDecodeError
 import requests
 import json
 import warnings
+import ipaddress
 
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
@@ -315,22 +316,7 @@ def get_ospf(ip, port, username, password):
 
     ospf_neighbors = []
     ospf_interfaces = []
-
-    try:
-        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-ospf-oper:ospf-oper-data/ospf-state/ospf-instance?fields=ospf-area/ospf-interface/ospf-neighbor"
-        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-        ospf = json.loads(response.text)
-
-        check_error = _check_api_error(ospf)
-        
-        if check_error:
-            raise AttributeError
-
-        for i in ospf.get('Cisco-IOS-XE-ospf-oper:ospf-instance')[0].get('ospf-area'):
-            [list((ospf_neighbors.append(neighbor) for neighbor in interface.get('ospf-neighbor'))) for interface in i.get('ospf-interface')]
-
-    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError, TypeError):
-        pass
+    topology = [{}]
 
     try:
 
@@ -339,22 +325,36 @@ def get_ospf(ip, port, username, password):
         ospf = json.loads(response.text)
 
         check_error = _check_api_error(ospf)
+
         if check_error:
             raise AttributeError
 
         for instance in ospf.get('Cisco-IOS-XE-ospf-oper:ospf-instance', {}):
+
+            try:
+                topology.append(str(ipaddress.IPv4Address(instance.get('router-id', {}))))
+            except ValueError:
+                pass
+
             for area in instance.get('ospf-area', {}):
                 if isinstance(area.get('ospf-interface', {}), list):
                     for interface in area.get('ospf-interface', {}):
                         interface['area'] = area.get('area-id', {})
-                        for i in interface.get('ospf-neighbor', {}):
+                        for neighbor in interface.get('ospf-neighbor', {}):
+                            interface['neighbor-state'] = neighbor
+                            neighbor['area'] = area.get('area-id', {})
+                            ospf_neighbors.append(neighbor)
                             ospf_interfaces.append(interface)
 
-    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError, TypeError) as e:
-        pass
+        for i in ospf_interfaces:
+            topology[0][i.get('neighbor-state').get('neighbor-id')] = None
 
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError, TypeError):
+        pass
     
-    return ospf_neighbors, ospf_interfaces
+    print(topology)
+
+    return ospf_neighbors, ospf_interfaces, topology
 
 def get_bridge(ip, port, username, password):
     """Gets device components /restconf/data/openconfig-platform:components"""

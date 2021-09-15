@@ -7,16 +7,15 @@ import os
 import json
 import requests
 import devicecalls as GetInterfaces
+import device_call_backup as GetBackup
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-
-# Create certs in api directory befor unmarking
-# ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-# ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "CHANGE ME!!!" 
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
 
 def parse_config(config, parent_key):
@@ -70,17 +69,25 @@ def ios_xe_login() -> dict:
 
 
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
-@jwt_required()
 def index_page():
     """This page displays device interface"""
 
     interfaces = GetInterfaces.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     arps = GetInterfaces.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    hsrp = GetBackup.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
 
-    return {'interfaces': interfaces, 'arps': arps, 'cpu': cpu_status[0], 'env': env_status, 'dp': neighbors, 'mem': cpu_status[1]}
+    return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp}
+
+@app.route('/pollEnv', methods=['POST', 'GET'])
+@jwt_required()
+def environment_page():
+    """This page displays device interface"""
+
+    cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1]}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
 @jwt_required()
@@ -96,14 +103,13 @@ def layer_2__page():
     return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
-@jwt_required()
 def routing_page():
     """This page displays device interface"""
 
     ospf = GetInterfaces.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     bgp = GetInterfaces.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
   
-    return {'ospf': ospf[0], 'ospf_ints': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1]}
+    return {'ospf': ospf[0], 'ospf_ints': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
@@ -193,7 +199,6 @@ def get_api_status():
     return "<h4>API Is Up</h4>"
 
 @app.route('/query', methods=['POST', 'GET'])
-@jwt_required()
 def device_query() -> dict:
 
     response_dict = {} 
@@ -226,5 +231,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    # ssl_context=ctx <-- Add to app.run as argument
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=ctx)
