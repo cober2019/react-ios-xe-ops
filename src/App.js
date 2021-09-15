@@ -40,9 +40,15 @@ function App() {
                                                   port={localStorage.getItem('port')} 
                                                   />)}/>
           <Route path="/routing" render={props => (<Routing username={localStorage.getItem('username')} 
-                                                            password={localStorage.getItem('password')} 
-                                                            ip={localStorage.getItem('ip')} 
-                                                            port={localStorage.getItem('port')} 
+                                                    password={localStorage.getItem('password')} 
+                                                    ip={localStorage.getItem('ip')} 
+                                                    port={localStorage.getItem('port')} 
+                                                  />)}/>
+          <Route path="/environment" render={props => (<Environment username={localStorage.getItem('username')} 
+                                                  password={localStorage.getItem('password')} 
+                                                  ip={localStorage.getItem('ip')} 
+                                                  port={localStorage.getItem('port')}
+                                                  token={localStorage.getItem('token')} 
                                                   />)}/>
           <Route path="/config" render={props => (<RestConfig username={localStorage.getItem('username')} 
                                                   password={localStorage.getItem('password')} 
