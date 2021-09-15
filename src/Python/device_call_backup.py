@@ -28,12 +28,14 @@ def creat_netmiko_connection(username, password, host) -> object:
 
 def send_command(command, username, password, host):
     """Send Netmiko commands"""
-
-    with creat_netmiko_connection(username, password, host) as session:
-        try:
-            response = session.send_command(command)
-        except (OSError, TypeError, AttributeError, ssh_exception.NetmikoTimeoutException):
-            pass
+    try:
+        with creat_netmiko_connection(username, password, host) as session:
+            try:
+                response = session.send_command(command)
+            except (OSError, TypeError, AttributeError, ssh_exception.NetmikoTimeoutException):
+                pass
+    except ValueError:
+        pass
         
     return response
 
