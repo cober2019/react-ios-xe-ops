@@ -3,6 +3,7 @@ import { Index }  from './Components/index'
 import { LayerTwo }  from './Components/layerTwo'
 import { DeviceAuth }  from './Components/login'
 import { Routing }  from './Components/routing'
+import { Environment }  from './Components/Environment/env'
 import { RestConfig }  from './Components/config'
 import {
   BrowserRouter as Router,
