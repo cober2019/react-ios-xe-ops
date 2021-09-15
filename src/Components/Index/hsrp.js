@@ -72,23 +72,41 @@ export  function Hsrp(props){
 
   }, [])
 
-  return <div>
-          <div className="row">
-            <div className="col-12">
-                <div className="card text-white bg-dark ">
-                    <div className="card-body">
-                      <h4 class="card-title mb-3">HSRP Topology</h4>
-                        <div className="col-12">
-                          <div ref={hsrpTopologyRef} className="bg-dark" style={{width: '100%', height: '300px'}}/>
+ if(props.hsrp.length >= 1){
+    return <div>
+            <div className="row">
+              <div className="col-12">
+                  <div className="card text-white bg-dark ">
+                      <div className="card-body">
+                        <h4 class="card-title mb-3">HSRP Topology</h4>
+                          <div className="col-12">
+                            <div ref={hsrpTopologyRef} className="bg-dark" style={{width: '100%', height: '300px'}}/>
+                          </div>
+                          <div className="col-12">
+                            <h4 class="card-title mb-3">HSRP Interfaces</h4>
+                            {table}
+                          </div>
                         </div>
-                        <div className="col-12">
-                          <h4 class="card-title mb-3">HSRP Interfaces</h4>
-                          {table}
-                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+    }
+    else{
+      return <div>
+              <div className="row">
+                <div className="col-12">
+                    <div className="card text-white bg-dark ">
+                        <div className="card-body">
+                            <div className="col-12">
+                              <h4 class="card-title mb-3">HSRP Interfaces</h4>
+                              {table}
+                            </div>
+                          </div>
                       </div>
                   </div>
               </div>
-           </div>
-        </div>
+            </div>
+    }
               
   }
