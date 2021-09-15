@@ -52,22 +52,23 @@ export function UpdateHsrpTopology(ref, interfaces, localIp){
   Object.entries(interfaces).forEach((details, i) => {
            
     if (details[1].standby === 'unknown' || details[1].state === 'Init'){
-        ref.body.data.edges.update({
-            
-            id: details[1].vlanInt, 
-            from: localIp, 
-            to: i, 
-            color: 'yellow',
+        ref.body.data.edges.update({id: details[1].vlanInt, 
+          from: localIp, 
+          to: i, 
+          color: 'yellow',
+          label: details[1].vlanInt + '\n' + details[1].state + "\n" + details[1].active, 
+          font: font
+          });
 
-            });
     }
     else{
-        ref.body.data.edges.update({
-            id: details[1].vlanInt, 
-            from: localIp, 
-            to: i, 
-            color: 'green',
-            });
+        ref.body.data.edges.update({id: details[1].vlanInt, 
+                        from: localIp, 
+                        to: i, 
+                        color: 'green',
+                        label: details[1].vlanInt + '\n' + details[1].state + "\n" + details[1].active, 
+                        font: font
+                        });
     }})
     
     return  ref
