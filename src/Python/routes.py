@@ -11,11 +11,11 @@ import device_call_backup as GetBackup
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-#ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret"
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
 
 def parse_config(config, parent_key):
@@ -47,6 +47,7 @@ def ios_xe_login() -> dict:
     try:
         response = requests.get(f"https://{request.json.get('ip')}:{request.json.get('port')}/restconf/data/netconf-state/capabilities",
             headers=headers_ios, verify=False, auth=(request.json.get('username'), request.json.get('password')))
+        print(response.text)
 
         if response.status_code == 200:
             auth_dict['status'] = 200
@@ -62,7 +63,8 @@ def ios_xe_login() -> dict:
             auth_dict['status'] = 500
 
     except (json.decoder.JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,
-            UnboundLocalError):
+            UnboundLocalError) as e:
+        print(e)
         auth_dict['status'] = 500
 
     return auth_dict
@@ -109,7 +111,15 @@ def routing_page():
     ospf = GetInterfaces.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     bgp = GetInterfaces.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
   
-    return {'ospf': ospf[0], 'ospf_ints': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
+    return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
+
+@app.route('/getDmvpn', methods=['POST', 'GET'])
+def dmvpn():
+    """Gets DMVPN topology information"""
+
+    dmvpn = GetBackup.get_dmvpn( request.json.get('username'), request.json.get('password'), request.json.get('ip'))
+
+    return {'dmvpn': dmvpn}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
@@ -231,4 +241,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=ctx)
