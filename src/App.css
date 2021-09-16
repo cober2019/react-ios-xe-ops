@@ -28,8 +28,8 @@
   color: #61dafb;
 }
 
-.red {
-  background-color: orange !important;
+.text-yellow {
+  color: yellow !important;
 }
 
 .green {
@@ -352,3 +352,15 @@ body{
     transform: rotate(359deg);
   }
 }
+
+.warning-loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid orange; /* Blue */
+  border-bottom: 16px solid orange; /* Blue */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
