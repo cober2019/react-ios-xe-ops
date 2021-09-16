@@ -105,6 +105,7 @@ def layer_2__page():
     return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
+@jwt_required()
 def routing_page():
     """This page displays device interface"""
 
@@ -114,6 +115,7 @@ def routing_page():
     return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
 
 @app.route('/getDmvpn', methods=['POST', 'GET'])
+@jwt_required()
 def dmvpn():
     """Gets DMVPN topology information"""
 
