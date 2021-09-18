@@ -330,7 +330,6 @@ def get_ospf(ip, port, username, password):
             raise AttributeError
 
         for instance in ospf.get('Cisco-IOS-XE-ospf-oper:ospf-instance', {}):
-
             try:
                 topology.append(str(ipaddress.IPv4Address(instance.get('router-id', {}))))
             except ValueError:
@@ -633,10 +632,85 @@ def get_bgp_status(ip, port, username, password):
                                      'installed-prefixes': i.get('installed-prefixes', {})})
 
 
-        print(bgp_neighbors)
 
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, KeyError, AttributeError) as e:
-        print(e)
         pass
 
     return bgp_neighbors, bgp_details, bgp_topology 
+
+def get_dmvpn_ints(ip, port, username, password):
+    """Gets device components /restconf/data/openconfig-platform:components"""
+
+    config_table = []
+    interf_op_table = []
+    tunnels = []
+    hubs = []
+
+    try:
+        response = requests.get(f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces", headers=headers, verify=False, auth=(username, password))
+        interface_data = json.loads(response.text)
+
+        if _check_api_error(interface_data):
+           pass
+        else:
+            [interf_op_table.append(interface) for interface in interface_data.get('Cisco-IOS-XE-interfaces-oper:interfaces').get('interface') if 'Tunnel' in interface.get('name', {})]
+
+        response = requests.get(f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/interface/Tunnel", headers=headers, verify=False, auth=(username, password))
+        config_data = json.loads(response.text)
+
+        if _check_api_error(config_data):
+            pass
+        else:
+            for details in config_data.values():
+                if isinstance(details, dict):
+                    tunnels.append({
+                                 'name': f'Tunnel{detail.get("name", {})}',
+                                'mss': detail.get('ip',{}).get("tcp", {}).get('adjust-mss', {}),
+                                'mtu': detail.get('ip',{}).get("mtu", {}),
+                                'source': detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('source', {}),
+                                'mode': f"{list(detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('mode', {}).keys())[0]} {list(list(detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('mode', {}).values())[0].keys())[0]}",
+                                'protection': detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('protection', {}).get('Cisco-IOS-XE-crypto:ipsec', {}).get('profile', {}),
+                                'authentication': detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('authentication', {}),
+                                'holdtime': detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('holdtime', {}),
+                                'netwrok-id': detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('map', {}).get('network-id', {})})
+
+                    hubs = _map_dmvpn_hubs(detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('map', {}))
+
+                else:
+                    for detail in details:
+                        tunnels.append({
+                                'name': f'Tunnel{detail.get("name", {})}',
+                                'mss': detail.get('ip',{}).get("tcp", {}).get('adjust-mss', {}),
+                                'mtu': detail.get('ip',{}).get("mtu", {}),
+                                'source': detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('source', {}),
+                                'mode': f"{list(detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('mode', {}).keys())[0]} {list(list(detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('mode', {}).values())[0].keys())[0]}",
+                                'protection': detail.get('Cisco-IOS-XE-tunnel:tunnel', {}).get('protection', {}).get('Cisco-IOS-XE-crypto:ipsec', {}).get('profile', {}),
+                                'authentication': detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('authentication', {}),
+                                'holdtime': detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('holdtime', {}),
+                                'network-id': detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('network-id', {})})
+
+                        hubs = _map_dmvpn_hubs(detail.get('ip',{}).get('Cisco-IOS-XE-nhrp:nhrp', {}).get('map', {}))
+
+                
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError) as e:
+        print(e)
+        pass
+
+    return config_table, interf_op_table, tunnels, hubs
+
+def _map_dmvpn_hubs(hub_details):
+
+    hubs = []
+    print(hub_details)
+    for i in hub_details.get('dest-ipv4', {}):
+    
+        if isinstance(i.get('nbma-ipv4', {}), list):
+            hubNbma = ", ".join([hub.get('nbma-ipv4', {}) for hub in i.get('nbma-ipv4', {})])
+        else:
+            hubNbma = i.get('nbma-ipv4', {})
+        print(i)
+
+        hubs.append({'tunnel': i.get('dest-ipv4', {}), 'hubNbma': hubNbma})
+    pass
+
+    return hubs

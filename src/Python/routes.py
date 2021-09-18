@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager
 import os
 import json
 import requests
-import devicecalls as GetInterfaces
+import devicecalls as GetThisDataFromDevice
 import device_call_backup as GetBackup
 import ssl
 
@@ -40,6 +40,8 @@ def token() -> dict:
 @app.route('/login', methods=['POST', 'GET'])
 @jwt_required()
 def ios_xe_login() -> dict:
+    """Authenticates credentials to device. Check device capabilities"""
+
     print(request.json.get('headers'))
 
     auth_dict = {'status': 'null'}
@@ -72,11 +74,11 @@ def ios_xe_login() -> dict:
 
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
 def index_page():
-    """This page displays device interface"""
+    """Get data for Index page , interfaces, dp neighbors, arps, and hsrp"""
 
-    interfaces = GetInterfaces.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    arps = GetInterfaces.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    arps = GetThisDataFromDevice.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     hsrp = GetBackup.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
 
     return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp}
@@ -84,134 +86,134 @@ def index_page():
 @app.route('/pollEnv', methods=['POST', 'GET'])
 @jwt_required()
 def environment_page():
-    """This page displays device interface"""
+    """Get data for environment page. CPU and memory"""
 
-    cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    env_status = GetThisDataFromDevice.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1]}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
 @jwt_required()
 def layer_2__page():
-    """This page displays device interface"""
+    """Get daya for layer two page. inerfaces, vlans, dp neighbors, macs, span-tree"""
 
-    interfaces = GetInterfaces.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    vlans = GetInterfaces.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    mac_addresses = GetInterfaces.get_bridge(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    span_table = GetInterfaces.get_span_tree(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    interfaces = GetThisDataFromDevice.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    vlans = GetThisDataFromDevice.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    mac_addresses = GetThisDataFromDevice.get_bridge(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    span_table = GetThisDataFromDevice.get_span_tree(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
-@jwt_required()
 def routing_page():
-    """This page displays device interface"""
+    """Get data for routing page. OSPF, and BGP"""
 
-    ospf = GetInterfaces.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    bgp = GetInterfaces.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    bgp = GetThisDataFromDevice.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
   
     return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
 
 @app.route('/getDmvpn', methods=['POST', 'GET'])
-@jwt_required()
 def dmvpn():
-    """Gets DMVPN topology information"""
+    """Gets DMVPN topology information. HUB/Spoke, interfaces, tunnel interfaces, topology info"""
 
     dmvpn = GetBackup.get_dmvpn( request.json.get('username'), request.json.get('password'), request.json.get('ip'))
+    dmvpn_ints  = GetThisDataFromDevice.get_dmvpn_ints(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'dmvpn': dmvpn}
+    return {'dmvpn': dmvpn, 'dmvpnInts': dmvpn_ints, 'hubs': dmvpn_ints[3]}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
-    """This page displays device interface"""
+    """Get device interfaces"""
 
-    interfaces = GetInterfaces.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'interfaces': interfaces[0], 'arps': interfaces[1]}
 
 @app.route('/getinterfacestats', methods=['POST', 'GET'])
 def interface_stats():
-    """This page displays device interface"""
+    """Get device interface stats"""
 
-    interface_stats = GetInterfaces.get_interface_stats(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'), request.json.get('interface'))
+    interface_stats = GetThisDataFromDevice.get_interface_stats(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'), request.json.get('interface'))
 
     return {'data': interface_stats}
 
 @app.route('/cpustatus', methods=['POST', 'GET'])
 def get_cpu_status():
-    """This page displays device interface"""
+    """Get CPU status"""
 
-    cpu_status = GetInterfaces.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/hardwarestatus', methods=['POST', 'GET'])
 def get_hardware_status():
-    """This page displays device interface"""
+    """Get hardware status"""
 
-    cpu_status = GetInterfaces.get_hardware_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_hardware_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': cpu_status}
 
 @app.route('/getenvirmoment', methods=['POST', 'GET'])
-def get_enviroment():
-    """This page displays device interface"""
+def get_environment():
+    """Get environmntal status"""
 
-    env_status = GetInterfaces.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    env_status = GetThisDataFromDevice.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': env_status}
 
 @app.route('/getcomponents', methods=['POST', 'GET'])
 def get_components():
-    """This page displays device interface"""
+    """Get device sompenent status"""
 
-    components = GetInterfaces.get_components(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    components = GetThisDataFromDevice.get_components(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': components}
 
 @app.route('/neighbors', methods=['POST', 'GET'])
 def get_dp_neigh():
-    """This page displays device interface"""
+    """Gey DP neighbors"""
 
-    neighbors = GetInterfaces.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': neighbors}
 
 
 @app.route('/vlans', methods=['POST', 'GET'])
 def get_vlans():
-    """This page displays device interface"""
+    """Get Vlans"""
 
-    vlans = GetInterfaces.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    vlans = GetThisDataFromDevice.get_vlans(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': vlans}
 
 @app.route('/layertwointerfaces', methods=['POST', 'GET'])
 def get_layertwo_interfaces():
-    """This page displays device interface"""
+    """Get switching interfaces"""
 
-    interfaces = GetInterfaces.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    interfaces = GetThisDataFromDevice.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'trunks': interfaces[0], 'access': interfaces[1]}
 
 @app.route('/bgpstatus', methods=['POST', 'GET'])
 def get_bgp_status():
-    """This page displays device interface"""
+    """Get BGP statuses"""
 
-    cpu_status = GetInterfaces.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'data': cpu_status}
 
 @app.route('/apistatus', methods=['POST', 'GET'])
 def get_api_status():
-    """This page displays device interface"""
+    """Get API status"""
 
     return "<h4>API Is Up</h4>"
 
 @app.route('/query', methods=['POST', 'GET'])
 def device_query() -> dict:
+    """Querys device for yang model. Return data, keys for next query"""
 
     response_dict = {} 
 
