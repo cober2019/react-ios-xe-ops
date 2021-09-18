@@ -7,7 +7,7 @@ import os
 import json
 import requests
 import devicecalls as GetThisDataFromDevice
-import device_call_backup as GetBackup
+import device_call_backup as InCaseRestDoesntWork
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
@@ -79,7 +79,7 @@ def index_page():
     interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     arps = GetThisDataFromDevice.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-    hsrp = GetBackup.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
+    hsrp = InCaseRestDoesntWork.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
 
     return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp}
 
