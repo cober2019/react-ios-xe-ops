@@ -2,12 +2,12 @@
 
 from netmiko import ConnectHandler, ssh_exception
 from paramiko.ssh_exception import PasswordRequiredException
+import ipapi 
 
-def send_command(command, username, password, host) -> object:
+def send_command(command, username, password, host) -> list:
     """Logs into device and returns a connection object to the caller. """
-    print(command, username, password, host)
-    response = []
 
+    response = []
     credentials = {
         'device_type': 'cisco_ios',
         'host': host,
@@ -27,11 +27,12 @@ def send_command(command, username, password, host) -> object:
     return response
 
 
-def get_hsrp_status(username, password, host):
+def get_hsrp_status(username, password, host) -> list:
     """Gets HSRP operation data"""
 
     hsrp_data = []
     cli = send_command('show dmvpn | b Interface', username, password, host)
+
     if cli:
         for interface in send_command('show standby brief | ex Interface', username, password, host).splitlines():
             if len(interface.split()) == 0:
@@ -45,10 +46,11 @@ def get_hsrp_status(username, password, host):
 
     return hsrp_data
 
-def get_dmvpn(username, password, host):
+def get_dmvpn(username, password, host) -> tuple:
     """Gets dmvpn peers, attributes, and statuses"""
 
     dmvpn_data = []
+    nbma_location = []
     cli = send_command('show dmvpn | b Interface', username, password, host)
 
     if cli:
@@ -57,24 +59,16 @@ def get_dmvpn(username, password, host):
             if data == 0 or '-' in line or '#' in line:
                 continue
             elif len(line.split()) == 6:
+
+                try:
+                    nbma_location.append(ipapi.location(data[1], key=None))
+                except ipapi.exceptions.RateLimited:
+                    pass
+
                 dmvpn_data.append({'peerNbma': data[1], 'peerTunnel': data[2], 'state': data[3], 'upTime': data[4], 'attrb': data[5]})
 
-    return dmvpn_data
+    return dmvpn_data, nbma_location
 
-def get_dmvpn_info():
-    """Gets dmvpn peers, attributes, status, writes to DB"""
 
-    interface = None
-
-    for line in send_command('show dmvpn | i Interface|Type').splitlines():
-        if len(line.split()) == 0:
-            continue
-        elif len(line.split()) == 5:
-            interface = line.split()[1].strip(',')
-            get_dmvpn_interface(session, interface, device)
-        elif len(line.split()) == 3:
-            router_type = line.split(':')[1].split(',')[0]
-            peer_count = line.split()[2].strip('Peers:').strip(',')
-            DbOps.update_dmvpn_count(device, interface, router_type, peer_count)
 
 
