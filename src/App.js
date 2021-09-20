@@ -11,8 +11,9 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { QueryClient } from 'react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
 const queryClient = new QueryClient()
+
 
 
 function App() {
@@ -32,49 +33,47 @@ function App() {
     <div classname="App">
       <Router>
         <Switch>
-        <Route path="/logout" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
+          <Route path="/logout" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
 
-          <Route path="/index" render={props => (<Index username={localStorage.getItem('username')} 
-                                                  password={localStorage.getItem('password')} 
-                                                  ip={localStorage.getItem('ip')} 
-                                                  port={localStorage.getItem('port')}
-                                                  token={localStorage.getItem('token')} 
-                                                  />)}/>
+          <Route path="/index">
+            <QueryClientProvider client={queryClient}>
+              <Index/>
+            </QueryClientProvider>
+          </Route>
+          <Route path="/layerTwo">
+            <QueryClientProvider client={queryClient}>
+              <LayerTwo/>
+            </QueryClientProvider>
+          </Route>
+
+          <Route path="/routing">
+            <QueryClientProvider client={queryClient}>
+             <Routing/>
+            </QueryClientProvider>
+          </Route>
 
 
-          <Route path="/layerTwo" render={props => (<LayerTwo username={localStorage.getItem('username')} 
-                                                  password={localStorage.getItem('password')} 
-                                                  ip={localStorage.getItem('ip')} 
-                                                  port={localStorage.getItem('port')}
-                                                  token={localStorage.getItem('token')}  
-                                                  />)}/>
+          <Route path="/config">
+            <QueryClientProvider client={queryClient}>
+              <RestConfig/>
+            </QueryClientProvider>
+          </Route>  
 
-          <Route path="/routing" render={props => (<Routing username={localStorage.getItem('username')} 
-                                                  password={localStorage.getItem('password')} 
-                                                  ip={localStorage.getItem('ip')} 
-                                                  port={localStorage.getItem('port')}
-                                                  token={localStorage.getItem('token')} 
-                                                  />)}/>
 
-          <Route path="/config" render={props => (<RestConfig username={localStorage.getItem('username')} 
-                                                  password={localStorage.getItem('password')} 
-                                                  ip={localStorage.getItem('ip')} 
-                                                  port={localStorage.getItem('port')} 
-                                                  />)}/>
+          <Route path="/dmvpn">
+            <QueryClientProvider client={queryClient}>
+              <Dmvpn/>
+            </QueryClientProvider>
+          </Route>  
 
-          <Route path="/dmvpn" render={props => (<Dmvpn username={localStorage.getItem('username')} 
-                                                  password={localStorage.getItem('password')} 
-                                                  ip={localStorage.getItem('ip')} 
-                                                  port={localStorage.getItem('port')}
-                                                  token={localStorage.getItem('token')} 
-                                                  />)}/>
 
-          <Route path="/environment" render={props => (<Environment username={localStorage.getItem('username')} 
-                                                  password={localStorage.getItem('password')} 
-                                                  ip={localStorage.getItem('ip')} 
-                                                  port={localStorage.getItem('port')}
-                                                  token={localStorage.getItem('token')} 
-                                                  />)}/>
+          <Route path="/environment">
+            <QueryClientProvider client={queryClient}>
+              <Environment/>
+            </QueryClientProvider>
+          </Route>
+
+
           <Route path="/" render={props => (<DeviceAuth callback={setAuthTrue} {...props}/>)}/>
         </Switch>
     </Router>
