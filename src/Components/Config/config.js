@@ -188,10 +188,6 @@ export  function RestConfig(props){
 
     useEffect(() => {
         if(update === 0){
-          localStorage.setItem('ip', props.ip);
-          localStorage.setItem('username', props.username);
-          localStorage.setItem('password', props.password); 
-          localStorage.setItem('port', props.port);
           let render = update + 1
           setUpdate(render)
         }
