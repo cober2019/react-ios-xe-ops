@@ -12,14 +12,14 @@ import GetRibData as GetRibs
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-#ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
 
-rib_session = None
+rib_session = {}
 
 def parse_config(config, parent_key):
     """Collect config and all keys for next config options"""
@@ -48,8 +48,12 @@ def ios_xe_login() -> dict:
 
     global rib_session
     
-    # Reset our rib status object
-    rib_session = None
+    try:
+        # Reset our rib status object
+        rib_session.pop(request.json.get('ip', {}))
+    except KeyError:
+        pass
+
     auth_dict = {'status': 'null'}
 
     try:
@@ -134,10 +138,22 @@ def rib_status():
 
     global rib_session
 
-    if rib_session is None:
-        rib_session = GetRibs.Routing()
-
-    routing_information = rib_session.get_routing_info(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    if not rib_session.get(request.json.get('ip', {})):
+        print('no')
+        rib_session_obj = GetRibs.Routing()
+        rib_session[request.json.get('ip', {})] = {'username': request.json.get('username', {}), 
+                                                    'password': request.json.get('password', {}), 
+                                                    'port': request.json.get('port', {}), 
+                                                      'session':rib_session_obj}
+    print(rib_session)
+    try:
+        routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
+                                                                request.json.get('ip'),
+                                                                rib_session.get(request.json.get('ip')).get('port'),
+                                                                rib_session.get(request.json.get('ip')).get('username'),
+                                                                rib_session.get(request.json.get('ip')).get('password'))    
+    except (UnboundLocalError):
+        pass
 
     return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
 
@@ -262,5 +278,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    # Add, ssl_context=ctx, to app.run() if you want to use ssl certs
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=ctx)
