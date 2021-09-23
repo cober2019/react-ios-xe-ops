@@ -13,13 +13,18 @@ export  function RibInfo(props){
   useEffect(() => {
 
     if(ipv4RibTableRef.current !== null){
+      try{
         $(ipv4RibTableRef.current).DataTable().clear()
         $(ipv4RibTableRef.current).DataTable().rows.add(props.routes['ietf-routing:ipv4'])
         $(ipv4RibTableRef.current).DataTable().draw(false)
-
+      }
+      catch{}
+      try{
         $(ipv6RibTableRef.current).DataTable().clear()
         $(ipv6RibTableRef.current).DataTable().rows.add(props.routes['ietf-routing:ipv6'])
         $(ipv6RibTableRef.current).DataTable().draw(false)
+      }
+      catch{}
     }
   
     }, [props.routes])
