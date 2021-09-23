@@ -137,23 +137,21 @@ def rib_status():
     """Get rib and flapping routes"""
 
     global rib_session
+    routing_information =[[],[],[]]
 
     if not rib_session.get(request.json.get('ip', {})):
-        print('no')
         rib_session_obj = GetRibs.Routing()
         rib_session[request.json.get('ip', {})] = {'username': request.json.get('username', {}), 
                                                     'password': request.json.get('password', {}), 
                                                     'port': request.json.get('port', {}), 
                                                       'session':rib_session_obj}
-    print(rib_session)
-    try:
-        routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
-                                                                request.json.get('ip'),
-                                                                rib_session.get(request.json.get('ip')).get('port'),
-                                                                rib_session.get(request.json.get('ip')).get('username'),
-                                                                rib_session.get(request.json.get('ip')).get('password'))    
-    except (UnboundLocalError):
-        pass
+                                                      
+    routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
+                                                            request.json.get('ip'),
+                                                            rib_session.get(request.json.get('ip')).get('port'),
+                                                            rib_session.get(request.json.get('ip')).get('username'),
+                                                            rib_session.get(request.json.get('ip')).get('password'))    
+
 
     return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
 
