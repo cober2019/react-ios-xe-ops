@@ -5,6 +5,7 @@ import { Environment }  from './Components/Environment/env'
 import { Routing }  from './Components/LayerThree/routing'
 import { Dmvpn }  from './Components/DMVPN/dmvpn'
 import { RestConfig }  from './Components/Config/config'
+import { RibIndex }  from './Components/RibStatus/RibMain'
 import { DeviceAuth }  from './Components/Other/login'
 import {
   BrowserRouter as Router,
@@ -12,9 +13,8 @@ import {
   Route,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { RibInfo } from './Components/RibStatus/getRibs';
 const queryClient = new QueryClient()
-
-
 
 function App() {
 
@@ -70,6 +70,12 @@ function App() {
           <Route path="/environment">
             <QueryClientProvider client={queryClient}>
               <Environment/>
+            </QueryClientProvider>
+          </Route>
+
+          <Route path="/ribstatus">
+            <QueryClientProvider client={queryClient}>
+              <RibIndex/>
             </QueryClientProvider>
           </Route>
 

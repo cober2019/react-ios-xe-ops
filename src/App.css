@@ -29,7 +29,15 @@
 }
 
 .text-yellow {
-  color: yellow !important;
+  background-color: yellow !important;
+}
+
+.bg-green{
+  background-color: palegreen;
+}
+
+.bg-orange{
+  background-color: orange;
 }
 
 .green {
@@ -351,6 +359,21 @@ body{
   to {
     transform: rotate(359deg);
   }
+}
+
+.spinner-status {
+  height: 20px;
+  width: 20px;
+  display:flex;
+  -webkit-animation: rotation .6s infinite linear;
+  -moz-animation: rotation .6s infinite linear;
+  -o-animation: rotation .6s infinite linear;
+  animation: rotation .6s infinite linear;
+  border-left: 4px solid rgba(0, 174, 239, .15);
+  border-right: 4px solid rgba(0, 174, 239, .15);
+  border-bottom: 4px solid rgba(0, 174, 239, .15);
+  border-top: 4px solid rgba(0, 174, 239, .8);
+  border-radius: 100%;
 }
 
 .warning-loader {
