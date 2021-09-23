@@ -8,21 +8,25 @@ import json
 import requests
 import devicecalls as GetThisDataFromDevice
 import device_call_backup as InCaseRestDoesntWork
+import GetRibData as GetRibs
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-#ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
+
+rib_session = None
 
 def parse_config(config, parent_key):
     """Collect config and all keys for next config options"""
 
     leafs = []
     data = []
+
     if isinstance(config[parent_key], list):
         lists = [k for k in config[parent_key]]
         leafs = [leaf for leaf in lists[0].keys()]
@@ -42,14 +46,15 @@ def token() -> dict:
 def ios_xe_login() -> dict:
     """Authenticates credentials to device. Check device capabilities"""
 
-    print(request.json.get('headers'))
-
+    global rib_session
+    
+    # Reset our rib status object
+    rib_session = None
     auth_dict = {'status': 'null'}
 
     try:
-        response = requests.get(f"https://{request.json.get('ip')}:{request.json.get('port')}/restconf/data/netconf-state/capabilities",
-            headers=headers_ios, verify=False, auth=(request.json.get('username'), request.json.get('password')))
-        print(response.text)
+        response = requests.get(f"https://{request.json.get('ip', {})}:{request.json.get('port', {})}/restconf/data/netconf-state/capabilities",
+            headers=headers_ios, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
 
         if response.status_code == 200:
             auth_dict['status'] = 200
@@ -64,16 +69,14 @@ def ios_xe_login() -> dict:
         elif response.status_code == 500:
             auth_dict['status'] = 500
 
-    except (json.decoder.JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,
-            UnboundLocalError) as e:
-        print(e)
+    except (json.decoder.JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, UnboundLocalError):
         auth_dict['status'] = 500
 
     return auth_dict
 
 
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
-def index_page():
+def index_page() -> dict:
     """Get data for Index page , interfaces, dp neighbors, arps, and hsrp"""
 
     interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
@@ -85,7 +88,7 @@ def index_page():
 
 @app.route('/pollEnv', methods=['POST', 'GET'])
 @jwt_required()
-def environment_page():
+def environment_page() -> dict:
     """Get data for environment page. CPU and memory"""
 
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
@@ -95,7 +98,7 @@ def environment_page():
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
 @jwt_required()
-def layer_2__page():
+def layer_2__page() -> dict:
     """Get daya for layer two page. inerfaces, vlans, dp neighbors, macs, span-tree"""
 
     interfaces = GetThisDataFromDevice.get_switch(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
@@ -107,7 +110,7 @@ def layer_2__page():
     return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
-def routing_page():
+def routing_page() -> dict:
     """Get data for routing page. OSPF, and BGP"""
 
     ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
@@ -116,13 +119,27 @@ def routing_page():
     return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
 
 @app.route('/getDmvpn', methods=['POST', 'GET'])
-def dmvpn():
+def dmvpn() -> dict:
     """Gets DMVPN topology information. HUB/Spoke, interfaces, tunnel interfaces, topology info"""
 
-    dmvpn = GetBackup.get_dmvpn( request.json.get('username'), request.json.get('password'), request.json.get('ip'))
+    dmvpn = InCaseRestDoesntWork.get_dmvpn( request.json.get('username'), request.json.get('password'), request.json.get('ip'))
     dmvpn_ints  = GetThisDataFromDevice.get_dmvpn_ints(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'dmvpn': dmvpn, 'dmvpnInts': dmvpn_ints, 'hubs': dmvpn_ints[3]}
+    return {'dmvpn': dmvpn[0], 'dmvpnInts': dmvpn_ints, 'hubs': dmvpn_ints[3], 'location': dmvpn[1], 'routing': ospf[1]}
+
+@app.route('/ribStatus', methods=['POST', 'GET'])
+def rib_status():
+    """Get rib and flapping routes"""
+
+    global rib_session
+
+    if rib_session is None:
+        rib_session = GetRibs.Routing()
+
+    routing_information = rib_session.get_routing_info(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
@@ -245,4 +262,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=ctx)

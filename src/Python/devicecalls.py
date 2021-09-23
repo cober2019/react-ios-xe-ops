@@ -202,7 +202,7 @@ def _map_queues(i, policy) -> list:
     return queues
 
 
-def convert_to_mbps(interface):
+def convert_to_mbps(interface) -> dict:
     """Convert Kbps to Mbps"""
 
     interface['statistics']['tx-kbps'] = int(interface['statistics']['tx-kbps']) / 1000
@@ -214,7 +214,7 @@ def convert_to_mbps(interface):
 
     return interface
 
-def get_cpu_usages(ip, port, username, password):
+def get_cpu_usages(ip, port, username, password) -> tuple:
     """Gets real time CPU statistics using restconf/data/Cisco-IOS-XE-process-cpu-oper:cpu-usage"""
 
     cpu_stats = {}
@@ -249,7 +249,7 @@ def get_cpu_usages(ip, port, username, password):
     
     return cpu_stats, memory_stats
 
-def get_hardware_status(ip, port, username, password):
+def get_hardware_status(ip, port, username, password) -> dict:
     """Gets CPU memory statuses IOS-XE\n
         Cisco-IOS-XE-platform-software-oper:cisco-platform-software/control-processes/control-process"""
 
@@ -277,7 +277,7 @@ def get_hardware_status(ip, port, username, password):
     return data
 
 
-def get_envirmoment(ip, port, username, password):
+def get_envirmoment(ip, port, username, password) -> dict:
     """Gets real time enviroment statistics using restconf/data/Cisco-IOS-XE-environment-oper:environment-sensors"""
 
     env_data = {}
@@ -297,7 +297,7 @@ def get_envirmoment(ip, port, username, password):
 
     return env_data
 
-def get_components(ip, port, username, password):
+def get_components(ip, port, username, password) -> dict:
     """Gets device components /restconf/data/openconfig-platform:components"""
 
     data = {}
@@ -311,7 +311,7 @@ def get_components(ip, port, username, password):
 
     return data
 
-def get_ospf(ip, port, username, password):
+def get_ospf(ip, port, username, password) -> tuple:
     """Gets device ospf operational data"""
 
     ospf_neighbors = []
@@ -351,11 +351,9 @@ def get_ospf(ip, port, username, password):
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError, TypeError):
         pass
     
-    print(topology)
-
     return ospf_neighbors, ospf_interfaces, topology
 
-def get_bridge(ip, port, username, password):
+def get_bridge(ip, port, username, password) -> list:
     """Gets device components /restconf/data/openconfig-platform:components"""
 
     mac_table = []
@@ -379,7 +377,7 @@ def get_bridge(ip, port, username, password):
 
     return mac_table
 
-def get_span_tree(ip, port, username, password):
+def get_span_tree(ip, port, username, password) -> tuple:
     """Gets device components /restconf/data/openconfig-platform:components"""
 
     span_table = []
@@ -409,7 +407,7 @@ def get_span_tree(ip, port, username, password):
     return span_table, span_global_table
 
 
-def get_dp_neighbors(ip, port, username, password):
+def get_dp_neighbors(ip, port, username, password) -> list:
     """Gets device components restconf/data/Cisco-IOS-XE-cdp-oper:cdp-neighbor-details"""
 
     data = []
@@ -447,7 +445,7 @@ def get_dp_neighbors(ip, port, username, password):
     return data
 
 
-def get_vlans(ip, port, username, password):
+def get_vlans(ip, port, username, password) -> list:
     """Gets device components /restconf/data/openconfig-platform:components"""
 
     vlan_data = []
@@ -476,12 +474,13 @@ def get_vlans(ip, port, username, password):
         
     return vlan_data
 
-def get_switch(ip, port, username, password):
+def get_switch(ip, port, username, password) -> tuple:
     """Gets device components /restconf/data/openconfig-platform:components"""
 
     data = {}
     trunk =[]
     access = []
+
     try:
         interfaces_configs = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/interface"
         interface_status = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces"
@@ -518,7 +517,7 @@ def get_switch(ip, port, username, password):
                     
     return trunk, access
 
-def map_switchports(config, interface, interfaces_statuses):
+def map_switchports(config, interface, interfaces_statuses) -> list:
 
     complete_interface = f"{interface}{config.get('name')}"
     interface_mode = False
@@ -555,14 +554,13 @@ def map_switchports(config, interface, interfaces_statuses):
 
     return data
 
-def get_bgp_status(ip, port, username, password):
+def get_bgp_status(ip, port, username, password) -> list:
     """Gets BGP neighbor statuses IOS-XE\n
         Cisco-IOS-XE-bgp-oper:bgp-state-data/address-families/address-family"""
 
     bgp_neighbors = []
     bgp_details = []
     bgp_topology = {}
-    router_id = None
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-bgp-oper:bgp-state-data/address-families/address-family"
@@ -638,7 +636,7 @@ def get_bgp_status(ip, port, username, password):
 
     return bgp_neighbors, bgp_details, bgp_topology 
 
-def get_dmvpn_ints(ip, port, username, password):
+def get_dmvpn_ints(ip, port, username, password) -> tuple:
     """Gets device components /restconf/data/openconfig-platform:components"""
 
     config_table = []
@@ -698,7 +696,7 @@ def get_dmvpn_ints(ip, port, username, password):
 
     return config_table, interf_op_table, tunnels, hubs
 
-def _map_dmvpn_hubs(hub_details):
+def _map_dmvpn_hubs(hub_details) -> list:
 
     hubs = []
     print(hub_details)
@@ -708,9 +706,7 @@ def _map_dmvpn_hubs(hub_details):
             hubNbma = ", ".join([hub.get('nbma-ipv4', {}) for hub in i.get('nbma-ipv4', {})])
         else:
             hubNbma = i.get('nbma-ipv4', {})
-        print(i)
 
         hubs.append({'tunnel': i.get('dest-ipv4', {}), 'hubNbma': hubNbma})
-    pass
 
     return hubs
