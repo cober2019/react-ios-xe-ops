@@ -38,7 +38,7 @@ if (error){
 else if (data){
   return <div className="container-fluid">
           <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
-          <div className="card border-0 mt-3 mb-3 bg-dark">
+          <div className="card border-0 mt-3 bg-dark">
                     <div className="card-body">
                       <div className="row">
                         <ul class="nav">
