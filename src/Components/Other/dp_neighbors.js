@@ -71,7 +71,7 @@ export  function DpNeighbors(props){
       
   }, [])
     return   <div className="col-12">
-                  <div className="card text-white bg-dark mb-3">
+                  <div className="card text-white bg-dark mt-3 mb-3">
                       <div className="card-body">
                           <h4 class="card-title mb-3">DP Neighbors</h4>
                           <ul class="nav">
