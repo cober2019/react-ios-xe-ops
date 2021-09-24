@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Navbar } from '../Other/navbar';
 
-export  function RestConfig(){
+export  function RestConfig(props){
     const [update, setUpdate] = useState(0)
     const [model, updateModel] = useState(undefined)
     const [loading, updateLoading] = useState(false)
@@ -80,9 +80,8 @@ export  function RestConfig(){
     };
 
     const queryData = uri => {
-
+        updateLoading(true);
         if(update !== 0){
-          updateLoading(true)
           axios.post('/query', 
 
             { 'ip': localStorage.getItem('ip'), 
@@ -182,6 +181,7 @@ export  function RestConfig(){
       }
     
     const handleChange = e => {
+        console.log('ff')
         updateModel(e.target.value)
     }
 
@@ -284,7 +284,15 @@ export  function RestConfig(){
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                           <div className="col-8">
+		             <div clssName="card bg-dark">
+			        <div className="card-body">
+                                   {loading ? <div className="overlay" onclick="off()" style={{display: "flex", justifyContent: "center"}}><div className='row'><div style={{marginTop: 300}} class="spinner"></div></div></div>: <div/>}
+                                </div>
+                             </div>
+                           </div> 
+                       </div>
+
                     </div>
 
       }                          
