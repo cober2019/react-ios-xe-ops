@@ -126,7 +126,7 @@ export  function Bgp(props){
             </div>
   }
   else{
-    return  <div className="card text-white bg-dark ">
+    return  <div className="card text-white mt-3 bg-dark ">
             <div className="card-body">
             <h4 class="card-title mb-3">BGP Neighbors</h4>
                 {bgpTable}
