@@ -6,6 +6,7 @@ import { Routing }  from './Components/LayerThree/routing'
 import { Dmvpn }  from './Components/DMVPN/dmvpn'
 import { RestConfig }  from './Components/Config/config'
 import { RibIndex }  from './Components/RibStatus/RibMain'
+import { IpSlas }  from './Components/IPSlas/SlaParent'
 import { DeviceAuth }  from './Components/Other/login'
 import {
   BrowserRouter as Router,
@@ -76,6 +77,12 @@ function App() {
           <Route path="/ribstatus">
             <QueryClientProvider client={queryClient}>
               <RibIndex/>
+            </QueryClientProvider>
+          </Route>
+
+          <Route path="/ipslas">
+            <QueryClientProvider client={queryClient}>
+              <IpSlas/>
             </QueryClientProvider>
           </Route>
 
