@@ -199,7 +199,7 @@ export  function RestConfig(){
                     <Navbar ip={localStorage.getItem('ip')}/>
                     <div className="row">
                         <div className="col-4">
-                            <div className="card text-white bg-dark">
+                            <div className="card text-white mt-3 bg-dark">
                                 <div className="card-body">
                                     <div className="row">
                                         <form onSubmit={handleSubmit}>
@@ -223,7 +223,7 @@ export  function RestConfig(){
                             </div>
                         </div>
                         <div className="col-8">
-                            <div className="card text-white bg-dark">
+                            <div className="card text-white mt-3 bg-dark">
                                 <div className="card-body">
                                 <div className="row">
                                     <div className="col-3">
@@ -261,7 +261,7 @@ export  function RestConfig(){
                     <Navbar ip={localStorage.getItem('ip')}/>
                         <div className="row">
                             <div className="col-4">
-                                <div className="card text-white bg-dark">
+                                <div className="card text-white mt-3 bg-dark">
                                     <div className="card-body">
                                         <div className="row">
                                             <form onSubmit={handleSubmit}>
