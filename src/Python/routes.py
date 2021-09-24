@@ -16,13 +16,13 @@ import device_call_backup as InCaseRestDoesntWork
 import GetRibData as GetRibs
 import ssl
 
-ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+#ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
 
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=5)
 jwt = JWTManager(app)
 
 ################################################
@@ -294,4 +294,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True, ssl_context=ctx)
+    app.run(debug=True)
