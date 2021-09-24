@@ -3,6 +3,11 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from hmac import compare_digest
 import os
 import json
 import requests
@@ -11,13 +16,16 @@ import device_call_backup as InCaseRestDoesntWork
 import GetRibData as GetRibs
 import ssl
 
-headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-#ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/src/certificate.crt', f'{os.getcwd()}/src/privatekey.key')
 
 app = Flask(__name__)
+
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
+
+################################################
 
 rib_session = {}
 
@@ -38,8 +46,9 @@ def parse_config(config, parent_key):
 
 @app.route('/token', methods=['POST', 'GET'])
 def token() -> dict:
+
     token = create_access_token(identity=request.json.get('username'))
-    return jsonify(token)
+    return  token
 
 @app.route('/login', methods=['POST', 'GET'])
 @jwt_required()
@@ -58,7 +67,7 @@ def ios_xe_login() -> dict:
 
     try:
         response = requests.get(f"https://{request.json.get('ip', {})}:{request.json.get('port', {})}/restconf/data/netconf-state/capabilities",
-            headers=headers_ios, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
+            headers={"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
 
         if response.status_code == 200:
             auth_dict['status'] = 200
@@ -97,8 +106,9 @@ def environment_page() -> dict:
 
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     env_status = GetThisDataFromDevice.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    poe_status = GetThisDataFromDevice.get_poe(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1]}
+    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1], 'poe': poe_status}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
 @jwt_required()
@@ -127,10 +137,18 @@ def dmvpn() -> dict:
     """Gets DMVPN topology information. HUB/Spoke, interfaces, tunnel interfaces, topology info"""
 
     dmvpn = InCaseRestDoesntWork.get_dmvpn( request.json.get('username'), request.json.get('password'), request.json.get('ip'))
-    dmvpn_ints  = GetThisDataFromDevice.get_dmvpn_ints(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    dmvpn_ints = GetThisDataFromDevice.get_dmvpn_ints(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'dmvpn': dmvpn[0], 'dmvpnInts': dmvpn_ints, 'hubs': dmvpn_ints[3], 'location': dmvpn[1], 'routing': ospf[1]}
+
+@app.route('/getipsla', methods=['POST', 'GET'])
+def ipslas() -> dict:
+    """Gets DMVPN topology information. HUB/Spoke, interfaces, tunnel interfaces, topology info"""
+
+    sla_stats = GetThisDataFromDevice.get_ip_sla(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'slas': sla_stats}
 
 @app.route('/ribStatus', methods=['POST', 'GET'])
 def rib_status():
@@ -145,7 +163,7 @@ def rib_status():
                                                     'password': request.json.get('password', {}), 
                                                     'port': request.json.get('port', {}), 
                                                       'session':rib_session_obj}
-                                                      
+
     routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
                                                             request.json.get('ip'),
                                                             rib_session.get(request.json.get('ip')).get('port'),
@@ -249,7 +267,7 @@ def device_query() -> dict:
     response_dict = {} 
 
     response = requests.get(request.json.get('url'), 
-                            headers=headers_ios, verify=False,
+                            headers={"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}, verify=False,
                             auth=(request.json.get('username'),
                             request.json.get('password')))
     
@@ -276,4 +294,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context=ctx)

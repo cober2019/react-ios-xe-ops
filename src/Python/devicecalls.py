@@ -17,6 +17,100 @@ def _check_api_error(response) -> bool:
     
     return is_error
 
+def get_poe(ip, port, username, password) -> list:
+    """Collects arp for the matching"""
+
+    poe_ports = []
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-poe-oper:poe-oper-data"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        poe = json.loads(response.text)
+
+        check_error = _check_api_error(poe)
+
+        if check_error:
+            raise AttributeError
+    
+        poe_ports = poe.get('Cisco-IOS-XE-poe-oper:poe-oper-data', {}).get('poe-port', {})
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError) as e:
+        pass
+
+    return poe_ports
+
+def get_ip_sla(ip, port, username, password) -> list:
+    """Collects arp for the matching"""
+
+    sla_stats = []
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-ip-sla-oper:ip-sla-stats"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        slas = json.loads(response.text)
+
+        check_error = _check_api_error(slas)
+
+        if check_error:
+            raise AttributeError
+        
+        sla_stats = slas.get('Cisco-IOS-XE-ip-sla-oper:ip-sla-stats', {}).get('sla-oper-entry', {})
+    
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError) as e:
+        pass
+
+    return sla_stats
+
+def get_code_version(ip, port, username, password) -> list:
+    """Collects arp for the matching"""
+
+    code_version = None
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/version"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        version = json.loads(response.text)
+        check_error = _check_api_error(version)
+
+        if check_error:
+            raise AttributeError
+
+        try:
+            code_version = version.get('Cisco-IOS-XE-native:version', {})
+        except (TypeError, AttributeError):
+            pass
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError):
+        pass
+
+    return code_version
+
+def get_serial_pid(ip, port, username, password) -> list:
+    """Collects arp for the matching"""
+
+    pid = None
+    serial = None
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/license"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        serial_pid = json.loads(response.text)
+        check_error = _check_api_error(serial_pid)
+
+        if check_error:
+            raise AttributeError
+
+        try:
+            pid = serial_pid.get('Cisco-IOS-XE-native:license', {}).get('udi', {}).get('pid', {})
+            serial = serial_pid.get('Cisco-IOS-XE-native:license', {}).get('udi', {}).get('sn', {})
+        except (TypeError, AttributeError):
+            pass
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError):
+        pass
+
+    return pid, serial
+
 def get_arps(ip, port, username, password) -> list:
     """Collects arp for the matching"""
 
