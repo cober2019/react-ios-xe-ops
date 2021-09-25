@@ -21,7 +21,8 @@ export  function RestConfig(props){
                                 'Cisco-IOS-XE-ospf-oper:ospf-oper-data/ospf-state', 'Cisco-IOS-XE-matm-oper:matm-oper-data',
                                 'Cisco-IOS-XE-spanning-tree-oper:stp-details', 'Cisco-IOS-XE-cdp-oper:cdp-neighbor-details',
                                 'Cisco-IOS-XE-lldp-oper:lldp-entries', 'Cisco-IOS-XE-vlan-oper:vlans', 'Cisco-IOS-XE-bgp-oper:bgp-state-data',
-                                'Cisco-IOS-XE-hsrp-oper:hsrp-oper-data', 'Cisco-IOS-XE-poe-oper:poe-oper-data', 'Cisco-IOS-XE-ip-sla-oper:ip-sla-stats'])
+                                'Cisco-IOS-XE-hsrp-oper:hsrp-oper-data', 'Cisco-IOS-XE-poe-oper:poe-oper-data', 'Cisco-IOS-XE-ip-sla-oper:ip-sla-stats',
+                                'openconfig-lacp:aggregation-lacp-top'])
     
     const previousSelection = async () => {
 
@@ -92,9 +93,11 @@ export  function RestConfig(props){
                 console.log(response)
             if (response.data.status === 404){
                 alert("404 Not Found")
+                updateLoading(false)
             }
             else if (response.data.status === 500){
                 alert("End of the road")
+                updateLoading(false)
             }
             else{
                 xpathHistory.current.push(uri);
@@ -136,6 +139,7 @@ export  function RestConfig(props){
 
                     if (response.data === 500 || response.status === 404){
                         alert("No Data Returned")
+                        updateLoading(false)
                     }
                     else{
                         pythonStrPath.current = pythonStrPath.current + '.get(\'' + nextPath + '\')'
