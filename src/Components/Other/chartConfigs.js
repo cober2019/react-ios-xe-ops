@@ -845,6 +845,84 @@ export function ProtocolsTableHtml(tableRef) {
             </div>
 }
 
+export function PoeTableHtml(tableRef) {
+
+    return  <div class="table-responsive">
+                <table ref={tableRef} className="table table-dark" style={{width: '100%'}}>
+                    <thead>
+                        <tr>
+                            <th >Interface</th>
+                            <th >Poe Enabled</th>
+                            <th >Consumed Power</th>
+                            <th >PD Class</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+}
+
+export function SlaTableHtml(tableRef) {
+
+    return  <div class="table-responsive">
+                <table ref={tableRef} className="table table-dark" style={{width: '100%'}}>
+                    <thead>
+                        <tr>
+                            <th >SLA ID</th>
+                            <th >Start Time</th>
+                            <th >SLA Type</th>
+                            <th >Latest Result</th>
+                            <th >Success</th>
+                            <th >Failure</th>
+                            <th >RTT</th>
+                            <th >TTL</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+}
+
+export function TransceiverTableHtml(tableRef) {
+
+    return  <div class="table-responsive">
+                <table ref={tableRef} className="table table-dark" style={{width: '100%'}}>
+                    <thead>
+                        <tr>
+                            <th >Interface</th>
+                            <th >IsFault</th>
+                            <th >Temp</th>
+                            <th >Connector Type</th>
+                            <th >Speed</th>
+                            <th >Power out</th>
+                            <th >Power In</th>
+                            <th >Laser Bias</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+}
+
+
+
+export function InventoryTransceiverTableHtml(tableRef) {
+
+    return  <div class="table-responsive">
+                <table ref={tableRef} className="table table-dark" style={{width: '100%'}}>
+                    <thead>
+                        <tr>
+                            <th >Interfaces</th>
+                            <th >Serial</th>
+                            <th >Connector Type</th>
+                            <th >Vender</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+}
+
+
+
+
+
 
 
 
