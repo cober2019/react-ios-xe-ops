@@ -4,7 +4,7 @@ import {AES, enc}from 'crypto-js';
 import { Navbar } from '../Other/navbar';
 
 export  function RestConfig(props){
-	const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
+    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
     const password = passwordDecrypt.toString(enc.Utf8); 
     const [update, setUpdate] = useState(0)
     const [model, updateModel] = useState(undefined)
