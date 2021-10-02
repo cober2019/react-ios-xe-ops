@@ -1,7 +1,7 @@
 IOS-XE-Ops
 ============
 
-**! This code is not complete but is functional !**
+**! This code is for viewing only !**
 
 Contributions are welcome. BYORC, bring your own react component!!!
 
