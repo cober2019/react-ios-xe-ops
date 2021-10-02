@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import {AES, enc}from 'crypto-js';
 import { Navbar } from '../Other/navbar';
 
 export  function RestConfig(props){
+	const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
+    const password = passwordDecrypt.toString(enc.Utf8); 
     const [update, setUpdate] = useState(0)
     const [model, updateModel] = useState(undefined)
     const [loading, updateLoading] = useState(false)
@@ -33,7 +36,7 @@ export  function RestConfig(props){
 
                             { 'ip': localStorage.getItem('ip'), 
                             'username': localStorage.getItem('username'), 
-                            'password': localStorage.getItem('password'), 
+                            'password': password, 
                             'port': localStorage.getItem('port'), 'url': url.current},
                             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
@@ -58,7 +61,7 @@ export  function RestConfig(props){
 
                             { 'ip': localStorage.getItem('ip'), 
                             'username': localStorage.getItem('username'), 
-                            'password': localStorage.getItem('password'), 
+                            'password': password, 
                             'port': localStorage.getItem('port'), 'url': previousUrl},
                             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
@@ -86,7 +89,7 @@ export  function RestConfig(props){
 
             { 'ip': localStorage.getItem('ip'), 
             'username': localStorage.getItem('username'), 
-            'password': localStorage.getItem('password'), 
+            'password': password, 
             'port': localStorage.getItem('port'), 'url': uri},
             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
                 console.log(response)
@@ -121,7 +124,7 @@ export  function RestConfig(props){
 
             { 'ip': localStorage.getItem('ip'), 
             'username': localStorage.getItem('username'), 
-            'password': localStorage.getItem('password'), 
+            'password': password, 
             'port': localStorage.getItem('port'), 'url': nextUrl}, {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
             if (response.data.status === 404){
@@ -131,7 +134,7 @@ export  function RestConfig(props){
 
                 axios.post('/query', { 'ip': localStorage.getItem('ip'), 
                     'username': localStorage.getItem('username'), 
-                    'password': localStorage.getItem('password'), 
+                    'password': password, 
                     'port': localStorage.getItem('port'), 'url': urlWithFilter},{'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
                     if (response.data === 500 || response.status === 404){
