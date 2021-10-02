@@ -90,7 +90,7 @@ export function Index(props){
             }
         else if (isLoading){
           return  <div>
-                    <h4 className="text-center fade-in" style={{marginTop: 100}}>Collecting Data for {localStorage.getItem('ip')}</h4>
+                    <h4 className="text-center fade-in" style={{marginTop: 100}}>Collecting Data From {localStorage.getItem('ip')}</h4>
                     <div className="loader text-center"></div>
                 </div>
         }
