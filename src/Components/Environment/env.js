@@ -62,7 +62,7 @@ export function Environment(props){
         }
     else if (isLoading){
       return  <div>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data for {localStorage.getItem('ip')}</h4>
+                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Environmental Data From {localStorage.getItem('ip')}</h4>
                 <div class="loader text-center"></div>
             </div>
     }
