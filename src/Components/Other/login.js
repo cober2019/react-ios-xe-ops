@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Redirect } from "react-router-dom";
+import {useRecoilState} from 'recoil';
 import { Login } from './promises'
 import { AES }from 'crypto-js';
+import { encytpKey } from '../../index'
+
 
 export function DeviceAuth(props){
+    const [encrypt, setDecrypt] = useRecoilState(encytpKey);
     const [loading, setloading] = useState(false);
     const [ip, setIp] = useState(null)
     const [username, setUserNaMe] = useState(null)
@@ -18,7 +22,7 @@ export function DeviceAuth(props){
         try{
             let response = await Login(ip, username, password)
             if(response.data.status === 200){
-                const encryptPassword = AES.encrypt(password,'MYKEY4DEMO');
+                const encryptPassword = AES.encrypt(password, encrypt);
                 localStorage.setItem('ip', ip);
                 localStorage.setItem('port', 443);
                 localStorage.setItem('username', username);
