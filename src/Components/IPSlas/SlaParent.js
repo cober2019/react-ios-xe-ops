@@ -1,19 +1,20 @@
 import React from 'react';
 import axios from 'axios';
+import {useRecoilState} from 'recoil';
 import { Navbar } from '../Other/navbar'
 import { SlaStats } from './ipslastats'
 import { BuildSlaTopologies } from './slatopologies'
 import { useQuery } from 'react-query';
 import { ErrorBoundary } from '../Other/errorBoundry';
 import {AES, enc}from 'crypto-js';
-
+import { encytpKey } from '../../index'
 
 export  function IpSlas(){
-  const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-  const password = passwordDecrypt.toString(enc.Utf8);
+  const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+  const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
   const { isLoading, error, data, isFetching } = useQuery('getipsla', async () => {
         const data = await axios.post('/getipsla', {'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-        'password': password, 'port': localStorage.getItem('port')})
+        'password':  passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
 
         return data.data
 
@@ -51,7 +52,7 @@ export  function IpSlas(){
   }
   else if (isLoading){
           return  <div>
-                      <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting IP SLAs From {localStorage.getItem('ip')}</h4>
+                      <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting routing data for {localStorage.getItem('ip')}</h4>
                       <div class="loader text-center"></div>
                   </div>
   }
