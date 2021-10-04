@@ -15,7 +15,7 @@ export  function Routing(props){
       
         const response = await axios.post('/pollRouting',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
         'password': password, 'port': localStorage.getItem('port')})
-
+        console.log(response)
         return response.data
 
         },
@@ -37,14 +37,14 @@ else if (data){
                     <div className="row mb-3 mt-3">
                         <div className="col-12">
                         <ErrorBoundary>
-                            <Bgp neighbors={data.bgp} details={data.bgpDetails} topology={data.bgpToplogy}/>
+                            {data.bgpDetails.length > 0 ? <Bgp neighbors={data.bgp} details={data.bgpDetails} topology={data.bgpToplogy}/> : <div/>}
                         </ErrorBoundary>
                         </div>
                     </div>
                     <div className="row mb-3">
                         <div className="col-12">
                         <ErrorBoundary>
-                            <Ospf neighbors={data.ospf} interfaces={data.ospfInts} topology={data.ospfToplogy}/>
+                            {data.ospf.length > 0 ? <Ospf neighbors={data.ospf} interfaces={data.ospfInts} topology={data.ospfToplogy}/> : <div/>}
                         </ErrorBoundary>
                         </div>
                     </div>
@@ -52,7 +52,7 @@ else if (data){
 }
 else if (isLoading){
     return  <div>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Routing Data From {localStorage.getItem('ip')}</h4>
+                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting routing data for {localStorage.getItem('ip')}</h4>
                 <div class="loader text-center"></div>
             </div>
 }
