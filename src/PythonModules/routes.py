@@ -129,7 +129,7 @@ def dmvpn() -> dict:
 
 @app.route('/getipsla', methods=['POST', 'GET'])
 def ipslas() -> dict:
-    """Gets DMVPN topology information. HUB/Spoke, interfaces, tunnel interfaces, topology info"""
+    """Gets IP SLA data from device"""
 
     sla_stats = GetThisDataFromDevice.get_ip_sla(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
@@ -143,19 +143,21 @@ def rib_status():
 
     routing_information =[[],[],[]]
 
-    if not rib_session.get(request.json.get('ip', {})):
-        rib_session_obj = GetRibs.Routing()
-        rib_session[request.json.get('ip', {})] = {'username': request.json.get('username'), 
-                                                    'password':request.json.get('password'), 
-                                                    'port': 443, 
-                                                    'session':rib_session_obj}
+    try:
+        if not rib_session.get(request.json.get('ip', {})):
+            rib_session_obj = GetRibs.Routing()
+            rib_session[request.json.get('ip', {})] = {'username': request.json.get('username'), 
+                                                        'password':request.json.get('password'), 
+                                                        'port': 443, 
+                                                        'session':rib_session_obj}
 
-    routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
-                                                            request.json.get('ip'),443,
-                                                            request.json.get('username'),
-                                                            request.json.get('password'))
+        routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
+                                                                request.json.get('ip'),443,
+                                                                request.json.get('username'),
+                                                                request.json.get('password'))
+    except (TypeError, AttributeError):
+        pass
 
-    print(routing_information)
     return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
@@ -279,4 +281,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='192.168.86.46')
