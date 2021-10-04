@@ -1,7 +1,7 @@
 IOS-XE-Ops
 ============
 
-**! This code is not complete but is functional !**
+**! This code is not complete !**
 
 SnapShots:
 ----------
