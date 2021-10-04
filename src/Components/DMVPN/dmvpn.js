@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
-import { Navbar } from '../Other/navbar'
-import { DmvpnData } from './dmvpnData'
+import {AES, enc} from 'crypto-js';
+import {useRecoilState} from 'recoil';
+import { Navbar } from '../Other/navbar';
+import { DmvpnData } from './dmvpnData';
 import { useQuery } from 'react-query';
 import { ErrorBoundary } from '../Other/errorBoundry';
-import {AES, enc}from 'crypto-js';
+import { encytpKey } from '../../index';
 
-export  function Dmvpn(props){
-const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-  const password = passwordDecrypt.toString(enc.Utf8);
-  const { isLoading, error, data, isFetching } = useQuery('getDmvpn', async () => {
+export  function Dmvpn(){
+    const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
+    const { isLoading, error, data, isFetching } = useQuery('getDmvpn', async () => {
 
         const response = await axios.post('/getDmvpn',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-        'password': password, 'port': localStorage.getItem('port')})
+        'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
 
         return response.data
 
