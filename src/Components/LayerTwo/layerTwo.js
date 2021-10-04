@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
+import {useRecoilState} from 'recoil';
 import { DpNeighbors} from '../Other/dp_neighbors'
 import { GlobalSpanTreeHtml} from '../Other/chartConfigs'
 import { MacTable} from './macAddress'
@@ -11,19 +12,18 @@ import { Vlans} from './vlans'
 import { Navbar } from '../Other/navbar';
 import { ErrorBoundary } from '../Other/errorBoundry';
 import {AES, enc}from 'crypto-js';
-
-
+import { encytpKey } from '../../index'
 
 export  function LayerTwo(props){
   const bridgeGlobalTble = useRef(false) 
-  const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-  const password = passwordDecrypt.toString(enc.Utf8);
+  const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+  const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
   const { isLoading, error, data, isFetching } = useQuery('pollL2Page', async () => {
     
     const response = await axios.post('/pollL2Page',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-    'password': password, 'port': localStorage.getItem('port')})
+    'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
 
-      if(response.data.mode){
+    if(response.data.mode){
         bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.mode)
       }
       
