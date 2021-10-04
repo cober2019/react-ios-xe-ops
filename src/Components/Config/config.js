@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { encytpKey } from '../../index'
+import {useRecoilState} from 'recoil';
 import {AES, enc}from 'crypto-js';
 
 import { Navbar } from '../Other/navbar';
 
 export  function RestConfig(props){
-	const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-    const password = passwordDecrypt.toString(enc.Utf8); 
+    const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
     const [update, setUpdate] = useState(0)
     const [model, updateModel] = useState(undefined)
     const [loading, updateLoading] = useState(false)
@@ -37,7 +39,7 @@ export  function RestConfig(props){
 
                             { 'ip': localStorage.getItem('ip'), 
                             'username': localStorage.getItem('username'), 
-                            'password': password, 
+                            'password': passwordDecrypt.toString(enc.Utf8), 
                             'port': 443, 'url': url.current},
                             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
@@ -62,7 +64,7 @@ export  function RestConfig(props){
 
                             { 'ip': localStorage.getItem('ip'), 
                             'username': localStorage.getItem('username'), 
-                            'password': password, 
+                            'password': passwordDecrypt.toString(enc.Utf8), 
                             'port': 443, 'url': previousUrl},
                             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
@@ -90,11 +92,11 @@ export  function RestConfig(props){
 
             { 'ip': localStorage.getItem('ip'), 
             'username': localStorage.getItem('username'), 
-            'password': password, 
+            'password': passwordDecrypt.toString(enc.Utf8), 
             'port': 443, 'url': uri},
             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
-                console.log(response)
-            if (response.data.status === 404){
+
+                if (response.data.status === 404){
                 alert("404 Not Found")
                 updateLoading(false)
             }
@@ -127,7 +129,7 @@ export  function RestConfig(props){
 
             { 'ip': localStorage.getItem('ip'), 
             'username': localStorage.getItem('username'), 
-            'password': password, 
+            'password': passwordDecrypt.toString(enc.Utf8), 
             'port': 443, 'url': nextUrl}, {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
             if (response.data.status === 404){
@@ -137,7 +139,7 @@ export  function RestConfig(props){
 
                 axios.post('/query', { 'ip': localStorage.getItem('ip'), 
                     'username': localStorage.getItem('username'), 
-                    'password': password, 
+                    'password': passwordDecrypt.toString(enc.Utf8), 
                     'port': 443, 'url': urlWithFilter},{'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
                     if (response.data === 500 || response.status === 404){
