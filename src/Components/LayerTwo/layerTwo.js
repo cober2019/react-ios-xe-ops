@@ -28,7 +28,7 @@ export  function LayerTwo(props){
 
     },
     {
-      refetchInterval: 5000, cacheTime: 0,
+      refetchInterval: 5000,
     }
 )
 
@@ -42,7 +42,7 @@ if (error){
 else if (data){
   return <div className="container-fluid">
           <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
-          <div className="card border-0 mt-3 bg-dark">
+          {data.span.length > 0 ? <div><div className="card border-0 mt-3 bg-dark">
                     <div className="card-body">
                       <div className="row">
                         <ul class="nav">
@@ -67,7 +67,7 @@ else if (data){
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div>  
                     <div className="row">
                       <ErrorBoundary>
                         <DpNeighbors dpNeighbors={data.dpNeighbors}/>
@@ -75,31 +75,33 @@ else if (data){
                     </div>
                     <div className="row">
                         <ErrorBoundary>
-                          <Vlans vlans={data.vlans}/>
+                          {data.vlans.length > 0 ? <Vlans vlans={data.vlans}/> : <div/>}
                         </ErrorBoundary>
                         <div className="col-xl-5">
                           <div className="row">
                             <ErrorBoundary>
-                              <Trunks ports={data.trunks}/>
+                              {data.trunks.length > 0 ? <Trunks ports={data.trunks}/> : <div/>}
                             </ErrorBoundary>
                           </div>
                           <div className='row'>
                             <ErrorBoundary>
-                              <AccessPorts ports={data.access}/>
+                              {data.access.length > 0 ? <AccessPorts ports={data.access}/>: <div/>}
                             </ErrorBoundary>
                           </div>
                             <div className='row'>
                             <ErrorBoundary>
-                              <MacTable macs={data.macs}/>
+                              {data.macs.length > 0 ? <MacTable macs={data.macs}/> : <div/>}
                             </ErrorBoundary>
                           </div>
                         </div>
                       </div>
                     </div>
+                     : <div className="alert alert-dark text-center mt-3" role="alert"><h5>No Layer Two Data Found</h5></div>}
+                     </div>
 }
 else if (isLoading){
   return  <div>
-            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 Data From {localStorage.getItem('ip')}</h4>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 data for {localStorage.getItem('ip')}</h4>
             <div class="loader text-center"></div>
         </div>
 }
