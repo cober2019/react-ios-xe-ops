@@ -470,7 +470,7 @@ def get_span_tree(ip, port, username, password) -> tuple:
         if check_error:
             raise AttributeError
 
-        span_global_data = span_table.get('Cisco-IOS-XE-spanning-tree-oper:stp-global', {})
+        span_global_data = span_global_table.get('Cisco-IOS-XE-spanning-tree-oper:stp-global', {})
 
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
         pass
