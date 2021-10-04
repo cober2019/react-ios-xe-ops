@@ -104,7 +104,7 @@ else if (data){
 }
 else if (isLoading){
   return  <div>
-            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 data for {localStorage.getItem('ip')}</h4>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 Data From {localStorage.getItem('ip')}</h4>
             <div class="loader text-center"></div>
         </div>
 }
