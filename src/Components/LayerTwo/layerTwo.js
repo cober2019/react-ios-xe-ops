@@ -22,7 +22,7 @@ export  function LayerTwo(props){
     
     const response = await axios.post('/pollL2Page',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
     'password': password, 'port': localStorage.getItem('port')})
-      console.log(response.data)
+
       if(response.data.mode){
         bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.mode)
       }
