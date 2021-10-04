@@ -45,7 +45,7 @@ if (error){
 else if (data){
   return <div className="container-fluid">
           <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
-          {data.mode ? <div><div className="card border-0 mt-3 bg-dark">
+         <div><div className="card border-0 mt-3 bg-dark">
                     <div className="card-body">
                       <div className="row">
                         <ul class="nav">
@@ -99,7 +99,7 @@ else if (data){
                         </div>
                       </div>
                     </div>
-                     : <div className="alert alert-dark text-center mt-3" role="alert"><h5>No Layer Two Data Found</h5></div>}
+           
                      </div>
 }
 else if (isLoading){
