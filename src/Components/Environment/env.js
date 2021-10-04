@@ -1,6 +1,7 @@
-import React, {useEffect } from 'react';
+import React from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
+import {useRecoilState} from 'recoil';
 import { CpuUsage} from './cpuUsages'
 import { Sensors} from './sensors'
 import { ErrorBoundary } from '../Other/errorBoundry';
@@ -8,23 +9,22 @@ import { Navbar } from '../Other/navbar';
 import { PoeConnections } from './poe'
 import { Transceivers } from './transceivers'
 import {AES, enc}from 'crypto-js';
+import { encytpKey } from '../../index'
 
-
-
-export function Environment(props){
-  const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-  const password = passwordDecrypt.toString(enc.Utf8);
+export function Environment(){
+  const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+  const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
   const { isLoading, error, data, isFetching } = useQuery('pollEnv', async () => {
-    
-        const response = await axios.post('/pollEnv', {'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-                'password': password, 'port': localStorage.getItem('port')})
-                return response.data
-  
-                },
-                {
-                  refetchInterval: 10000, cacheTime: 0
-                }
-    )
+    const response = await axios.post('/pollEnv', {'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
+    'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
+
+    return response.data
+
+    },
+    {
+      refetchInterval: 10000, cacheTime: 0
+    }
+)
 
 
     if (error){
@@ -60,7 +60,7 @@ export function Environment(props){
         }
     else if (isLoading){
       return  <div>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data for {localStorage.getItem('ip')}</h4>
+                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data From {localStorage.getItem('ip')}</h4>
                 <div class="loader text-center"></div>
             </div>
     }
