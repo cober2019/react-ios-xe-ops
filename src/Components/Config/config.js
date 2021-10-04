@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {AES, enc}from 'crypto-js';
+
 import { Navbar } from '../Other/navbar';
 
 export  function RestConfig(props){
-    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
+	const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
     const password = passwordDecrypt.toString(enc.Utf8); 
     const [update, setUpdate] = useState(0)
     const [model, updateModel] = useState(undefined)
@@ -24,7 +25,7 @@ export  function RestConfig(props){
                                 'Cisco-IOS-XE-ospf-oper:ospf-oper-data/ospf-state', 'Cisco-IOS-XE-matm-oper:matm-oper-data',
                                 'Cisco-IOS-XE-spanning-tree-oper:stp-details', 'Cisco-IOS-XE-cdp-oper:cdp-neighbor-details',
                                 'Cisco-IOS-XE-lldp-oper:lldp-entries', 'Cisco-IOS-XE-vlan-oper:vlans', 'Cisco-IOS-XE-bgp-oper:bgp-state-data',
-                                'Cisco-IOS-XE-hsrp-oper:hsrp-oper-data'])
+                                'Cisco-IOS-XE-hsrp-oper:hsrp-oper-data',' Cisco-IOS-XE-matm-oper:matm-oper-data'])
     
     const previousSelection = async () => {
 
@@ -37,7 +38,7 @@ export  function RestConfig(props){
                             { 'ip': localStorage.getItem('ip'), 
                             'username': localStorage.getItem('username'), 
                             'password': password, 
-                            'port': localStorage.getItem('port'), 'url': url.current},
+                            'port': 443, 'url': url.current},
                             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
                             pythonStrPath.current = '{PythonVar}'
@@ -62,7 +63,7 @@ export  function RestConfig(props){
                             { 'ip': localStorage.getItem('ip'), 
                             'username': localStorage.getItem('username'), 
                             'password': password, 
-                            'port': localStorage.getItem('port'), 'url': previousUrl},
+                            'port': 443, 'url': previousUrl},
                             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
                             pythonStrPath.current = pythonPath.current[pythonPath.current.length - 2];
@@ -90,14 +91,16 @@ export  function RestConfig(props){
             { 'ip': localStorage.getItem('ip'), 
             'username': localStorage.getItem('username'), 
             'password': password, 
-            'port': localStorage.getItem('port'), 'url': uri},
+            'port': 443, 'url': uri},
             {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
                 console.log(response)
             if (response.data.status === 404){
                 alert("404 Not Found")
+                updateLoading(false)
             }
             else if (response.data.status === 500){
                 alert("End of the road")
+                updateLoading(false)
             }
             else{
                 xpathHistory.current.push(uri);
@@ -125,7 +128,7 @@ export  function RestConfig(props){
             { 'ip': localStorage.getItem('ip'), 
             'username': localStorage.getItem('username'), 
             'password': password, 
-            'port': localStorage.getItem('port'), 'url': nextUrl}, {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
+            'port': 443, 'url': nextUrl}, {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
             if (response.data.status === 404){
 
@@ -135,10 +138,11 @@ export  function RestConfig(props){
                 axios.post('/query', { 'ip': localStorage.getItem('ip'), 
                     'username': localStorage.getItem('username'), 
                     'password': password, 
-                    'port': localStorage.getItem('port'), 'url': urlWithFilter},{'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
+                    'port': 443, 'url': urlWithFilter},{'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}).then(response => {
 
                     if (response.data === 500 || response.status === 404){
                         alert("No Data Returned")
+                        updateLoading(false)
                     }
                     else{
                         pythonStrPath.current = pythonStrPath.current + '.get(\'' + nextPath + '\')'
@@ -158,6 +162,7 @@ export  function RestConfig(props){
             }
             else if (response.data.status === 500 || response.data.status === 404){
                 alert("No Data Returned")
+                updateLoading(false)
             }
             else{
                 pythonStrPath.current = pythonStrPath.current + '.get(\'' + nextPath + '\')'
@@ -179,7 +184,7 @@ export  function RestConfig(props){
     const handleSubmit = e => {
         e.preventDefault()
         pythonStrPath.current = '{PythonVar}'
-        let url = 'https://'+ localStorage.getItem('ip')  + ':' + localStorage.getItem('port') + '/restconf/data/' + model;
+        let url = 'https://'+ localStorage.getItem('ip')  + ':443/restconf/data/' + model;
         queryData(url)
       }
     
