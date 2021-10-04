@@ -1,22 +1,23 @@
-
-import { Navbar } from '../Other/navbar'
-import { RibInfo} from './getRibs'
-import { RibDiff} from './ribDiff'
-import { RoutingProtocols} from './protocols'
 import axios from 'axios';
 import { useQuery } from 'react-query';
-import {AES, enc}from 'crypto-js';
+import {AES, enc} from 'crypto-js';
+import {useRecoilState} from 'recoil';
+import { Navbar } from '../Other/navbar';
+import { RibInfo} from './getRibs';
+import { RibDiff} from './ribDiff';
+import { RoutingProtocols} from './protocols';
+import { encytpKey } from '../../index';
 const $ = require('jquery');
 $.DataTable = require('datatables.net');
 
 
 export function RibIndex(){
-    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-    const password = passwordDecrypt.toString(enc.Utf8);  
+    const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
     const { isLoading, error, data, isFetching  } = useQuery('ribStatus', async () => {
       
         const response = await axios.post('/ribStatus',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-        'password': password, 'port': localStorage.getItem('port')}, {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')}, {'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         
         return response.data
 
