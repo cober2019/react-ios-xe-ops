@@ -281,4 +281,5 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
+    #ssl_context=ctx, You can add ssl to the api by placing ssl_context in to app.run as an argument. Ensure you've generated SSL certs. Line 14-15
     app.run(debug=True)
