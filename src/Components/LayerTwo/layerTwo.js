@@ -22,9 +22,9 @@ export  function LayerTwo(props){
     
     const response = await axios.post('/pollL2Page',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
     'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
-
+    console.log(response.data)
     if(response.data.span[1]['Cisco-IOS-XE-spanning-tree-oper:stp-global']){
-        bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.span[1]['Cisco-IOS-XE-spanning-tree-oper:stp-global'])
+        bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.globalSpan)
       }
       
       return response.data
@@ -45,7 +45,7 @@ if (error){
 else if (data){
   return <div className="container-fluid">
           <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
-         <div><div className="card border-0 mt-3 bg-dark">
+          { bridgeGlobalTble.current ? <div><div className="card border-0 mt-3 bg-dark">
                     <div className="card-body">
                       <div className="row">
                         <ul class="nav">
@@ -58,7 +58,7 @@ else if (data){
                           </ul>
                           <div class="tab-content">
                               <div class="tab-pane" id="spanports" role="tabpanel">     
-                              { data.span[0].map(instance => (
+                              { data.span.map(instance => (
                                     <ErrorBoundary>
                                       <SpanTable span={instance}/>
                                     </ErrorBoundary>
@@ -99,12 +99,12 @@ else if (data){
                         </div>
                       </div>
                     </div>
-           
+                     : <div className="alert alert-dark text-center mt-3" role="alert"><h5>No Layer Two Data Found</h5></div>}
                      </div>
 }
 else if (isLoading){
   return  <div>
-            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 Data From {localStorage.getItem('ip')}</h4>
+            <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting L2 data for {localStorage.getItem('ip')}</h4>
             <div class="loader text-center"></div>
         </div>
 }
