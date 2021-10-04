@@ -23,8 +23,8 @@ export  function LayerTwo(props){
     const response = await axios.post('/pollL2Page',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
     'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
 
-    if(response.data.mode){
-        bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.mode)
+    if(response.data.span[1]['Cisco-IOS-XE-spanning-tree-oper:stp-global']){
+        bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.span[1]['Cisco-IOS-XE-spanning-tree-oper:stp-global'])
       }
       
       return response.data
