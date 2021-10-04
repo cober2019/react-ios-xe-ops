@@ -22,8 +22,8 @@ export  function LayerTwo(props){
     
     const response = await axios.post('/pollL2Page',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
     'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
- 
-    if(response.data.span[1]['Cisco-IOS-XE-spanning-tree-oper:stp-global']){
+
+    if(response.data.globalSpan){
         bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.globalSpan)
       }
       
@@ -45,7 +45,7 @@ if (error){
 else if (data){
   return <div className="container-fluid">
           <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
-          { bridgeGlobalTble.current ? <div><div className="card border-0 mt-3 bg-dark">
+          { data.span.length > 0 ? <div><div className="card border-0 mt-3 bg-dark">
                     <div className="card-body">
                       <div className="row">
                         <ul class="nav">
