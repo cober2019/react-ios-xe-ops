@@ -281,4 +281,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.86.46')
+    app.run(debug=True')
