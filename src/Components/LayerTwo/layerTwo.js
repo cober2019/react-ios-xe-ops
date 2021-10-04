@@ -10,7 +10,6 @@ import { AccessPorts} from './accessPorts'
 import { Vlans} from './vlans'
 import { Navbar } from '../Other/navbar';
 import { ErrorBoundary } from '../Other/errorBoundry';
-import { MacData, SpanData, VlansData, TrunkData, AccessData, DpData} from '../Other/data';
 import {AES, enc}from 'crypto-js';
 
 
@@ -23,7 +22,11 @@ export  function LayerTwo(props){
     
     const response = await axios.post('/pollL2Page',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
     'password': password, 'port': localStorage.getItem('port')})
-      bridgeGlobalTble.current = GlobalSpanTreeHtml(SpanData[1]['Cisco-IOS-XE-spanning-tree-oper:stp-global'])
+      console.log(response.data)
+      if(response.data.mode){
+        bridgeGlobalTble.current = GlobalSpanTreeHtml(response.data.mode)
+      }
+      
       return response.data
 
     },
@@ -42,7 +45,7 @@ if (error){
 else if (data){
   return <div className="container-fluid">
           <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
-          {data.span.length > 0 ? <div><div className="card border-0 mt-3 bg-dark">
+          {data.mode ? <div><div className="card border-0 mt-3 bg-dark">
                     <div className="card-body">
                       <div className="row">
                         <ul class="nav">
@@ -90,7 +93,7 @@ else if (data){
                           </div>
                             <div className='row'>
                             <ErrorBoundary>
-                              {data.macs.length > 0 ? <MacTable macs={data.macs}/> : <div/>}
+                              {data.mac_addresses.length > 0 ? <MacTable macs={data.macs}/> : <div/>}
                             </ErrorBoundary>
                           </div>
                         </div>
