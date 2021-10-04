@@ -1,27 +1,27 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
+import {useRecoilState} from 'recoil';
 import { Ospf } from './ospf';
 import { Bgp } from './bgp';
 import { Navbar } from '../Other/navbar'
-import { useQuery, getQueriesData } from 'react-query';
+import { useQuery } from 'react-query';
 import { ErrorBoundary } from '../Other/errorBoundry';
 import {AES, enc}from 'crypto-js';
+import { encytpKey } from '../../index'
 
-
-export  function Routing(props){
-    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
-    const password = passwordDecrypt.toString(enc.Utf8);
+export  function Routing(){
+    const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+    const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
     const { isLoading, error, data, isFetching } = useQuery('pollRouting', async () => {
-      
-        const response = await axios.post('/pollRouting',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-        'password': password, 'port': localStorage.getItem('port')})
-        console.log(response)
-        return response.data
+    const response = await axios.post('/pollRouting',{'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
+    'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
+    
+    return response.data
 
-        },
-        {
-        refetchInterval: 5000, cacheTime: 0,
-        }
+    },
+    {
+    refetchInterval: 5000, cacheTime: 0,
+    }
   )
 
   if (error){
