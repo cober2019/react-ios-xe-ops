@@ -429,6 +429,7 @@ def get_bridge(ip, port, username, password) -> list:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-matm-oper:matm-oper-data"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         bridge_data = json.loads(response.text)
+        print(bridge_data)
 
         check_error = _check_api_error(bridge_data)
         
@@ -440,8 +441,9 @@ def get_bridge(ip, port, username, password) -> list:
                 [mac_table.append(i) for i in i.get('matm-mac-entry', {})]
                 
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        mac_table = {'Cisco-IOS-XE-matm-oper:matm-oper-data': {'matm-table': [{}]}}
-
+        pass
+    
+    print(mac_table)
     return mac_table
 
 def get_span_tree(ip, port, username, password) -> tuple:
