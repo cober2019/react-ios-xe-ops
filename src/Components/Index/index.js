@@ -8,11 +8,10 @@ import { Hsrp} from './hsrp'
 import { DpNeighbors} from '../Other/dp_neighbors'
 import { ErrorBoundary } from '../Other/errorBoundry';
 import { Navbar } from '../Other/navbar';
-import { DpData, QosData, InterfaceData, HsrpData } from '../Other/data';
 import {AES, enc}from 'crypto-js';
 
 
-export function Index(props){
+export function Index(){
   const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), 'MYKEY4DEMO');
   const password = passwordDecrypt.toString(enc.Utf8);
   const { isLoading, error, data, isFetching } = useQuery('indexData', async () => {
@@ -83,7 +82,7 @@ export function Index(props){
                             </div>
                           </div>
                           <ErrorBoundary>
-                            <Hsrp hsrp={data.hsrp} localIp={localStorage.getItem('ip')} />
+                            {data.hsrp.length > 0 ? <Hsrp hsrp={data.hsrp} localIp={localStorage.getItem('ip')} /> : <div/>}
                           </ErrorBoundary>
                         
                       </div>
