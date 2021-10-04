@@ -106,7 +106,7 @@ def layer_2__page() -> dict:
     mac_addresses = GetThisDataFromDevice.get_bridge(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     span_table = GetThisDataFromDevice.get_span_tree(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table}
+    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table[0], 'globalSpan': span_table[1]}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
 def routing_page() -> dict:
@@ -281,5 +281,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    #ssl_context=ctx, You can add ssl to the api by placing ssl_context in to app.run as an argument. Ensure you've generated SSL certs. Line 14-15
-    app.run(debug=True)
+    app.run(debug=True, host='192.168.86.46')
