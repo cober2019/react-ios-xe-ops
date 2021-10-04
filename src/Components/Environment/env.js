@@ -4,9 +4,7 @@ import axios from 'axios';
 import { CpuUsage} from './cpuUsages'
 import { Sensors} from './sensors'
 import { ErrorBoundary } from '../Other/errorBoundry';
-import { EnvData} from '../Other/data';
 import { Navbar } from '../Other/navbar';
-import { Poe , Transiever } from '../Other/data';
 import { PoeConnections } from './poe'
 import { Transceivers } from './transceivers'
 import {AES, enc}from 'crypto-js';
@@ -40,7 +38,7 @@ export function Environment(props){
           return  <div className="container-fluid">
                       <Navbar update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
                       <ErrorBoundary>
-                          <Transceivers transceivers={data.transceivers}/>
+                          {data.transceivers.length > 0 ? <Transceivers transceivers={data.transceivers}/> : <div/>}
                       </ErrorBoundary>
                       <div className="row">
                           <div className="col-xl-4">
@@ -48,7 +46,7 @@ export function Environment(props){
                               <Sensors env={data.env}/>
                             </ErrorBoundary>
                             <ErrorBoundary>
-                              <PoeConnections poe={data.poe}/>
+                              {data.poe.length > 0 ? <PoeConnections poe={data.poe}/> : <div/>}
                           </ErrorBoundary>
                           </div>
     
@@ -62,7 +60,7 @@ export function Environment(props){
         }
     else if (isLoading){
       return  <div>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Environmental Data From {localStorage.getItem('ip')}</h4>
+                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data for {localStorage.getItem('ip')}</h4>
                 <div class="loader text-center"></div>
             </div>
     }
