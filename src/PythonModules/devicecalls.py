@@ -21,6 +21,50 @@ def _check_api_error(response) -> bool:
     
     return is_error
 
+def get_poe(ip, port, username, password) -> list:
+    """Collects poe port information"""
+
+    poe_ports = []
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-poe-oper:poe-oper-data"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        poe = json.loads(response.text)
+
+        check_error = _check_api_error(poe)
+
+        if check_error:
+            raise AttributeError
+    
+        poe_ports = poe.get('Cisco-IOS-XE-poe-oper:poe-oper-data', {}).get('poe-port', {})
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError) as e:
+        pass
+
+    return poe_ports
+
+def get_sfps(ip, port, username, password) -> list:
+    """Collects device transcievers"""
+
+    transceiver_ports = []
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-transceiver-oper:transceiver-oper-data"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        transceivers = json.loads(response.text)
+
+        check_error = _check_api_error(transceivers)
+
+        if check_error:
+            raise AttributeError
+    
+        transceiver_ports = transceivers.get('Cisco-IOS-XE-transceiver-oper:transceiver-oper-data', {}).get('transceiver', {})
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError) as e:
+        pass
+
+    return transceiver_ports
+
 def get_arps(ip, port, username, password) -> list:
     """Collects arp for the matching"""
 
@@ -96,10 +140,6 @@ def get_interfaces(ip, port, username, password) -> dict:
         try:
             uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-arp-oper:arp-data/arp-vrf"
             response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
-
-            converted_json = json.loads(response.text, strict=False)
-            get_keys = dict.fromkeys(converted_json)
-            parent_key = list(get_keys.keys())[0]
 
             for interface in interface_data:
                 #Collect inter qos statistics. Commence policy breakdown

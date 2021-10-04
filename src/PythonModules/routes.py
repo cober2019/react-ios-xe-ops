@@ -91,8 +91,10 @@ def environment_page() -> dict:
 
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     env_status = GetThisDataFromDevice.get_envirmoment(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    poe_status = GetThisDataFromDevice.get_poe(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    transceivers = GetThisDataFromDevice.get_sfps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1]}
+    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1], 'poe': poe_status, 'transceivers': transceivers}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
 def layer_2__page() -> dict:
@@ -277,4 +279,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='192.168.86.46')
