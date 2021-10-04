@@ -144,21 +144,23 @@ def rib_status():
     routing_information =[[],[],[]]
 
     try:
-        if not rib_session.get(request.json.get('ip', {})):
-            rib_session_obj = GetRibs.Routing()
-            rib_session[request.json.get('ip', {})] = {'username': request.json.get('username'), 
-                                                        'password':request.json.get('password'), 
-                                                        'port': 443, 
-                                                        'session':rib_session_obj}
-
         routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
                                                                 request.json.get('ip'),443,
                                                                 request.json.get('username'),
                                                                 request.json.get('password'))
-    except (TypeError, AttributeError):
-        pass
+    except (TypeError, AttributeError) as e:
+        rib_session_obj = GetRibs.Routing()
+        rib_session[request.json.get('ip', {})] = {'username': request.json.get('username'), 
+                                                        'password':request.json.get('password'), 
+                                                        'port': 443, 
+                                                        'session':rib_session_obj}
+    finally:
+        routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
+                                                        request.json.get('ip'),443,
+                                                        request.json.get('username'),
+                                                        request.json.get('password'))
 
-    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
+    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
