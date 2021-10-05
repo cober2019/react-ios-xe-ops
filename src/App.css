@@ -51,6 +51,10 @@ tr{
   text-align: center;
 }
 
+.disabledCursor { 
+  cursor: default;
+}
+
 .row-text{
   color: white;
   font-size: 5;

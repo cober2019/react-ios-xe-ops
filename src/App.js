@@ -1,20 +1,21 @@
 import './App.css';
-import { Index }  from './Components/Index/index'
-import { LayerTwo }  from './Components/LayerTwo/layerTwo'
-import { Environment }  from './Components/Environment/env'
-import { Routing }  from './Components/LayerThree/routing'
-import { Dmvpn }  from './Components/DMVPN/dmvpn'
-import { RestConfig }  from './Components/Config/config'
-import { RibIndex }  from './Components/RibStatus/RibMain'
-import { DeviceAuth }  from './Components/Other/login'
-import { IpSlas }  from './Components/IPSlas/SlaParent'
+import { Index }  from './Components/Index/Index-Parent';
+import { LayerTwo }  from './Components/LayerTwo/layerTwo-Parent';
+import { Environment }  from './Components/Environment/Env-Parent';
+import { Routing }  from './Components/LayerThree/Routing-Parent';
+import { Dmvpn }  from './Components/DMVPN/Dmvpn-Parent';
+import { RestConfig }  from './Components/Config/config';
+import { RibIndex }  from './Components/RibStatus/RIB-Parent';
+import { DeviceAuth }  from './Components/Other/login';
+import { IpSlas }  from './Components/IPSlas/SlaParent';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from 'react-query'
-const queryClient = new QueryClient()
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
 
@@ -97,4 +98,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
