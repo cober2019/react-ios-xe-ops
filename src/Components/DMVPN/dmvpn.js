@@ -46,7 +46,7 @@ else if (data){
 }
 else if (isLoading){
     return  <div>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting DMVPN Toplogy Data From {localStorage.getItem('ip')}</h4>
+                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting DMVPN Topology Data From {localStorage.getItem('ip')}</h4>
                 <div class="loader text-center"></div>
             </div>
 }
