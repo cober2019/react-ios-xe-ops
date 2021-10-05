@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/cober2019/react-ios-xe-ops.git
+
 npm install package.json -y
 pm2 --name XE-Ops start npm -- start
 cd "$(pwd)/BackEndModeules"
