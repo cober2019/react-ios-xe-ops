@@ -12,11 +12,9 @@ export const encytpKey = atom({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
       <RecoilRoot>
         <App />
-      </RecoilRoot>
-  </React.StrictMode>,
+      </RecoilRoot>,
    document.getElementById("root")
 );
 
