@@ -160,7 +160,7 @@ def rib_status():
                                                         request.json.get('username'),
                                                         request.json.get('password'))
 
-    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]
+    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
 
 @app.route('/getinterfaces', methods=['POST', 'GET'])
 def index():
