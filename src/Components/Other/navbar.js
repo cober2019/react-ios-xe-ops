@@ -31,7 +31,7 @@ export  function Navigation(props){
                         <Navbar.Brand href="#home" className="disabledCursor">IOS-XE Ops</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
+                        <Nav className="me-auto" style={{fontSize: 16}}>
                             <Link className="nav-link text-light" to="/index">Home</Link>
                             <Link className="nav-link text-light"to="/layerTwo">LayerTwo</Link>
                             <Link className="nav-link text-light" to="/routing">Routing</Link>
