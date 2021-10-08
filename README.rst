@@ -2,6 +2,8 @@
     :target: -
 .. image:: https://img.shields.io/badge/npm-16.14.12-blue
     :target: -
+.. image:: https://img.shields.io/badge/node-14.16.1-blue
+    :target: -
    
     
 IOS-XE-Ops
