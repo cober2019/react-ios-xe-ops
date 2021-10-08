@@ -30,6 +30,18 @@
   color: #61dafb;
 }
 
+#uncontrolled-tab-example-tab-ipv6{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+#uncontrolled-tab-example-tab-ipv4{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
 #interfaces-tab-Interfacetable{
   color: white;
   background-color: inherit;
