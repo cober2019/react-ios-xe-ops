@@ -3,7 +3,6 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
-import os
 import json
 import requests
 import devicecalls as GetThisDataFromDevice
@@ -77,13 +76,15 @@ def ios_xe_login() -> dict:
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
 def index_page() -> dict:
     """Get data for Index page , interfaces, dp neighbors, arps, and hsrp"""
-
+    print(request.json)
     interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     arps = GetThisDataFromDevice.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     hsrp = InCaseRestDoesntWork.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp}
+
+    return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/pollEnv', methods=['POST', 'GET'])
 def environment_page() -> dict:
@@ -94,7 +95,7 @@ def environment_page() -> dict:
     poe_status = GetThisDataFromDevice.get_poe(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     transceivers = GetThisDataFromDevice.get_sfps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1], 'poe': poe_status, 'transceivers': transceivers}
+    return {'cpu': cpu_status[0], 'env': env_status, 'mem': cpu_status[1], 'poe': poe_status, 'transceivers': transceivers, 'mem': cpu_status[1]}
 
 @app.route('/pollL2Page', methods=['POST', 'GET'])
 def layer_2__page() -> dict:
@@ -105,8 +106,10 @@ def layer_2__page() -> dict:
     neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     mac_addresses = GetThisDataFromDevice.get_bridge(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     span_table = GetThisDataFromDevice.get_span_tree(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table[0], 'globalSpan': span_table[1]}
+    return {'trunks': interfaces[0], 'access': interfaces[1], 'dpNeighbors': neighbors, 'vlans': vlans, 'mac_addresses': mac_addresses, 'span': span_table[0], 
+            'globalSpan': span_table[1], 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/pollRouting', methods=['POST', 'GET'])
 def routing_page() -> dict:
@@ -114,8 +117,9 @@ def routing_page() -> dict:
 
     ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     bgp = GetThisDataFromDevice.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-  
-    return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpToplogy': bgp[2], 'ospfToplogy': ospf[2]}
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpTopology': bgp[2], 'ospfTopology': ospf[2], 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/getDmvpn', methods=['POST', 'GET'])
 def dmvpn() -> dict:
@@ -124,16 +128,19 @@ def dmvpn() -> dict:
     dmvpn = InCaseRestDoesntWork.get_dmvpn( request.json.get('username'), request.json.get('password'), request.json.get('ip'))
     dmvpn_ints  = GetThisDataFromDevice.get_dmvpn_ints(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'dmvpn': dmvpn[0], 'dmvpnInts': dmvpn_ints, 'hubs': dmvpn_ints[3], 'location': dmvpn[1], 'routing': ospf[1]}
+    return {'dmvpn': dmvpn[0], 'dmvpnInts': dmvpn_ints, 'hubs': dmvpn_ints[3], 'location': dmvpn[1], 'ospfInts': ospf[1], 'ospfTopology': ospf[2], 'ospf': ospf[0], 
+            'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/getipsla', methods=['POST', 'GET'])
 def ipslas() -> dict:
     """Gets IP SLA data from device"""
 
     sla_stats = GetThisDataFromDevice.get_ip_sla(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'slas': sla_stats}
+    return {'slas': sla_stats, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/ribStatus', methods=['POST', 'GET'])
 def rib_status():
@@ -142,6 +149,7 @@ def rib_status():
     global rib_session
 
     routing_information =[[],[],[]]
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     try:
         routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
@@ -160,15 +168,16 @@ def rib_status():
                                                         request.json.get('username'),
                                                         request.json.get('password'))
 
-    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2]}
+    return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2], 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
-@app.route('/getinterfaces', methods=['POST', 'GET'])
-def index():
+@app.route('/liveinterfaces', methods=['POST', 'GET'])
+def live_interfaces():
     """Get device interfaces"""
 
     interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'interfaces': interfaces[0], 'arps': interfaces[1]}
+    return {'interfaces': interfaces, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
 @app.route('/getinterfacestats', methods=['POST', 'GET'])
 def interface_stats():
@@ -283,4 +292,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='192.168.86.46')

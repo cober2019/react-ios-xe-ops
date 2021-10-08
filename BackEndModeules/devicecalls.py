@@ -5,6 +5,7 @@ import requests
 import json
 import warnings
 import ipaddress
+import device_call_backup as InCaseRestDoesntWork
 
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
@@ -85,13 +86,14 @@ def get_arps(ip, port, username, password) -> list:
                 for entry in i.get('arp-oper'):
                     entry.pop('interface')
                     entry['vrf'] = i.get('vrf')
+                    entry['interface'] = 'n/a'
                     entry['time'] = entry.get('time').split('.')[0].strip('T00')
                     entries.append(entry)
         except (TypeError, AttributeError):
             pass
 
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL, AttributeError):
-        entries = [{}]
+        entries = InCaseRestDoesntWork.get_arp(username, password, ip)
 
     return entries
 
@@ -294,8 +296,8 @@ def get_cpu_usages(ip, port, username, password) -> tuple:
         if check_error:
             raise AttributeError
 
-    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        cpu_stats = {'Cisco-IOS-XE-process-cpu-oper:cpu-utilization': {'cpu-usage-processes': {'cpu-usage-process': []}},'five-seconds': []}
+    except Exception:
+        cpu_stats = {'Cisco-IOS-XE-process-cpu-oper:cpu-utilization': {'cpu-usage-processes': {'cpu-usage-process': []},'five-seconds': 'Err', 'one-minute': 'Err', 'five-minutes': 'Err'}}
 
     try:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-platform-software-oper:cisco-platform-software/control-processes/control-process"
@@ -309,8 +311,8 @@ def get_cpu_usages(ip, port, username, password) -> tuple:
 
         memory_stats = memory_stats.get('Cisco-IOS-XE-platform-software-oper:control-process')[0].get('memory-stats', {})
 
-    except (JSONDecodeError, requests.exceptions.ChunkedEncodingError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError) as e:
-        memory_stats = {'memory-status': '?'}
+    except Exception:
+        memory_stats = {'memory-status': 'Err'}
     
     return cpu_stats, memory_stats
 
@@ -429,11 +431,10 @@ def get_bridge(ip, port, username, password) -> list:
         uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-matm-oper:matm-oper-data"
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         bridge_data = json.loads(response.text)
-        print(bridge_data)
 
         check_error = _check_api_error(bridge_data)
         
-        if check_error:
+        if check_error or response.status_code == 404:
             raise AttributeError
 
         for i in bridge_data['Cisco-IOS-XE-matm-oper:matm-oper-data']['matm-table']:
@@ -441,7 +442,7 @@ def get_bridge(ip, port, username, password) -> list:
                 [mac_table.append(i) for i in i.get('matm-mac-entry', {})]
                 
     except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
-        pass
+        mac_table = InCaseRestDoesntWork.get_mac_table(username, password, ip)
     
     return mac_table
 
