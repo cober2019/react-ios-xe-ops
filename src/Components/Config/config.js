@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {encytpKey}  from '../../App'
+import {Navigation}  from './navbar'
 import {useRecoilState} from 'recoil';
 import {AES, enc}from 'crypto-js';
 
-import { Navigation } from '../Other/navbar';
 
 export  function RestConfig(props){
-    const [decrypt, setDecrypt] = useRecoilState(encytpKey);
+    const [decrypt] = useRecoilState(encytpKey);
     const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
     const [update, setUpdate] = useState(0)
     const [model, updateModel] = useState(undefined)
@@ -49,7 +49,6 @@ export  function RestConfig(props){
                             parentKey.current = response.data.parent
                             leafs.current = response.data.data
 
-                            url.current= url.current
                             updateLoading(false)
 
                             }).catch(error => {
@@ -200,7 +199,6 @@ export  function RestConfig(props){
           let render = update + 1
           setUpdate(render)
         }
-        
       }, [])
 
     if(url.current !== undefined){
@@ -234,8 +232,8 @@ export  function RestConfig(props){
                         </div>
                         <div className="col-8">
                             <div className="card text-white mt-3 bg-dark">
-                                <div className="card-body">
-                                <div className="row">
+                                <div className="card-body" style={{textAlign: 'left'}}>
+                                <div className="row" >
                                     <div className="col-3">
                                         <button style={{marginBottom: '15px', fontWeight: 'bold'}} className="btn btn-success btn-md" onClick={(e) => previousSelection(e)}>Previous URI</button>
                                     </div>
@@ -257,7 +255,7 @@ export  function RestConfig(props){
                                         </div>
                                     <div className='row'>
                                         <div className="col-12">
-                                            <pre  className="fade-in" key={'test'} style={{fontWeight:'bold'}}>{JSON.stringify(config.current, null, 2)}</pre>
+                                            <pre  className="fade-in" key={'test'} style={{fontWeight:'bold', textAlign: 'left'}}>{JSON.stringify(config.current, null, 2)}</pre>
                                         </div>
                                     </div>
                                 </div>
