@@ -3,8 +3,8 @@ import axios from 'axios';
 import { encytpKey } from '../../index'
 import {useRecoilState} from 'recoil';
 import {AES, enc}from 'crypto-js';
-
-import { Navigation } from '../Other/navbar';
+import { Navigation } from './navbar'
+import { ApiCheck } from './promises'
 
 export  function RestConfig(props){
     const [decrypt, setDecrypt] = useRecoilState(encytpKey);
