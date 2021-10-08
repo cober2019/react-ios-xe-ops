@@ -15,6 +15,7 @@ export function CpuUsage(props){
     const memTable = MemTableHtml(memRef);
     const proccessTable = CpuTableHtml(proccessRef);
     $.fn.dataTable.ext.errMode = 'none';
+    console.log(props)
 
     if(parseInt(props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']) > 25 || props.mem['memory-status'] !== 'Healthy'){
          cpuMemCss.current = {color: 'orange', textAlign: 'center', fontSize: 40}
@@ -85,11 +86,11 @@ export function CpuUsage(props){
                                         </thead>  
                                         <tbody>
                                         <tr className="fade-in">
-                                            <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
-                                            <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
-                                            <td style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
-                                            <td href="#" style={cpuMemCss}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
-                                            <td style={cpuMemCss}>{props.mem['used-percent']}</td>
+                                            <td style={cpuMemCss.current}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-seconds']}</td>
+                                            <td style={cpuMemCss.current}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['one-minute']}</td>
+                                            <td style={cpuMemCss.current}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['five-minutes']}</td>
+                                            <td href="#" style={cpuMemCss.current}>{props.cpu['Cisco-IOS-XE-process-cpu-oper:cpu-utilization']['cpu-usage-processes']['cpu-usage-process'].length}</td>
+                                            <td style={cpuMemCss.current}>{props.mem['used-percent']}</td>
                                         </tr>
                                         </tbody>                             
                                     </table>
