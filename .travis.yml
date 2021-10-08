@@ -3,4 +3,4 @@ node_js:
   - "stable"
 script:
     - npm test
-    - npm build
+    - npm run-script build
