@@ -82,6 +82,10 @@ body > iframe {
   font-weight: bold;
 }
 
+.text-white{
+  color: white;
+  text-align: left;
+}
 
 .text-yellow {
   background-color: yellow !important;
