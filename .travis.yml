@@ -1,3 +1,9 @@
+before_script:
+  - cd BackEndModeules
+  language: python
+  script:
+    - echo "skipping tests"
+
 language: node_js
 node_js:
   - "stable"
