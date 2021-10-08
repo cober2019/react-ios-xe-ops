@@ -1,7 +1,7 @@
 jobs:
   include:
         before_script:
-          -cd BackendModeules
+          -cd BackEndModeules
       - language: python
         python: 3.8
         install:
