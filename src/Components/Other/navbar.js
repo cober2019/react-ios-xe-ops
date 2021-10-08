@@ -41,6 +41,7 @@ export  function Navigation(props){
                         <Link className="nav-link text-light" to="/environment">Env</Link>
                         <Link className="nav-link text-light" to="/dmvpn">DMVPN</Link>
                         <Link className="nav-link text-light" to='/ipslas'>IP Slas</Link>
+                        <Link className="nav-link text-light" to="/ribstatus">RibStatus</Link>
                         <Link className="nav-link text-light" to="/live_interfaces">Live-Interfaces</Link>
                         <Link className="nav-link text-light" to="/config">Cfg/Oper</Link>
                         <Link className="nav-link text-light" to='/logout'>Logout</Link>
