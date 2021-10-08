@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 
 export  function Navigation(props){
   const [apiStatus, setApiStatus] = useState(true)
-  console.log(props)
 
   useEffect(() => {
     (async () => {
