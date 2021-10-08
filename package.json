@@ -2,7 +2,7 @@
   "name": "ios-xe-ops",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:5000/",
+  "proxy": "http://192.168.86.46:5000/",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -11,6 +11,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.21.1",
+    "bootstrap": "^5.1.2",
     "chart.js": "^3.5.0",
     "concurrently": "^6.2.0",
     "crypto-js": "^4.1.1",
