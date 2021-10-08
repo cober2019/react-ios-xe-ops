@@ -163,10 +163,13 @@ def rib_status():
                                                         'port': 443, 
                                                         'session':rib_session_obj}
     finally:
-        routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
-                                                        request.json.get('ip'),443,
-                                                        request.json.get('username'),
-                                                        request.json.get('password'))
+        try:
+            routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
+                                                            request.json.get('ip'),443,
+                                                            request.json.get('username'),
+                                                            request.json.get('password'))
+        except (TypeError, AttributeError):
+            pass
 
     return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2], 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
