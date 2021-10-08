@@ -1,12 +1,15 @@
 jobs:
   include:
-    - language: python
-      python: 3.8
-      script:
-      - echo "skipping tests"
-
-    - language: node_js
-      node_js:
-        - "stable"
-      script:
-        - npm test
+        before_script:
+          -cd BackendModeules
+      - language: python
+        python: 3.8
+        script:
+          - echo "skipping tests"
+        before_script:
+          -cd 
+      - language: node_js
+        node_js:
+          - "stable"
+        script:
+          - npm test
