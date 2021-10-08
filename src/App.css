@@ -1,3 +1,5 @@
+
+
 .App {
   text-align: center;
 }
@@ -27,6 +29,43 @@
 .App-link {
   color: #61dafb;
 }
+
+#interfaces-tab-Interfacetable{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+#dpneighbors-tab-lldp{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+#dpneighbors-tab-cdp{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+#spanningtre-tab-globalvlan{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+#spanningtre-tab-pervlan{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+#interfaces-tab-arp{
+  color: white;
+  background-color: inherit;
+  font-weight: bold;
+}
+
 
 .text-yellow {
   background-color: yellow !important;
@@ -160,11 +199,6 @@ body{
   color: #575757;
 }
 
-.center-login {
-  margin-top: 200px;
-  width: 25%;
-  padding: 10px;
-  border-bottom: white solid thin;}
   
 .export-button{ display: block;
   width: 150px;
@@ -200,9 +234,9 @@ body{
 
 .center-login {
   margin-top: 200px;
+  margin-left: 600px;
   width: 25%;
-  padding: 10px;
-  border-bottom: white solid thin;}
+  padding: 10px;}
 
 .loading-table {
     margin-top: 15px;

@@ -1,4 +1,5 @@
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Index }  from './Components/Index/Index-Parent';
 import { LayerTwo }  from './Components/LayerTwo/layerTwo-Parent';
 import { Environment }  from './Components/Environment/Env-Parent';
@@ -8,6 +9,7 @@ import { RestConfig }  from './Components/Config/config';
 import { RibIndex }  from './Components/RibStatus/RIB-Parent';
 import { DeviceAuth }  from './Components/Other/login';
 import { IpSlas }  from './Components/IPSlas/SlaParent';
+import { LiveInterfaces }  from './Components/InterfaceGraphs/liveInterface';
 import {
   BrowserRouter as Router,
   Switch,
@@ -72,18 +74,25 @@ function App() {
             </QueryClientProvider>
           </Route>
 
-	  <Route path="/ipslas">
+	        <Route path="/ipslas">
               <QueryClientProvider client={queryClient}>
                 <IpSlas/>
               </QueryClientProvider>
           </Route>
+
+          <Route path="/live_interfaces">
+              <QueryClientProvider client={queryClient}>
+                <LiveInterfaces/>
+              </QueryClientProvider>
+          </Route>
+
 
 
           <Route path="/">
             <QueryClientProvider client={queryClient}>
               <DeviceAuth/>
             </QueryClientProvider>
-	  </Route>
+	        </Route>
 
 	<Route path="/logout">
             <QueryClientProvider client={queryClient}>
