@@ -5,9 +5,7 @@ import App from './App.js';
 import { RecoilRoot, atom } from 'recoil';
 
 ReactDOM.render(
-
         <App />,
-
   document.getElementById('root')
 );
 
