@@ -62,7 +62,7 @@ else if (data){
             </ErrorBoundary>
             { data.span.length > 0 ? 
                 <div>
-                  <Card bg={"dark"}>
+                  <Card bg={"dark"} className="mb-3">
                     <Card.Body>
                       <Tabs defaultActiveKey="globalvlan" id="spanningtre" bg={"success"}>
                       <Tab eventKey="globalvlan" title="Global Setting">
