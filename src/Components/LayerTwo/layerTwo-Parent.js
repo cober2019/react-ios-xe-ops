@@ -68,9 +68,9 @@ else if (data){
                       <Tab eventKey="globalvlan" title="Global Setting">
                             {bridgeGlobalTble.current}
                           </Tab>
-                        <Tab eventKey="pervlan" title="Spanning Tree">
-                          { data.span.map(instance => (<ErrorBoundary><SpanTable span={instance}/></ErrorBoundary>))}
-                          </Tab>
+                                            {data.span.hasOwnProperty.key ? <Tab eventKey="pervlan" title="Spanning Tree">
+                          { data.span.map(instance => (<ErrorBoundary FallbackComponent={IsErrorFallback}><SpanTable span={instance}/></ErrorBoundary>))}
+                          </Tab> : <div/>}
                       </Tabs>
                     </Card.Body>
                   </Card>
