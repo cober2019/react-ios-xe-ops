@@ -2,7 +2,7 @@
     :target: -
 .. image:: https://img.shields.io/badge/npm-16.14.12-blue
     :target: -
-.. image:: https://img.shields.io/badge/node-stable-blue
+.. image:: https://img.shields.io/badge/Node-stable-blue
     :target: -
    
     
