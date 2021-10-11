@@ -10,6 +10,8 @@ import { InterfaceCard} from '../Index/interfaceCard'
 import { Navigation } from '../Other/navbar';
 import { CreateCard } from '../Other/jsxCard';
 import { AES, enc }from 'crypto-js';
+import { IsErrorFallback } from "../Other/errorComponent";
+import { ErrorBoundary } from  'react-error-boundary'
 
 export function LiveInterfaces(){
   const [decrypt] = useRecoilState(encytpKey);
