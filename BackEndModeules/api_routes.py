@@ -81,13 +81,12 @@ def ios_xe_login() -> dict:
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
 def index_page() -> dict:
     """Get data for Index page , interfaces, dp neighbors, arps, and hsrp"""
-    print(request.json)
+
     interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     arps = GetThisDataFromDevice.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     hsrp = InCaseRestDoesntWork.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
-
 
     return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
