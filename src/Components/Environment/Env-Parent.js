@@ -22,7 +22,7 @@ import {encytpKey}  from '../../App'
 export function Environment(){
   const [decrypt] = useRecoilState(encytpKey);
   const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
-  const { isLoading, error, data, isFetching } = useQuery('pollEnv', async () => {
+  const { isLoading, error, data, isFetching } = useQuery(localStorage.getItem('ip') + 'pollEnv', async () => {
     const response = await axios.post('/pollEnv', {'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
     'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port')})
 
@@ -30,7 +30,7 @@ export function Environment(){
 
     },
     {
-      refetchInterval: 10000, cacheTime: 0
+      refetchInterval: 10000
     }
 )
 
@@ -40,40 +40,33 @@ export function Environment(){
                 <ErrorBoundary FallbackComponent={NavigationFallback}>
                   <Navigation update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
                 </ErrorBoundary>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Error Collecting Data. I'll Keep Trying</h4>
-                <div class="warning-loader text-center"></div>
+                <h4 classname="text-center fade-in" style={{marginTop: 100}}>Error Collecting Data. I'll Keep Trying</h4>
+                <div classname="warning-loader text-center"></div>
               </div>
     }
     else if (data){
           return  <Container fluid>
                       <ErrorBoundary FallbackComponent={NavigationFallback}>
-                        <Navigation update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching} cpu={data.cpu} mem={data.mem}/>
+                          <ErrorBoundary  FallbackComponent={IsErrorFallback}><Navigation update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching} cpu={data.cpu} mem={data.mem}/></ErrorBoundary>
                       </ErrorBoundary>
                       <Row>
-                      <Col xl={8}>
-                          {CreateCard(<Transceivers transceivers={data.transceivers}/>, "SFP Statuses")}
-                      </Col>
-                      <Col xl={4}>
-                          {CreateCard(<TransceiversInv transceivers={data.transceivers}/>, "SFP Inventory")}
-                      </Col>
-                      </Row>
-                      <Row>
-                          <Col xl={4}>
-                              {CreateCard(<Sensors env={data.env}/>, 'Environmental Stats')}
-                              {CreateCard(<PoeConnections poe={data.poe}/>, 'Poe Interface')}
-                          </Col>
-                        <Col xl={8}>
+                          <Col xl={8}>
                           <ErrorBoundary FallbackComponent={IsErrorFallback}>
                             <CpuUsage cpu={data.cpu} mem={data.mem}/>
                           </ErrorBoundary>
+                          {CreateCard(<Transceivers transceivers={data.transceivers}/>, "SFP Statuses")}  
+                          </Col>
+                        <Col xl={4}>
+                          {CreateCard(<Sensors env={data.env}/>, 'Environmental Stats')}
+                          {CreateCard(<PoeConnections poe={data.poe}/>, 'Poe Interface')}
+                          {CreateCard(<TransceiversInv transceivers={data.transceivers}/>, "SFP Inventory")}
                         </Col>
                       </Row>
                   </Container>
         }
     else if (isLoading){
       return  <div>
-                <h4 class="text-center fade-in" style={{marginTop: 100}}>Collecting Data From {localStorage.getItem('ip')}</h4>
-                <div class="loader text-center"></div>
+                <h4 className="text-center blinking-loader" style={{marginTop: 100}}>Collecting Data From {localStorage.getItem('ip')}</h4>
             </div>
     }
     
