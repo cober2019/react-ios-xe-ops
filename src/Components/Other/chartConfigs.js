@@ -672,6 +672,7 @@ export function TunnelInterfacesTableHtml(tableRef) {
                                     <th >Description</th>
                                     <th >IP</th>
                                     <th >Mask</th>
+                                    <th >Speed</th>
                                     <th >Trans Band</th> 
                                     <th >RecieveBand</th>                       
                                 </tr>
