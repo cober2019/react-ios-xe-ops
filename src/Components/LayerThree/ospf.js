@@ -15,7 +15,6 @@ export  function Ospf(props){
   const ospfTopology = useRef(null)
   const ospfIntTable = OpsfIntsTableHtml(ospfIntsTableRef)
   $.fn.dataTable.ext.errMode = 'none';
-  console.log(props.interfaces)
 
   useEffect(() => {
     if(ospfTableRef.current !== null){
@@ -28,8 +27,10 @@ export  function Ospf(props){
       catch{}
 
       try{
-        ospfTopology.current = UpdateOspfTopology(ospfTopology.current, props.neighbors, props.topology)
-        ospfTopologyRef.current =  ospfTopology.current
+        if(props.topology.length >= 1){
+          ospfTopology.current = UpdateOspfTopology(ospfTopology.current, props.neighbors, props.topology)
+          ospfTopologyRef.current =  ospfTopology.current
+        }
       }
       catch(e){}
     }
@@ -37,7 +38,6 @@ export  function Ospf(props){
 
   useEffect(() => {
 
-        $(ospfIntsTableRef.current).DataTable().destroy()
         OspfData(ospfIntsTableRef.current, props.interfaces)
          
         try{
@@ -51,13 +51,13 @@ export  function Ospf(props){
       }, [])
   
     return <Card bg={"dark"}>
-                <Card.Body>
+                {<Card.Body>
                   <Card.Title className="mb-3">OSPF Interfaces/Neighbors</Card.Title>
                   {ospfIntTable}
-                </Card.Body>
+                </Card.Body>}
                 <Row>
                   <Col>
-                    {props.topology.length > 0 ? <div ref={ospfTopologyRef} className="bg-dark  mt-3" style={{width: '100%', height: '300px'}}/> : <div/>}
+                    {props.interfaces.length >= 1 ? <div ref={ospfTopologyRef} className="bg-dark  mt-3" style={{width: '100%', height: '300px'}}/> : <div/>}
                     </Col>
                 </Row>
               </Card>

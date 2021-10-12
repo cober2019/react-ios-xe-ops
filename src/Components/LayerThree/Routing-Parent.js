@@ -44,15 +44,15 @@ else if (data){
                     </ErrorBoundary>
                     <Row className="mb-3">
                         <Col xl>
-                        <ErrorBoundary>
-                            {data.ospf.length > 0 ? <Ospf neighbors={data.ospf} interfaces={data.ospfInts} topology={data.ospfTopology}/> : <div/>}
+                        <ErrorBoundary  FallbackComponent={NavigationFallback}>
+                             <Ospf neighbors={data.ospf} interfaces={data.ospfInts} topology={data.ospfTopology}/>
                         </ErrorBoundary>
                         </Col>
                     </Row>
                     <Row className="mb-3 mt-3">
                         <Col xl>
-                        <ErrorBoundary>
-                            {data.bgpDetails.length > 0 ? <Bgp neighbors={data.bgp} details={data.bgpDetails} topology={data.bgpTopology}/> : <div/>}
+                        <ErrorBoundary  FallbackComponent={NavigationFallback}>
+                            <Bgp neighbors={data.bgp} details={data.bgpDetails} topology={data.bgpTopology}/>
                         </ErrorBoundary>
                         </Col>
                     </Row>
