@@ -771,7 +771,7 @@ def get_dmvpn_ints(ip, port, username, password) -> tuple:
 def _map_dmvpn_hubs(hub_details) -> list:
 
     hubs = []
-    print(hub_details)
+
     for i in hub_details.get('dest-ipv4', {}):
     
         if isinstance(i.get('nbma-ipv4', {}), list):
