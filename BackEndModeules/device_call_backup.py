@@ -128,14 +128,15 @@ def get_mac_table(username, password, host):
 
         if mac_table:
             for mac in mac_table.splitlines():
-                if mac.split()[0] == '%':
-                    break
                 try:
-                    mac_data.append({'vlan-id-number': mac.split()[0], 'mac': mac.split()[1], 'mat-addr-type': mac.split()[2],
-                                        'port': mac.split()[3]})
+                    if mac.split()[0] == '%':
+                        break
+                    else
+                        mac_data.append({'vlan-id-number': mac.split()[0], 'mac': mac.split()[1], 'mat-addr-type': mac.split()[2],
+                                            'port': mac.split()[3]})
                 except IndexError:
                     continue
-        
+   
         return mac_data
 
 def get_model(username, password, host):
