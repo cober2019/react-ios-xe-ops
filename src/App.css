@@ -34,6 +34,7 @@ body > iframe {
   color: #61dafb;
 }
 
+card
 #uncontrolled-tab-example-tab-ipv6{
   color: white;
   background-color: inherit;
@@ -83,7 +84,7 @@ body > iframe {
 }
 
 .text-white{
-  color: white;
+  color: greenyellow;
   text-align: left;
 }
 
@@ -133,6 +134,14 @@ div[class~="dataTables_length"]{
 }
 
 div[class~="dataTables_filter"]{
+  color: white;
+}
+
+div[class~="card"]{
+  border-radius: 15px;
+}
+
+td{
   color: white;
 }
 
@@ -239,6 +248,7 @@ body{
 .card-text{
   margin-top: 0px;
   margin-bottom: 0px;
+  text-align: left;
 }
 
 .overlay {
@@ -249,7 +259,6 @@ body{
   bottom: 0;
   background-color: rgb(66, 61, 61, 0.9);
   z-index: 2;
-  cursor: pointer;
 }
 
 .center-login {
@@ -312,8 +321,8 @@ body{
 
 .loader {
   border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-bottom: 16px solid #3498db; /* Blue */
+  border-top: 6px solid #3498db; /* Blue */
+  border-bottom: 6px solid #3498db; /* Blue */
   border-radius: 50%;
   width: 80px;
   height: 80px;
@@ -444,4 +453,16 @@ body{
   animation: spin 1s linear infinite;
   margin: auto;
 }
+
+.blinking-loader{
+  animation:blinkingText 2s infinite;
+}
+@keyframes blinkingText{
+  0%{     color: white; }
+  60%{    color: grey;} 
+  99%{    color:white;  }
+  100%{   color: white;}
+}
+
+
 
