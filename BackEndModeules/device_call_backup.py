@@ -51,7 +51,6 @@ def get_dmvpn(username, password, host) -> tuple:
     dmvpn_data = []
     nbma_location = []
     dmvpn = send_command('show dmvpn | b Interface', username, password, host)
-    print(dmvpn)
     
     if dmvpn:
         for line in dmvpn.splitlines():
@@ -75,6 +74,7 @@ def get_arp(username, password, host):
 
     entries = []
     vrfs = _get_vrfs(username, password, host)
+    
     try:
         if vrfs:
             for vrf in vrfs:
@@ -110,6 +110,7 @@ def _get_vrfs(username, password, host):
 
     vrfs = []
     get_vrf = send_command('show vrf', username, password, host)
+
     if get_vrf:
         for line in get_vrf.splitlines():
             try:
@@ -127,6 +128,8 @@ def get_mac_table(username, password, host):
 
         if mac_table:
             for mac in mac_table.splitlines():
+                if mac.split()[0] == '%':
+                    break
                 try:
                     mac_data.append({'vlan-id-number': mac.split()[0], 'mac': mac.split()[1], 'mat-addr-type': mac.split()[2],
                                         'port': mac.split()[3]})
@@ -134,3 +137,37 @@ def get_mac_table(username, password, host):
                     continue
         
         return mac_data
+
+def get_model(username, password, host):
+        """Get self.device model"""
+
+        model = None
+        serial = None
+        uptime = None
+        software = None
+        get_model = send_command('show inventory', username, password, host)
+        show_version = send_command('show version', username, password, host)
+
+
+        try:
+
+            for i in get_model.splitlines():
+                if i.rfind('Chassis') != -1:
+                    model = i.split("\"")[3].split()[1][0:3]
+                elif i.rfind('NAME') != -1:
+                    model = i.split("\"")[1]
+
+                if i.rfind('SN') != -1:
+                    serial = i.split('SN: ')[1]
+                    break
+
+            for i in show_version.splitlines():
+                if i.rfind('Uptime') != -1:
+                    uptime = i.split("is")[2]
+                    break
+                elif i.rfind('RELEASE SOFTWARE') != -1:
+                    software = i
+        except AttributeError:
+            pass
+
+        return model, serial, uptime, software
