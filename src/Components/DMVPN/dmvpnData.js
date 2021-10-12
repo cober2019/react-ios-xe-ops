@@ -2,6 +2,7 @@ import React, { useEffect, useRef} from 'react';
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
 import { DmvpnTableHtml, DmvpnInterfacesTableHtml, TunnelInterfacesTableHtml, DmvpnHubsTableHtml, NbmaLocationTableHtml } from '../Other/chartConfigs';
 import { DmvpnTopologyBuild, UpdateDmvpnTopology } from './topology';
 import { CreateCard } from '../Other/jsxCard';
@@ -183,9 +184,8 @@ export  function DmvpnData(props){
 
 if(props.dmvpn.length !== 0){
 
-    return <div>
-                <Row>
-                    <Card bg={"dark"} className="mt-3">
+    return  <Container fluid>
+                    <Card bg={"dark"} className="mt-3 mb-3">
                         <Card.Body>
                         <Card.Title className="mb-3">DMVPN Peers</Card.Title>
                         <Row>
@@ -198,10 +198,7 @@ if(props.dmvpn.length !== 0){
                           </Row>
                         </Card.Body>
                       </Card>
-                    </Row>
-                    <Col xl>
                       {CreateCard(tunnelInterfacestable, "Tunnel Interfaces")}
-                    </Col>
                     <Row>
                       <Col xl={8}>
                         {CreateCard(dmvpnInterfacestable, "DMVPN Interfaces")}
@@ -215,7 +212,7 @@ if(props.dmvpn.length !== 0){
                     </Row>
                     <div>               
                   </div>
-                  </div>
+            </Container>
                     
   }
 else{
