@@ -55,7 +55,12 @@ def ios_xe_login() -> dict:
             headers=headers_ios, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
 
         if response.status_code == 200:
+            model_serial = InCaseRestDoesntWork.get_model(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
             auth_dict['status'] = 200
+            auth_dict['model'] = model_serial[0]
+            auth_dict['serial'] = model_serial[1]
+            auth_dict['uptime'] = model_serial[2]
+            auth_dict['software'] = model_serial[3]
         elif response.status_code == 400:
             auth_dict['status'] = 400
         elif response.status_code == 401:
