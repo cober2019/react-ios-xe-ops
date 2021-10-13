@@ -13,7 +13,7 @@ import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
 ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ctx.load_cert_chain(f'{os.getcwd()}/certificate.crt', f'{os.getcwd()}/privatekey.key')
+ctx.load_cert_chain(f'{os.getcwd()}/domainname.crt', f'{os.getcwd()}/domainname.key')
 
 
 app = Flask(__name__)
