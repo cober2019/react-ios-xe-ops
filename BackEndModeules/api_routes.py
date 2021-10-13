@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+import os
 import json
 import requests
 import devicecalls as GetThisDataFromDevice
@@ -11,8 +12,9 @@ import GetRibData as GetRibs
 import ssl
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-#ctx.load_cert_chain(f'{os.getcwd()}/certificate.crt', f'{os.getcwd()}/privatekey.key')
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain(f'{os.getcwd()}/certificate.crt', f'{os.getcwd()}/privatekey.key')
+
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
@@ -53,7 +55,7 @@ def ios_xe_login() -> dict:
     try:
         response = requests.get(f"https://{request.json.get('ip', {})}:{request.json.get('port', {})}/restconf/data/netconf-state/capabilities",
             headers=headers_ios, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
-
+        print(res)
         if response.status_code == 200:
             model_serial = InCaseRestDoesntWork.get_model(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
             auth_dict['status'] = 200
@@ -81,12 +83,13 @@ def ios_xe_login() -> dict:
 @app.route('/pollIndexPage', methods=['POST', 'GET'])
 def index_page() -> dict:
     """Get data for Index page , interfaces, dp neighbors, arps, and hsrp"""
-
+    print(request.json)
     interfaces = GetThisDataFromDevice.get_interfaces(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     neighbors = GetThisDataFromDevice.get_dp_neighbors(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     arps = GetThisDataFromDevice.get_arps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     hsrp = InCaseRestDoesntWork.get_hsrp_status(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
 
     return {'interfaces': interfaces, 'arps': arps, 'dp': neighbors, 'hsrp': hsrp, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
@@ -299,4 +302,4 @@ def device_query() -> dict:
     return response_dict
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(ssl_context=ctx)
