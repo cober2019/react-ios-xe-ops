@@ -55,7 +55,7 @@ def ios_xe_login() -> dict:
     try:
         response = requests.get(f"https://{request.json.get('ip', {})}:{request.json.get('port', {})}/restconf/data/netconf-state/capabilities",
             headers=headers_ios, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
-        print(res)
+
         if response.status_code == 200:
             model_serial = InCaseRestDoesntWork.get_model(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
             auth_dict['status'] = 200
