@@ -14,6 +14,11 @@ IOS-XE-Ops
 
 View operational and config data from devices running Cisco IOS-Xe software. A demo is available at http://13.92.41.254:3000/
 
+**Snapshots**
+
+.. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/xeopsprod-env.PNG
+
+
 **Notes:**
     
     |    -Switches are slower to poll than routers
