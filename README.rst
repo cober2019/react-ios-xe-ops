@@ -32,7 +32,7 @@ Available Views:
     |    -OSPF Neighbors
     |    -BGP Neighbors
     
-**Routing:**|
+**Routing:**
     |    -OSPF
     |    -BGP
     |    -Routing Table (Flapping Route Checker)
