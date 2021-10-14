@@ -76,7 +76,7 @@ Requirements:
 Install
 --------
 
-You can install code on either windows or linux. Whichever one you choose you will need to install the following dependencies:
+|   You can install code on either windows or linux. Whichever one you choose you will need to install the following dependencies:
     |
     |   **If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"**
     |
