@@ -18,6 +18,8 @@ app.post('/liveinterfaces', createProxyMiddleware({ target: 'https://127.0.0.1:5
 app.post('/pollRouting', createProxyMiddleware({ target: 'https://127.0.0.1:5000', changeOrigin: true , secure: false }));
 app.post('/getDmvpn', createProxyMiddleware({ target: 'https://127.0.0.1:5000', changeOrigin: true , secure: false }));
 app.post('/getipsla', createProxyMiddleware({ target: 'https://127.0.0.1:5000', changeOrigin: true , secure: false }));
+app.post('/query', createProxyMiddleware({ target: 'https://127.0.0.1:5000', changeOrigin: true , secure: false }));
+app.post('/apistatus', createProxyMiddleware({ target: 'https://127.0.0.1:5000', changeOrigin: true , secure: false }));
 
 app.get('/*', function (req, res) {res.sendFile(path.join(__dirname, 'build', 'index.html'));});
 
