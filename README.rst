@@ -80,10 +80,10 @@ Requirements:
 
     |   -Check to see if your device is compatible to use this program. Use the following instructions - https://developer.cisco.com/docs/ios-xe/#!enabling-restconf-on-ios-xe
 
-Install
+Install:Linux
 --------
 
-|   You can install code on either windows or linux. Whichever one you choose you will need to install the following dependencies:
+    The following dependencies are required. You can use the script to install or you can do it manually.
     |
     |   **If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"**
     |
@@ -99,7 +99,7 @@ Install
     |   **Note: If you're using windows 10, you can use built-in Ubuntu** 
     |   
     |   1. Clone this repo to you server and navigate to the /react-ios-xe-ops (root) directory. 
-    |   2. Execute command "sudo bash init_app_routes" which will take care of everything below. When running the script, SSL certs will be created for app to api security. TLSv1.3 for transport.
+    |   2. Execute command "sudo bash init_app_routes" which will take care of everything below. When running the script, SSL certs will be created for app to api security.                TLSv1.3 for transport.
     |
     |   **If you want to manualy install then continue with these steps:**
     |
