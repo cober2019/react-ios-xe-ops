@@ -7,7 +7,7 @@
 npm install package.json -y
 
 #START APP
-pm2 --name XE-Ops start npm -- start
+node server.js&
 
 #CHANGE TO PYTHON DIRECTORY
 cd "$(pwd)/BackEndModeules"
