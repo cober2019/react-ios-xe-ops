@@ -33,10 +33,11 @@ Available Views:
     |    -BGP Neighbors
     
 **Routing:**
+
     |    -OSPF
     |    -BGP
     |    -Routing Table (Flapping Route Checker)
-    |
+    
 **IP SLAs:**
     
     |    -Check current IP SLA statuses
