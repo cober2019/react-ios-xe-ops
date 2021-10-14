@@ -71,7 +71,7 @@ Available Views:
 Requirements:
 --------------
 
-Check to see if your device is compatible to use this program. Use the following instructions - https://developer.cisco.com/docs/ios-xe/#!enabling-restconf-on-ios-xe
+    |   -Check to see if your device is compatible to use this program. Use the following instructions - https://developer.cisco.com/docs/ios-xe/#!enabling-restconf-on-ios-xe
 
 Install
 --------
