@@ -11,6 +11,7 @@ IOS-XE-Ops
 View operational and config data from devices running Cisco IOS-Xe software. A demo is available at http://13.92.41.254:3000/
 
 **Notes:**
+    |
     |    -Switches are slower to poll than routers
     |    -Some YANG models may not be compatible with your device. If so, data is collected via Netmiko
     |    -Views are conditionally rendered which means so some views wont display.
