@@ -92,7 +92,7 @@ Install
     |   **Note: If you're using windows 10, you can use built-in Ubuntu** 
     |   
     |   1. Clone this repo to you server and navigate to the /react-ios-xe-ops (root) directory. 
-    |   2. Execute command "sudo bash init_app_routes" which will take care of everything below. When running the script SSL certs will be created for app to api security. TLSv1.3 for transport.
+    |   2. Execute command "sudo bash init_app_routes" which will take care of everything below. When running the script, SSL certs will be created for app to api security. TLSv1.3 for transport.
     |
     |   **If you want to manualy install then continue with these steps:**
     |
