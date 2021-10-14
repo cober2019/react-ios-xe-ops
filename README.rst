@@ -22,35 +22,49 @@ Available Views:
 -----------------
 
 **Interfaces:**
+    |
     |    -Layer Two and Layer Three
     |    -Arps
     |    -QoS
 **Neighbors:**
+    |
     |    -DP Neighbors
     |    -OSPF Neighbors
     |    -BGP Neighbors
-**Routing:**
+    |
+**Routing:**|
     |    -OSPF
     |    -BGP
     |    -Routing Table (Flapping Route Checker)
+    |
 **IP SLAs:**
+    |
     |    -Check current IP SLA statuses
+    |
 **Environment:**
+    |
     |    -CPU/Memory statuse
     |    -Sensor statuses
     |    -SFP statuses
     |    -POE port statuses
+    |
 **DMVPN:**
+    |
     |    -Tunnel statuses
     |    -Peer statuses
     |    -Public IP resolution
     |    -DMVPN topology visualization
+    |
 **LayerTwo:**
+    |
     |    -Vlans
     |    -Trunks
     |    -Spanning-tree
+    |
 **Rest Viewer:**
+    |
     |    -View all device data in JSON format
+    |
         
 
 Requirements:
