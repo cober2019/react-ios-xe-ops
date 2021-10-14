@@ -88,7 +88,7 @@ Install
     |   **If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"**
     |
     |   -NPM && Node.js - https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
-    |   -Python: Windows - https://www.python.org/downloads/, Linux: https://docs.python-guide.org/starting/install3/linux/
+    |   -Python: https://docs.python-guide.org/starting/install3/linux/
     |   -Open SSL
     |
 
@@ -110,16 +110,7 @@ Install
     |   6. Install python modules using pip "pip install -r requirements.txt"
     |   7. Start the API using "Python3 api_routes.py"
     |   8. Go back to the web app and login to your device
-    |
-    |   **Windows: Non-Prod build for now**
-    |
-    |   1. Clone this repo to you server and navigate to the /react-ios-xe-ops-main directory. (**Directory Name Could Change!**)
-    |   2. Located package.json and execute code "npm install package.json"
-    |   3. Once packages are installed, execute code "npm start". This will automatically open a browser tab with the app.
-    |   4. You can copy/install requirements.txt globally from your Windows user profile - C:\Users\**YOUR_USERNAME**\AppData\Local\Programs\Python\Python38\Scripts. From CMD run "pip install -r requirements.txt"
-    |   5. Navigate to the repo react-ios-xe-ops-main/BackEndModeules and double-click the api_routes.py
-    |
-    |   **IF YOU CREATE VIRTUAL ENVIRONMENTS FROM YOUR IDE YOU CAN INSTALL REQUIREMENTS.TXT FROM THERE AS WELL.**
+    
 
 
 
