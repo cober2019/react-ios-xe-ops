@@ -11,61 +11,60 @@ IOS-XE-Ops
 View operational and config data from devices running Cisco IOS-Xe software. A demo is available at http://13.92.41.254:3000/
 
 **Notes:**
-    |
+    
     |    -Switches are slower to poll than routers
     |    -Some YANG models may not be compatible with your device. If so, data is collected via Netmiko
     |    -Views are conditionally rendered which means so some views wont display.
     |    -Sometimes CPU data for CSRs will error. If so, it will be represented with 'Err'
     |    -Page data will be cached for 5 minutes per device. This means if you switch pages or log into another device, the page will load what was polled last for that device/page. Beats a loading page!
     |    -Login timeout set to 30 seconds
-
 Available Views:
 -----------------
 
 **Interfaces:**
-    |
+    
     |    -Layer Two and Layer Three
     |    -Arps
     |    -QoS
 **Neighbors:**
-    |
+    
     |    -DP Neighbors
     |    -OSPF Neighbors
     |    -BGP Neighbors
-    |
+    
 **Routing:**|
     |    -OSPF
     |    -BGP
     |    -Routing Table (Flapping Route Checker)
     |
 **IP SLAs:**
-    |
+    
     |    -Check current IP SLA statuses
-    |
+    
 **Environment:**
-    |
+    
     |    -CPU/Memory statuse
     |    -Sensor statuses
     |    -SFP statuses
     |    -POE port statuses
-    |
+    
 **DMVPN:**
-    |
+    
     |    -Tunnel statuses
     |    -Peer statuses
     |    -Public IP resolution
     |    -DMVPN topology visualization
-    |
+    
 **LayerTwo:**
-    |
+    
     |    -Vlans
     |    -Trunks
     |    -Spanning-tree
     |
 **Rest Viewer:**
-    |
+    
     |    -View all device data in JSON format
-    |
+    
         
 
 Requirements:
