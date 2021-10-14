@@ -8,7 +8,7 @@
 IOS-XE-Ops
 ============
 
-View operational and config data from devices running Cisco IOS-Xe software. A demo is available at http://13.92.41.254:3000/
+View operational and config data from devices running Cisco IOS-Xe software.
 
 **Snapshots**
 
