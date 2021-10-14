@@ -78,12 +78,13 @@ Available Views:
 Requirements:
 --------------
 
-    |   -Check to see if your device is compatible to use this program. Use the following instructions - https://developer.cisco.com/docs/ios-xe/#!enabling-restconf-on-ios-xe
+    Check to see if your device is compatible to use this program. Use the following instructions - https://developer.cisco.com/docs/ios-xe/#!enabling-restconf-on-ios-xe
 
 Install:Linux
 --------
 
     The following dependencies are required. You can use the script to install or you can do it manually.
+    |
     |
     |   **If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"**
     |
@@ -94,7 +95,6 @@ Install:Linux
 
 **Once Dependecies Are Installed:**
     |
-    |   **Linux:**
     |   
     |   **Note: If you're using windows 10, you can use built-in Ubuntu** 
     |   
