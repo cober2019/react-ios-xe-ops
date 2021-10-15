@@ -76,7 +76,7 @@ Available Views:
     |    -Vlans
     |    -Trunks
     |    -Spanning-tree
-    |
+    
 **Rest Viewer:**
     
     |    -View all device data in JSON format
