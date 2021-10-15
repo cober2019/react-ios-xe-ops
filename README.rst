@@ -5,7 +5,7 @@
 .. image:: https://img.shields.io/badge/Node-stable-blue
     :target: -
 
-IOS-XE-Ops
+XE-Ops
 ============
 
 View operational and config data from devices running Cisco IOS-Xe software. 
