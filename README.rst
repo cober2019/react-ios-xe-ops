@@ -12,10 +12,10 @@ View operational and config data from devices running Cisco IOS-Xe software.
 
 **Tested Models**
     |
-    |   -ASR 
-    |   -ISR
-    |   -CSR
-    |   -CAT >=3000 
+    |   -ASR 1000 Series
+    |   -ISR 4000 Series
+    |   -CSR 1000v
+    |   -CAT 3000 Series
 
 **Snapshots:**
 ----------------
