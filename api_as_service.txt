@@ -1,6 +1,6 @@
 
 You can use this to create a service for your API. This is if you want the API to run permanantly, even after server reboot. 
-Just replace the "YOUR USERNAME" text. This is will contact the WSGI entrypoint in your virtual env. This technically/best practice on how to the API.
+Just replace the "YOUR USERNAME" text. This is will contact the WSGI entrypoint in your virtual env. This technically/best practice on how to run the API.
 
 #Create the service
 sudo nano /etc/systemd/system/react-ios-xe-ops.service
