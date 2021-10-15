@@ -503,7 +503,7 @@ export function AccesPortData(ref, data){
         fnRowCallback: function (nRow, aData) {
             try{
             //Change Back to 'ready'
-            if(aData['status'] === 'up'){
+            if(aData['status'] === 'if-oper-state-ready'){
                 $('td:eq(2)', nRow).html('up')
                 $('td:eq(2)', nRow).addClass('env-row-text')
             }
