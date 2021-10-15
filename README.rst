@@ -94,16 +94,14 @@ Check to see if your device is compatible to use this program. Use the following
 
 Install:Linux
 --------------
-The following dependencies are required. If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"
+The following dependencies are required. If you don't have the following dependencies installed, execute:  "sudo bash install_dependencies.sh"
     |
     |   -NPM && Node.js https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
     |   -Python: https://docs.python-guide.org/starting/install3/linux/
     |   -Open SSL
-    |
 
 **Once Dependecies Are Installed:**
     |
-    |   
     |   **Note: If you're using windows 10, you can use built-in Ubuntu** 
     |   
     |   1. Clone this repo to you server and navigate to the /react-ios-xe-ops (root) directory. 
