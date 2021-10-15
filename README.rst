@@ -8,7 +8,7 @@
 XE-Ops
 ============
 
-View operational and config data from devices running Cisco IOS-Xe software. 
+View operational and config data from devices running Cisco IOS-XE software. 
 
 **Tested Models**
     |
@@ -36,6 +36,7 @@ View operational and config data from devices running Cisco IOS-Xe software.
     |    -Page data will be cached for 5 minutes per device. This means if you switch pages or log into another device, the page will load what was polled last for that device/page. Beats a loading page!
     |    -Login timeout set to 30 seconds
     |    -Collecting RIB tables can take some time. Be patient
+    |
 Available Views:
 -----------------
 
