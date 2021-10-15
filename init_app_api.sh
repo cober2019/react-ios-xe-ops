@@ -65,4 +65,4 @@ source ios-xe-ops-env/bin/activate
 #INSTALL REQUIREMENTS
 pip3 install -r requirements.txt 
 #START API
-python3 api_routes.py 
+python3 wsgi.py 
