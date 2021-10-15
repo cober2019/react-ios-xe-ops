@@ -1,10 +1,12 @@
 
-#You can use this to create a service for your API. This is if you want the API to run permanantly, even after server reboot. Just replace the "YOUR USERNAME" text.This is will contact the WSGI entrypoint in your virtual env
+You can use this to create a service for your API. This is if you want the API to run permanantly, even after server reboot. 
+Just replace the "YOUR USERNAME" text. This is will contact the WSGI entrypoint in your virtual env. This technically/best practice on how to the API.
 
 #Create the service
 sudo nano /etc/systemd/system/react-ios-xe-ops.service
 
 #Copy/paste this text
+------------------------
 
 [Unit]
 Description=Gunicorn instance to serve ios-xe-ops
@@ -21,7 +23,9 @@ ExecStart=/home/"YOUR USERNAME"/react-ios-xe-ops/BackEndModeules/ios-xe-ops-env/
 [Install]
 WantedBy=multi-user.target
 
+--------------------------
+
 #start/verify the service
-# sudo systemctl start react-ios-xe-ops
-# sudo systemctl enable react-ios-xe-ops
-# sudo systemctl status react-ios-xe-ops
+sudo systemctl start react-ios-xe-ops
+sudo systemctl enable react-ios-xe-ops
+sudo systemctl status react-ios-xe-ops
