@@ -95,9 +95,7 @@ Requirements:
 Install:Linux
 --------------
 
-    The following dependencies are required. You can use the script to install or can install manually.
-    |
-    **If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"**
+    **The following dependencies are required. If you don't have the following dependencies install, execute:  "sudo bash install_dependencies.sh"**
     |
     |   -NPM && Node.js https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
     |   -Python: https://docs.python-guide.org/starting/install3/linux/
