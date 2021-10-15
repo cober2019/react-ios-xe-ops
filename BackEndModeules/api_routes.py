@@ -49,7 +49,6 @@ def ios_xe_login() -> dict:
     global rib_session
     
     # Reset our rib status object
-    rib_session = None
     auth_dict = {'status': 'null'}
 
     try:
@@ -63,6 +62,11 @@ def ios_xe_login() -> dict:
             auth_dict['serial'] = model_serial[1]
             auth_dict['uptime'] = model_serial[2]
             auth_dict['software'] = model_serial[3]
+            rib_session_obj = GetRibs.Routing()
+            rib_session[request.json.get('ip')] = {'username': request.json.get('username'), 
+                                                        'password':request.json.get('password'), 
+                                                        'port': 443, 
+                                                        'session':rib_session_obj}
         elif response.status_code == 400:
             auth_dict['status'] = 400
         elif response.status_code == 401:
@@ -163,20 +167,8 @@ def rib_status():
                                                                 request.json.get('ip'),443,
                                                                 request.json.get('username'),
                                                                 request.json.get('password'))
-    except (TypeError, AttributeError) as e:
-        rib_session_obj = GetRibs.Routing()
-        rib_session[request.json.get('ip', {})] = {'username': request.json.get('username'), 
-                                                        'password':request.json.get('password'), 
-                                                        'port': 443, 
-                                                        'session':rib_session_obj}
-    finally:
-        try:
-            routing_information = rib_session.get(request.json.get('ip')).get('session').get_routing_info(
-                                                            request.json.get('ip'),443,
-                                                            request.json.get('username'),
-                                                            request.json.get('password'))
-        except (TypeError, AttributeError):
-            pass
+    except (TypeError, AttributeError):
+        pass
 
     return {'ribsEntries': routing_information[1], 'protocols': routing_information[0], 'flaps': routing_information[2], 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
