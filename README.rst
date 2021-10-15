@@ -8,10 +8,18 @@
 IOS-XE-Ops
 ============
 
-View operational and config data from devices running Cisco IOS-Xe software.
+View operational and config data from devices running Cisco IOS-Xe software. 
 
-**Snapshots**
+**Tested Models**
+    |
+    |   -ASR 
+    |   -ISR
+    |   -CSR
+    |   -CAT >=3000 
 
+**Snapshots:**
+----------------
+    |
 .. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/xeopsprod-env.PNG
 .. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/xeoprestprod.PNG
 .. image:: https://github.com/cober2019/react-ios-xe-ops/blob/main/images/xeopslaprod.PNG
