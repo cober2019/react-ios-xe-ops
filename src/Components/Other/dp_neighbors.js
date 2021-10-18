@@ -42,11 +42,11 @@ export  function DpNeighbors(props){
       LldpTable(lldpTableRef.current, props.dpNeighbors[1])
   }, [])
 
-  return  <Tabs defaultActiveKey="cdp" id="dpneighbors">
-                  <Tab eventKey="cdp" title="CDP">
+  return  <Tabs defaultActiveKey="cdp" id="dpneighbors" className="mb-3">
+                  <Tab eventKey="cdp" title="CDP" className="mb-3">
                       {cdptable}
                   </Tab>
-                  <Tab eventKey="lldp" title="LLDP">
+                  <Tab eventKey="lldp" title="LLDP" className="mb-3">
                       {lldptable}
                   </Tab>
                 </Tabs>
