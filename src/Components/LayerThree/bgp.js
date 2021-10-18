@@ -49,7 +49,7 @@ export  function Bgp(props){
 
   if(props.neighbors.length !== 0){
     return   <Row>
-              <Col lg={4}>
+              <Col xl={4}>
                 <Card bg={"dark"}>
                   <Card.Body>
                     <Card.Title className="mb-3">Local AS: {props.details[0]}</Card.Title>
@@ -95,12 +95,12 @@ export  function Bgp(props){
 
   }
   else{
-    return  <div className="card text-white bg-dark ">
-            <div className="card-body">
-            <h4 classname="card-title mb-3">BGP Neighbors</h4>
+    return  <Card bg={"dark"}>
+            <Card.Body>
+            <Card.Title className="mb-3">BGP Neighbors</Card.Title>
                 {bgpTable}
-            </div>
-        </div>
+            </Card.Body>
+        </Card>
   }
             
   }
