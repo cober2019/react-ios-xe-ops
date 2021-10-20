@@ -17,14 +17,20 @@ import {
   Route,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from 'react-query';
+const queryClient = new QueryClient();
+
 
 export const encytpKey = atom({
   key: 'key',
   default: 'jdh%):Aap(3>S#', 
 });
 
+export const client = atom({
+  key: 'queryClient',
+  default: queryClient, 
+});
 
-const queryClient = new QueryClient();
+
 
 function App() {
 
