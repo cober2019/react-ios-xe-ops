@@ -49,7 +49,6 @@ export function LiveInterfaces(){
   }
 
   const closeInterface = () => {
-    console.log('yes')
     setSelectInterface(undefined)
     setModalShow(false)
   }
