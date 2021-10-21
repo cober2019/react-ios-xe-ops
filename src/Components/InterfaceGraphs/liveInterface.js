@@ -29,7 +29,7 @@ export function LiveInterfaces(){
         const calulatedBandwdithDiff = BandwidthDiff(cache, data.data)
         if(selectInterface !== undefined){
             Object.values(calulatedBandwdithDiff.interfaces).map(int => {
-              if(int.data.name === selectInterface.interface){
+              if(int.data.name === selectInterface.interface && selectInterface){
                 setSelectInterface(int)
               }
           })
@@ -48,6 +48,12 @@ export function LiveInterfaces(){
     setModalShow(true)
   }
 
+  const closeInterface = () => {
+    console.log('yes')
+    setSelectInterface(undefined)
+    setModalShow(false)
+  }
+
   if (error){
     return  <div>
               <Navigation update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching}/>
@@ -57,31 +63,31 @@ export function LiveInterfaces(){
   }
   else if (data){
         return  <Container fluid>
-                    <ErrorBoundary  FallbackComponent={IsErrorFallback}>
-                      <Navigation update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching} cpu={data.cpu} mem={data.mem}/>
-                      </ErrorBoundary>
-                      <Row>
-                      <Col xl={2}>
+                      <ErrorBoundary  FallbackComponent={IsErrorFallback}>
+                        <Navigation update={data} ip={localStorage.getItem('ip')} fetchingStatus={isFetching} cpu={data.cpu} mem={data.mem}/>
+                        </ErrorBoundary>
                         <Row>
-                          { Object.values(data.interfaces).map((value) => (
-                                <button type="button" style={{marginBottom: "10px"}} className="btn btn-success btn-md" onClick={()=> interfaceFocus(value)}>{value.interface}</button>
-                                ))}
-                        </Row>
-                      </Col>
-                      <Col xl={10}>
-                        <Row>
+                        <Col xl={2}>
+                          <Row>
                             { Object.values(data.interfaces).map((value) => (
-                                <Col xl={4}>
-                                {CreateCard(<InterfaceCard key={value.interface} qos={value.qos} value={value.data}/>, value.interface, value.interface)}
-                                </Col>
-                            ))}
+                                  <button type="button" style={{marginBottom: "10px"}} className="btn btn-success btn-md" onClick={()=> interfaceFocus(value)}>{value.interface}</button>
+                                  ))}
+                          </Row>
+                        </Col>
+                        <Col xl={10}>
+                          <Row>
+                              { Object.values(data.interfaces).map((value) => (
+                                  <Col xl={4}>
+                                  {CreateCard(<InterfaceCard key={value.interface} qos={value.qos} value={value.data}/>, value.interface, value.interface)}
+                                  </Col>
+                              ))}
+                          </Row>
+                        </Col>
                         </Row>
-                      </Col>
-                      </Row>
-                      {modalShow ? <ShowInterfaceOverlay interface={selectInterface.interface} component={<InterfaceCard key={selectInterface.interface} qos={selectInterface.qos} value={selectInterface.data}/>} show={modalShow} onHide={() => setModalShow(false)}/>
-                        :  
-                        <div></div>}
-              </Container>
+                        {modalShow ? <ShowInterfaceOverlay interface={selectInterface.interface} component={<InterfaceCard key={selectInterface.interface} qos={selectInterface.qos} value={selectInterface.data}/>} show={modalShow} onHide={() => closeInterface()}/>
+                          :  
+                          <div></div>}
+                </Container>
 
 
       }
