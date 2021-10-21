@@ -29,7 +29,7 @@ export function LiveInterfaces(){
         const calulatedBandwdithDiff = BandwidthDiff(cache, data.data)
         if(selectInterface !== undefined){
             Object.values(calulatedBandwdithDiff.interfaces).map(int => {
-              if(int.data.name === selectInterface.interface && selectInterface){
+              if(int.data.name === selectInterface.interface && modalShow){
                 setSelectInterface(int)
               }
           })
