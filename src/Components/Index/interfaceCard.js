@@ -85,8 +85,8 @@ return      <div id={props.value.name}>
                 </Row>
                 <Row>
                   <Col xl={3} className="mt-3">
-                  <p className="card-text">LastChange:</p>
-                    <p className="card-text">Descr:</p>
+                  <p className="card-text">Description:</p>
+                    <p className="card-text">LastChange:</p>
                   </Col>
                   <Col xl={9} className="mt-3">
                   <p className="card-text">{props.value.description}</p>
