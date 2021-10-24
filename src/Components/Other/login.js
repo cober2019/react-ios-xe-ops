@@ -31,10 +31,10 @@ export function DeviceAuth(){
             localStorage.setItem('port', 443);
             localStorage.setItem('username', username);
             localStorage.setItem('password', encryptPassword.toString());
-            localStorage.setItem('model', data.model);
-            localStorage.setItem('serial', data.serial);
-            localStorage.setItem('uptime', data.uptime);
-            localStorage.setItem('software', data.software);
+            localStorage.setItem('model', data.data.model);
+            localStorage.setItem('serial', data.data.serial);
+            localStorage.setItem('uptime', data.data.uptime);
+            localStorage.setItem('software', data.data.software);
             setModalShow(false)
             setAuth(true)
 
