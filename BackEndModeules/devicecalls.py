@@ -229,13 +229,13 @@ def _allocation_type(action) -> tuple:
         if 'bit-rate' in action.get('shape',{}).get('average',{}):
             allocation = str(round(int(action.get("shape",{}).get("average",{}).get("bit-rate",{})) / 1e+6)) + " Mbps"
         elif 'percent' in action.get('shape',{}).get('average'):
-            allocation = action.get("shape",{}).get("average",{}).get("percent",{}) + "%"
+            allocation = str(action.get("shape",{}).get("average",{}).get("percent",{})) + "%"
 
     elif action.get("action-type",{}) == 'bandwidth':
         if 'kilo-bits' in action.get('bandwidth', {}):
             allocation = str(round(int(action.get("bandwidth",{}).get("kilo-bits",{})) * 1000 / 1e+6)) + " Mbps"
         elif 'percent' in action.get('bandwidth', {}):
-            allocation = action.get("bandwidth",{}).get("percent",{}) + '%'
+            allocation = str(action.get("bandwidth",{}).get("percent",{})) + '%'
 
     if action.get("action-type",{}) == 'service-policy':
         action_type = 'service-policy'
