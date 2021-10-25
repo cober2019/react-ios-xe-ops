@@ -11,6 +11,7 @@ import {useRecoilState} from 'recoil';
 import { LoginModal } from '../Modals/loadingModal'
 import { AES }from 'crypto-js';
 import {encytpKey}  from '../../App'
+import { error } from 'jquery';
 
 export function DeviceAuth(){
     const [encrypt] = useRecoilState(encytpKey);
@@ -21,29 +22,33 @@ export function DeviceAuth(){
     const [isAuth, setAuth] = useState(false)
     const [modalShow, setModalShow] = React.useState(false);
     const [msg, setMsg] = useState('Autheniticating')
+    const requestSession = axios.create();
+    requestSession.defaults.timeout = 10000;
     const { isLoading, error, data, isFetching, refetch, isSuccess } = useQuery(ip + 'login', async () => {
     
-        const data = await axios.post('/login', {'ip': ip, 'username': username, 'password': password, 'port': port})
+        await requestSession.post('/login', {'ip': ip, 'username': username, 'password': password, 'port': port}).then(response =>{
 
-        if(data.data.status === 200){
-            const encryptPassword = AES.encrypt(password, encrypt);
-            localStorage.setItem('ip', ip);
-            localStorage.setItem('port', 443);
-            localStorage.setItem('username', username);
-            localStorage.setItem('password', encryptPassword.toString());
-            localStorage.setItem('model', data.data.model);
-            localStorage.setItem('serial', data.data.serial);
-            localStorage.setItem('uptime', data.data.uptime);
-            localStorage.setItem('software', data.data.software);
-            setModalShow(false)
-            setAuth(true)
+            if(response.data.status === 200){
+                const encryptPassword = AES.encrypt(password, encrypt);
+                localStorage.setItem('ip', ip);
+                localStorage.setItem('port', 443);
+                localStorage.setItem('username', username);
+                localStorage.setItem('password', encryptPassword.toString());
+                localStorage.setItem('model', response.data.model);
+                localStorage.setItem('serial', response.data.serial);
+                localStorage.setItem('uptime', response.data.uptime);
+                localStorage.setItem('software', response.data.software);
+                setModalShow(false)
+                setAuth(true)
 
-        }
-        else{
-            setMsg('Authentication Failed')
-        }
+                return response.data
     
-        return data.data
+            }
+            else{
+                setMsg('Authentication Failed')
+            }
+        }).catch(() => {setMsg('Request Timeout')})
+    
 
         },
         {
@@ -54,6 +59,7 @@ export function DeviceAuth(){
     const handleSubmit =  (evt) => {
         evt.preventDefault();
         refetch();
+
     }
 
     const resetPageStatus = () => {
@@ -65,6 +71,7 @@ export function DeviceAuth(){
         localStorage.clear()
     }, [])
     
+
     if(!isAuth){
         return (
             <Container fluid="xl">
@@ -81,7 +88,7 @@ export function DeviceAuth(){
                                         <Form.Control className="mb-3 text-center" value={port} onChange={e => setPort(e.target.value)} placeholder="Default 443" name="restconfPort" required/>
                                         <Form.Control  onClick={() => setModalShow(true)} type="submit" value="Login" className="btn btn-success"/>
                                     </Form>
-                                    {modalShow ? <LoginModal msg={msg} show={modalShow} onHide={() => resetPageStatus()}/> : <div></div>}
+                                    {modalShow ? <LoginModal msg={msg} show={modalShow} onHide={() => resetPageStatus()}/> : <></>}
                             </Card.Body>
                         </Card>
                     </Col>
