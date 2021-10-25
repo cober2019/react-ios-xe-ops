@@ -23,7 +23,7 @@ export function DeviceAuth(){
     const [modalShow, setModalShow] = React.useState(false);
     const [msg, setMsg] = useState('Autheniticating')
     const requestSession = axios.create();
-    requestSession.defaults.timeout = 10000;
+    requestSession.defaults.timeout = 30000;
     const { isLoading, error, data, isFetching, refetch, isSuccess } = useQuery(ip + 'login', async () => {
     
         await requestSession.post('/login', {'ip': ip, 'username': username, 'password': password, 'port': port}).then(response =>{
