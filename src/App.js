@@ -24,6 +24,11 @@ export const encytpKey = atom({
   default: 'jdh%):Aap(3>S#', 
 });
 
+export const client = atom({
+  key: 'queryClient',
+  default: CachedQueryClient, 
+});
+
 
 function App() {
 
