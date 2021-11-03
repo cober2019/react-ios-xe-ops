@@ -28,11 +28,11 @@ export function ModifyInterface(props){
     const [modalShow, setModalShow] = React.useState(false);
     const [msg, setMsg] = useState('Sending Config')
     const passwordDecrypt = AES.decrypt(localStorage.getItem('password'), decrypt);
-    const {refetch, data} = useQuery(localStorage.getItem('ip') + 'modifyInterfaceConfig', async () => {
+    const { isLoading, error, data, isFetching, refetch } = useQuery(localStorage.getItem('ip') + 'modifyInterfaceConfig', async () => {
         if(newSelectedInt === undefined){
             const data = await axios.post('/modifyconfig', {'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-                    'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port'),
-                    'data': {'type': 'interface', 'name': selectedInt.data.name, 'mask': mask, 'ip': ip, 'mask': mask, 'portStatus': portStatus, 'speed': speed, 'description': description}}).then(response => {
+                            'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port'),
+                            'data': {'type': 'interface', 'name': selectedInt.data.name, 'mask': mask, 'ip': ip, 'mask': mask, 'portStatus': portStatus, 'speed': speed, 'description': description}}).then(response => {
 
                     if(response.data.data.status === 'successful'){
                         setMsg('Configuration Successful')
@@ -48,8 +48,8 @@ export function ModifyInterface(props){
         }
         else{
             const data = await axios.post('/modifyconfig', {'ip': localStorage.getItem('ip'), 'username': localStorage.getItem('username'), 
-                    'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port'),
-                    'data': {'type': 'interface', 'name': newSelectedInt, 'mask': mask, 'ip': ip, 'mask': mask, 'portStatus': portStatus, 'speed': speed, 'description': description} }).then(response => {
+                            'password': passwordDecrypt.toString(enc.Utf8), 'port': localStorage.getItem('port'),
+                            'data': {'type': 'interface', 'name': newSelectedInt, 'mask': mask, 'ip': ip, 'mask': mask, 'portStatus': portStatus, 'speed': speed, 'description': description} }).then(response => {
 
                     if(response.data.data.status === 'successful'){
                         setMsg('Configuration Successful')
@@ -72,7 +72,7 @@ export function ModifyInterface(props){
         if(newSelectedInt === undefined){
             evt.preventDefault();
             refetch();
-	    }
+	        }
         else{
             evt.preventDefault();
             refetch();
@@ -89,7 +89,7 @@ export function ModifyInterface(props){
 
         if(value.type === "new"){
 	
-	        setShowSpeed(true)
+	    setShowSpeed(true)
             setSelectedInt(undefined);
             setNewSelectedInt(undefined);
     	    interfaceHtml.current = null
@@ -100,10 +100,10 @@ export function ModifyInterface(props){
         else{
             if(value.data.name.includes('Loopback')){
                setShowSpeed(false)
-	        }
+	    }
             else{
-		        setShowSpeed(true)
-	        }
+		setShowSpeed(true)
+	    }
 
             setNewSelectedInt(undefined);
             setSelectedInt(value);
@@ -118,14 +118,9 @@ export function ModifyInterface(props){
 
         }
         else{
-	        !showSpeed ? setShowSpeed(true) :
+	    !showSpeed ? setShowSpeed(true) :
             setNewSelectedInt(value);
         }
-    }
-
-    const resetPageStatus = () => {
-        setMsg('Sending Config')
-        setModalShow(false)
     }
 
     useEffect(() => {
@@ -140,8 +135,13 @@ export function ModifyInterface(props){
         catch{}
 
     }, [props.interfaces])
+
+    const resetPageStatus = () => {
+        setMsg('Sending Config')
+        setModalShow(false)
+    }
     
-   if(data){
+   try{
         if(selectedInt !== undefined){
 	
             if(ip === undefined || ip.length === 0){
@@ -201,7 +201,7 @@ export function ModifyInterface(props){
                 statusHtml.current = <h5>&nbsp;&nbsp;shutdown</h5>
             }
 	    if(!showSpeed){
-		    speedHtml.current = null
+		speedHtml.current = null
 	    }
             else if(speed === undefined || speed === ''){
                 speedHtml.current = <h5>&nbsp;&nbsp;speed </h5>
@@ -211,7 +211,8 @@ export function ModifyInterface(props){
             }
         }
     }
-    
+    catch(e){console.log(e)}
+
     return <>
                 <Col xl={5}>
                     <Form controlId="interfaceSelect" bg={"dark"} className="mb-3">
@@ -239,7 +240,7 @@ export function ModifyInterface(props){
                                             {statusHtml.current}
                                         </Col>
                                     </Row>                                    
-				                    <Form ref={interfaceForm} onSubmit={handleSubmit}>
+				        <Form ref={interfaceForm} onSubmit={handleSubmit}>
                                         <Row>
                                             <Form.Group as={Col} controlId="ip">
                                                 <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>IP Address</Form.Label>
@@ -276,10 +277,10 @@ export function ModifyInterface(props){
 
                                         </Row>
                                         <Row>
-				  	                    <Col xl={2}>
-                                		    <Form.Control type="submit" value="Submit" className="btn btn-success mt-3"/>
-                                        </Col>
-                                    </Row>
+				  	    <Col xl={2}>
+                                		<Form.Control type="submit" value="Submit" className="btn btn-success mt-3"/>
+				  	   </Col>
+					</Row>
                                     </Form>
                                 </Card.Body>
                             </Card>
@@ -319,39 +320,41 @@ export function ModifyInterface(props){
                         </Card>
                     </Col>
                 </Row>
-                : 
+            : 
                 <Col xl={6}>
                     <Card bg={"dark"} style={{textAlign: 'left'}}>
                         <Card.Body>
-                            <Col xl={10} style={{textAlign: 'left', fontFamily: 'Courier'}}>
-                                <h5> Interface {newSelectedInt}</h5>
-                                {interfaceHtml.current}
-                                <h5>&nbsp;&nbsp;description {description}</h5>
-                                {speedHtml.current}
-                                {statusHtml.current}
-                            </Col>
+				
+                               <Col xl={10} style={{textAlign: 'left', fontFamily: 'Courier'}}>
+                                            <h5> Interface {newSelectedInt}</h5>
+                                            {interfaceHtml.current}
+                                            <h5>&nbsp;&nbsp;description {description}</h5>
+                                            {speedHtml.current}
+                                            {statusHtml.current}
+                                        </Col>
+                                     
                             <Form ref={interfaceForm} onSubmit={handleSubmit}>
                                 <Row>
                                     <Form.Group as={Col} controlId="interface">
-                                            <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>Interface Name</Form.Label>
+                                            <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>Interface Name</Form.Label>
                                             <Form.Control size="sm" className=" mb-3" onChange={e => configureLogicalInterface(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold'}}/>
                                     </Form.Group>
                                 </Row>
                                 <Row>
                                     <Form.Group as={Col} controlId="ip">
-                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>IP Address</Form.Label>
+                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>IP Address</Form.Label>
                                         <Form.Control size="sm" className="mb-3" onChange={e => setIp(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold'}}/>
                                     </Form.Group>
                                     <Form.Group as={Col} controlId="mask">
-                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>Mask</Form.Label>
+                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>Mask</Form.Label>
                                         <Form.Control size="sm" className="mb-3" onChange={e => setMask(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold' }}/>
                                     </Form.Group>
                                 </Row>
-                                    <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>Description</Form.Label>
+                                    <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>Description</Form.Label>
                                     <Form.Control size="sm" className="mb-3" onChange={e => setDescription(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold'}}/>
                                 <Row>
                                     <Form.Group as={Col} controlId="status">
-                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>Status</Form.Label>
+                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>Status</Form.Label>
                                         <Form.Select  size="sm" style={{marginLeft: "19px"}} onChange={e => setPortStatus(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold'}}>
                                             <option value="up">no shutdown</option>
                                             <option value="down">shutdown</option>
@@ -360,22 +363,22 @@ export function ModifyInterface(props){
 
                                     { showSpeed ? 
 
-                                    <Form.Group as={Col} controlId="speed">
-                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>Speed</Form.Label>
-                                        <Form.Control size="sm"  className=" mb-3" onChange={e => setSpeed(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold'}}/>
-                                    </Form.Group> 
-                                            : 
-                                    <Form.Group as={Col} controlId="speed">
-                                        <Form.Label style={{textAlign: 'left', fontWeight: 'bold'}}>Speed</Form.Label>
-                                        <Form.Control  size="sm" className="mb-3" placeholder="Can't Set Speed" style={{textAlign: 'left', fontWeight: 'bold'}} disabled/>
-                                    </Form.Group>}
+                                        <Form.Group as={Col} controlId="speed">
+                                            <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>Speed</Form.Label>
+                                            <Form.Control size="sm"  className=" mb-3" onChange={e => setSpeed(e.target.value)}  style={{textAlign: 'left', fontWeight: 'bold'}}/>
+                                        </Form.Group> 
+                                                : 
+                                        <Form.Group as={Col} controlId="speed">
+                                            <Form.Label style={{textAlign: 'left', fontWeight: 'bold', color: 'white'}}>Speed</Form.Label>
+                                            <Form.Control  size="sm" className="mb-3" placeholder="Can't Set Speed" style={{textAlign: 'left', fontWeight: 'bold'}} disabled/>
+                                        </Form.Group>}
 
                                 </Row>
-                                <Row>
-                                    <Col xl={2}>
-                                	    <Form.Control type="submit" value="Submit" className="btn btn-success mt-3"/>
-                                    </Col>
-                                </Row>
+				<Row>
+				  <Col xl={2}>
+                                	<Form.Control type="submit" value="Submit" className="btn btn-success mt-3"/>
+				  </Col>
+				</Row>
                             </Form>
                         </Card.Body>
                     </Card>
@@ -385,5 +388,8 @@ export function ModifyInterface(props){
 	    {modalShow ? <ConfigurationModal msg={msg} show={modalShow} onHide={() => resetPageStatus()}/> : <></>}
         </>
     </>
-       
+                            
+
+                    
+            
     }
