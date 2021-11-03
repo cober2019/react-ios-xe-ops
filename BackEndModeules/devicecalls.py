@@ -184,8 +184,8 @@ def collect_qos_stats(interface, ip, port, username, password) -> list:
                 if not allocation:
                     qos = []
                 elif len(allocation) == 1:
-                    qos = {'interface_policy': policy.get('policy-name', {}), 'allocation': allocation[0].get('allocation', {}), 
-                    'direction': policy.get('direction', {}).split('-')[1], 'queues': _map_queues(allocation[0], policy)}
+                    qos = [{'interface_policy': policy.get('policy-name', {}), 'allocation': allocation[0].get('allocation', {}), 
+                    'direction': policy.get('direction', {}).split('-')[1], 'queues': _map_queues(allocation[0], policy)}]
                 else:
                     qos = [
                         
@@ -255,7 +255,8 @@ def _map_queues(i, policy) -> list:
             if len(queue.get('parent-path').split()) != 2:
                 queues.append({'queue-name': queue.get('classifier-entry-name'), 'parent': " ".join(queue.get('parent-path').split(" ")[0:2]),
                 'rate': queue.get('classifier-entry-stats').get('classified-rate'), 'bytes': queue.get('classifier-entry-stats').get('classified-bytes'),
-                'pkts': queue.get('classifier-entry-stats').get('classified-pkts'), 'drops': queue.get('queuing-stats').get('drop-bytes')})
+                'pkts': queue.get('classifier-entry-stats').get('classified-pkts'), 'drops': queue.get('queuing-stats').get('drop-bytes'), 
+                'tail-drops': queue.get('queuing-stats').get('wred-stats').get('tail-drop-bytes')})
             elif len(queue.get('parent-path').split()) == 2 and queue.get('classifier-entry-name') == i.get('queue'):
                 queues.append({'queue-name': f'Parent Queue: {queue.get("classifier-entry-name")}'})
 
@@ -365,6 +366,61 @@ def get_envirmoment(ip, port, username, password) -> dict:
         pass
 
     return env_data
+
+def get_prefix_list(ip, port, username, password) -> list:
+    """Gets prefix-lists from device"""
+
+    prefix_data = [{'name': 'No Prefix-lists Found'}]
+    asr_uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/ip/prefix-list"
+    csr_uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/ip/prefix-lists"
+
+    try:
+        response = requests.get(asr_uri, headers=headers, verify=False, auth=(username, password))
+        
+        if response.status_code == 204:
+            response = requests.get(csr_uri, headers=headers, verify=False, auth=(username, password))
+            prefix_lists = json.loads(response.text)
+            check_error = _check_api_error(prefix_lists)
+
+            if check_error:
+                raise AttributeError
+            else:
+                prefix_data = prefix_lists.get('Cisco-IOS-XE-native:prefix-lists', {}).get('prefixes')
+        else:
+            prefix_lists = json.loads(response.text)
+            check_error = _check_api_error(prefix_lists)
+        
+            if check_error:
+                raise AttributeError
+
+            prefix_data = prefix_lists.get('Cisco-IOS-XE-native:prefix-list', {}).get('prefixes')
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError, TypeError):
+        pass
+
+    return prefix_data
+
+def get_route_maps(ip, port, username, password) -> list:
+    """Gets route-maps from device"""
+
+    route_map_data = [{'name': 'No Route-maps Found'}]
+
+    try:
+        uri = f"https://{ip}:{port}/restconf/data/Cisco-IOS-XE-native:native/route-map"
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        route_maps = json.loads(response.text)
+
+        check_error = _check_api_error(route_maps)
+        
+        if check_error or len(route_maps.get('Cisco-IOS-XE-native:route-map', {})) == 0:
+            raise AttributeError
+
+        route_map_data = route_maps.get('Cisco-IOS-XE-native:route-map', {})
+
+    except (JSONDecodeError, requests.exceptions.ConnectionError, requests.exceptions.InvalidURL,UnboundLocalError, AttributeError):
+        pass
+
+    return route_map_data
 
 def get_components(ip, port, username, password) -> dict:
     """Gets device components /restconf/data/openconfig-platform:components"""

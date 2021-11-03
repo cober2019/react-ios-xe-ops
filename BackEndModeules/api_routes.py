@@ -9,11 +9,11 @@ import requests
 import devicecalls as GetThisDataFromDevice
 import device_call_backup as InCaseRestDoesntWork
 import GetRibData as GetRibs
-import ssl
+
 
 headers_ios = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
-ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ctx.load_cert_chain(f'{os.getcwd()}/domainame.crt', f'{os.getcwd()}/domainame.key')
+#ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+#ctx.load_cert_chain(f'{os.getcwd()}/domainame.crt', f'{os.getcwd()}/domainame.key')
 
 
 app = Flask(__name__)
@@ -50,11 +50,12 @@ def ios_xe_login() -> dict:
     
     # Reset our rib status object
     auth_dict = {'status': 'null'}
+    print(request.json)
 
     try:
         response = requests.get(f"https://{request.json.get('ip', {})}:{request.json.get('port', {})}/restconf/data/netconf-state/capabilities",
             headers=headers_ios, verify=False, auth=(request.json.get('username', {}), request.json.get('password', {})))
-
+        print(response.status_code)
         if response.status_code == 200:
             model_serial = InCaseRestDoesntWork.get_model(request.json.get('username'), request.json.get('password'), request.json.get('ip'))
             auth_dict['status'] = 200
@@ -129,8 +130,11 @@ def routing_page() -> dict:
     ospf = GetThisDataFromDevice.get_ospf(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     bgp = GetThisDataFromDevice.get_bgp_status(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    prefix_lists = GetThisDataFromDevice.get_prefix_list(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    route_maps = GetThisDataFromDevice.get_route_maps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
-    return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpTopology': bgp[2], 'ospfTopology': ospf[2], 'cpu': cpu_status[0], 'mem': cpu_status[1]}
+    return {'ospf': ospf[0], 'ospfInts': ospf[1], 'bgp': bgp[0], 'bgpDetails': bgp[1], 'bgpTopology': bgp[2], 'ospfTopology': ospf[2], 'cpu': cpu_status[0], 'mem': cpu_status[1], 
+            'prefixLists': prefix_lists, 'routeMaps': route_maps}
 
 @app.route('/getDmvpn', methods=['POST', 'GET'])
 def dmvpn() -> dict:
@@ -152,6 +156,15 @@ def ipslas() -> dict:
     cpu_status = GetThisDataFromDevice.get_cpu_usages(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
 
     return {'slas': sla_stats, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
+
+@app.route('/policies', methods=['POST', 'GET'])
+def policies() -> dict:
+    """Gets policy based configurations. i.e. route-maps, acls, prefix-lists"""
+
+    prefix_lists = GetThisDataFromDevice.get_prefix_list(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+    route_maps = GetThisDataFromDevice.get_route_maps(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'))
+
+    return {'prefixLists': prefix_lists, 'routeMaps': route_maps}
 
 @app.route('/ribStatus', methods=['POST', 'GET'])
 def rib_status():
@@ -181,13 +194,20 @@ def live_interfaces():
 
     return {'interfaces': interfaces, 'cpu': cpu_status[0], 'mem': cpu_status[1]}
 
-@app.route('/getinterfacestats', methods=['POST', 'GET'])
-def interface_stats():
-    """Get device interface stats"""
 
-    interface_stats = GetThisDataFromDevice.get_interface_stats(request.json.get('ip'), request.json.get('port'), request.json.get('username'), request.json.get('password'), request.json.get('interface'))
+@app.route('/modifyconfig', methods=['POST', 'GET'])
+def modify_interface():
+    """Send new configuration options to Ansible"""
 
-    return {'data': interface_stats}
+    config_status = 'Failed'
+
+    if request.json.get('data').get('type') == 'interface':
+        print(request.json.get('data', {}))
+    elif request.json.get('data').get('type') == 'bgp':
+        print(request.json.get('data', {}))
+
+    return {'data': config_status}
+
 
 @app.route('/cpustatus', methods=['POST', 'GET'])
 def get_cpu_status():
@@ -264,13 +284,14 @@ def get_api_status():
 def device_query() -> dict:
     """Querys device for yang model. Return data, keys for next query"""
 
-    response_dict = {} 
+    response_dict = {}
+    print(request.json)
 
     response = requests.get(request.json.get('url'), 
                             headers=headers_ios, verify=False,
                             auth=(request.json.get('username'),
                             request.json.get('password')))
-    
+    print(response.text)
     if response.status_code == 200:
         try:
             converted_json = json.loads(response.text, strict=False)
@@ -282,16 +303,12 @@ def device_query() -> dict:
             response_dict['leafs'] = config[1]
             response_dict['parent'] = list(get_keys.keys())[0]
             response_dict['config'] = response.text
-        except json.decoder.JSONDecodeError as error:
+        except json.decoder.JSONDecodeError:
             response_dict['status'] = 500
-    elif response.status_code == 204:
-        response_dict['status'] = 200
-    elif response.status_code == 401:
-        response_dict['status'] = 401
-    elif response.status_code == 404:
-        response_dict['status'] = 404
+    else:
+        response_dict['status'] = response.status_code
 
     return response_dict
 
 if __name__ == '__main__':
-    app.run(ssl_context=ctx)
+    app.run()
