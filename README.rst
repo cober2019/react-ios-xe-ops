@@ -8,7 +8,12 @@
 XE-Ops
 ============
 
-View operational and config data from devices running Cisco IOS-XE software. 
+View operational and config data from devices running Cisco IOS-XE software.
+
+NoteS
+============
+
+The build folder is the latest build. All other files are for developement and are updated frequently. They've not been tested for prod build yet.
 
 **Tested Models**
     
