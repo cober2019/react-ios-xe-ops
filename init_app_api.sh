@@ -5,6 +5,8 @@
 
 #INSTALL APP DEPENDINCIES
 npm install package.json -y
+npm install express
+npm install http-proxy-middleware
 
 #START APP
 node server.js&
