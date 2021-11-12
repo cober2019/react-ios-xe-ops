@@ -1,0 +1,17 @@
+- name: IOSXE CONFIGURATION CONFIG VIA JINJA
+  hosts: sandbox-iosxe-latest-1.cisco.com
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+    - name: Configure OSPF on IOS-XE via jinja2 tempalte
+      ios_config:
+        backup: no
+        src: ospf_config.j2
+      when:
+        - ansible_network_os == 'ios'
+      register: ospf_config
+
+    - name: Getting the ospf configuration 
+      debug:
+        var: ospf_config.updates

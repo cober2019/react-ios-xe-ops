@@ -1,0 +1,21 @@
+{% if ospf.vrf is not none %}
+	router ospfv3 {{ ospf.process_id }}
+	address-faimily ipv4 unicast vrf {ospf.vrf}
+{% if ospf.network is not none %}
+ 	network {{ ospf.network }} {{ ospf.wildcard }} area {{ ospf.area }}
+{%endif%}
+{% if ospf.area_type is not none %}
+ 	area {{ ospf.area }} {{ ospf.area_type }}
+{%endif%}
+
+
+{%else%}
+router ospf {{ ospf.process_id }}
+{%endif%}
+{% if ospf.network is not none %}
+ 	network {{ ospf.network }} {{ ospf.wildcard }} area {{ ospf.area }}
+{%endif%}
+{% if ospf.area_type is not none %}
+ 	area {{ ospf.area }} {{ ospf.area_type }}
+{%endif%}
+

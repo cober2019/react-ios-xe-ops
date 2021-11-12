@@ -1,0 +1,10 @@
+router bgp {{ bgp.local_as }}
+ bgp router-id {{ bgp.router_id }}
+ neighbor {{ bgp.neighbor }} remote-as {{ bgp.remote_as }}
+ address-family ipv4 unicast
+ {% if bgp.route_map is not none and 'routeMap' in bgp.route_map_key %}
+  neighbor {{ bgp.neighbor }} route-map {{ bgp.route_map }} {{ bgp.direction }}
+ {% elif bgp.prefix_list is not none and 'prefixList' in  bgp.prefix_list_key %}
+  neighbor {{ bgp.neighbor }} prefix-list {{ bgp.prefix_list }} {{ bgp.direction }}
+ {% endif %}
+  exit-address-family

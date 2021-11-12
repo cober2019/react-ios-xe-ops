@@ -1,0 +1,18 @@
+
+Welcome to the DevNet Sandbox for CSR1000v and IOS XE
+ 
+The following programmability features are already enabled:
+  - NETCONF
+  - RESTCONF
+ 
+Thanks for stopping by.
+
+
+csr1000v-1#terminal width 511
+csr1000v-1#terminal length 0
+csr1000v-1#
+csr1000v-1#
+csr1000v-1#show standby brief | ex Interface
+
+csr1000v-1#
+csr1000v-1#exit
